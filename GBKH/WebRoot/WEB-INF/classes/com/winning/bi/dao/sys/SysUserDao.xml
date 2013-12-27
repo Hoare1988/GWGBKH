@@ -1,0 +1,390 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.winning.bi.dao.sys.SysUserDao">
+
+	<resultMap id="sysOrgBasicResultMap" type="SysOrg">
+		<id property="id" column="o_id" javaType="int" />
+		<result property="name" column="o_name" javaType="string" />
+		<result property="isSelected" column="isSelected" javaType="int" />
+		<result property="code" column="o_code" javaType="string" />
+		<result property="comments" column="o_comments" javaType="string" />
+	</resultMap>
+
+	<resultMap id="sysRoleBasicResultMap" type="SysRole">
+		<id property="id" column="r_id" javaType="int" />
+		<result property="name" column="r_name" javaType="string" />
+		<result property="description" column="r_description" javaType="string" />
+		<association property="sysOrg" column="r_orgid" javaType="SysOrg"
+			resultMap="sysOrgBasicResultMap" />
+	</resultMap>
+
+	<resultMap id="sysRoleUserMapResultMap" type="SysRole">
+		<id property="id" column="r_id" javaType="int" />
+		<result property="name" column="r_name" javaType="string" />
+		<result property="description" column="r_description" javaType="string" />
+		<result property="isDefault" column="isDefault" javaType="int" />
+		<result property="isSelected" column="isSelected" javaType="int" />
+	</resultMap>
+
+	<resultMap id="sysUserBasicResultMap" type="SysUser">
+		<id property="id" column="u_id" javaType="long" />
+		<result property="userName" column="u_userName" javaType="string" />
+		<result property="password" column="u_password" javaType="string" />
+		<result property="realName" column="u_realName" javaType="string" />
+		<result property="py" column="u_py" javaType="string" />
+		<result property="wb" column="u_wb" javaType="string" />
+		<result property="comments" column="u_comments" javaType="string" />
+		<result property="enable" column="u_enable" javaType="int" />
+		<result property="type" column="u_type" javaType="int" />
+		<result property="lastLoginTime" column="u_lastlogintime"
+			javaType="date" />
+		<result property="loginCount" column="u_logincount" javaType="int" />
+
+		<result property="gender" column="u_gender" javaType="string" />
+		<result property="deptcode" column="u_deptcode" javaType="string" />
+		<result property="deptname" column="u_deptname" javaType="string" />
+		<result property="cellphone" column="u_cellphone" javaType="string" />
+		<result property="telphone" column="u_telphone" javaType="string" />
+		<result property="email" column="u_email" javaType="string" />
+		<result property="superiors" column="u_superiors" javaType="long" />
+		<result property="postname" column="u_postname" javaType="string" />
+		<result property="entrydate" column="u_entrydate" javaType="date" />
+		<result property="canaudit" column="u_canaudit" javaType="int" />
+        <result property="privilege" column="u_privilege" javaType="int" />
+        <collection property="orgs" column="u_id" ofType="SysOrg"
+			select="selectAllOrgsForUser" />
+			
+	</resultMap>
+
+	<resultMap id="sysModuleBasicResultMap" type="SysModule">
+		<id property="id" column="m_id" javaType="int" />
+		<result property="name" column="m_name" javaType="string" />
+		<result property="code" column="m_code" javaType="string" />
+		<result property="path" column="m_path" javaType="string" />
+		<result property="groupName" column="m_groupName" javaType="string" />
+		<result property="comments" column="m_comments" javaType="string" />
+		<result property="ordinal" column="m_ordinal" javaType="int" />
+		<result property="isMenu" column="m_isMenu" javaType="int" />
+		<result property="isNav" column="m_isNav" javaType="int" />
+		<result property="isLeaf" column="m_isLeaf" javaType="int" />
+		<result property="stage" column="m_stage" javaType="int" />
+		<result property="type" column="m_type" javaType="int" />
+		<result property="enable" column="m_enable" javaType="int" />
+		<result property="isSelected" column="isSelected" javaType="int" />
+		<association property="parent" column="m_parentid"
+			javaType="SysModule" select="getParentModule" />
+	</resultMap>
+
+	<!-- <resultMap id="sysModuleBasicResultMap" type="SysModule" extends="sysPmModuleResultMap"> 
+		<collection property="children" column="m_id" ofType="SysModule" select="getChildrenModule"/> 
+		</resultMap> -->
+
+	<resultMap id="sysUserResultMap" type="SysUser" extends="sysUserBasicResultMap">
+		<collection property="roles" column="u_id" ofType="SysRole"
+			select="selectRolesForUser" />
+	</resultMap>
+
+	<resultMap id="sysUserWithAllRolesResultMap" type="SysUser"
+		extends="sysUserBasicResultMap">
+		<collection property="roles" column="u_id" ofType="SysRole"
+			select="selectAllRolesForUser" />
+	</resultMap>
+	
+	
+
+	<resultMap id="sysRoleResultMap" type="sysRole" extends="sysRoleBasicResultMap">
+		<collection property="modules" column="r_id" ofType="SysModule"
+			select="selectModulesForRole" />
+	</resultMap>
+
+	<!-- <resultMap id="sysRoleWithAllModulesResultMap" type="sysRole" extends="sysRoleBasicResultMap"> -->
+	<!-- <collection property="modules" column="r_id" ofType="SysModule" select="selectAllModulesForRole"/> -->
+	<!-- </resultMap> -->
+
+
+	<sql id="sysOrgCol">
+		o.id as o_id,
+		o.name as o_name,
+		o.code as o_code,
+		o.comments as o_comments
+	</sql>
+	<sql id="sysRoleCol">
+		r.id as r_id,
+		r.name as r_name,
+		r.description as
+		r_description,
+		r.orgid as r_orgid
+	</sql>
+	<sql id="sysUserCol">
+		u.id as u_id,
+		u.username as u_userName,
+		u.password as
+		u_password,
+		u.realName as u_realName,
+		u.py as u_py,
+		u.wb as u_wb,
+		u.enable as u_enable,
+		u.type as u_type,
+		u.lastlogintime as
+		u_lastlogintime,
+		u.logincount as u_logincount,
+		u.comments as u_comments,
+		u.gender as u_gender,
+		u.deptcode as u_deptcode,
+		u.deptname as
+		u_deptname,
+		u.cellphone as u_cellphone,
+		u.telphone as u_telphone,
+		u.email as u_email,
+		u.superiors as u_superiors,
+		u.postname as
+		u_postname,
+		u.entrydate as u_entrydate,
+		u.canaudit as u_canaudit,
+		u.privilege as u_privilege
+	</sql>
+	<sql id="sysModuleCol">
+		m.id as m_id,
+		m.name as m_name,
+		m.code as m_code,
+		m.path as
+		m_path,
+		m.groupName as m_groupName,
+		m.comments as m_comments,
+		m.ordinal
+		as m_ordinal,
+		m.isMenu as m_isMenu,
+		m.isNav as m_isNav,
+		m.isLeaf as
+		m_isLeaf,
+		m.type as m_type,
+		m.stage as m_stage,
+		m.enable as m_enable,
+		m.parentid as m_parentid
+	</sql>
+
+
+
+
+
+	<!-- select -->
+	<select id="findSysUserById" parameterType="long"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.id=#{id}
+	</select>
+
+	<select id="queryUsersByCondition" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.enable=1
+		<if test="userName!=null"> and u.username like '%${userName}%' </if>
+		<if test="realName!=null"> and u.realName like '%${realName}%' </if>
+		<if test="py!=null"> and u.py like #{py}+'%' </if>
+	</select>
+
+	<select id="queryPmUsers" parameterType="map"
+		resultMap="sysUserWithAllRolesResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.enable=1
+		<if test="userName!=null"> and u.username like '%${userName}%' </if>
+		<if test="realName!=null"> and u.realName like '%${realName}%' </if>
+		<if test="py!=null"> and u.py like #{py}||'%' </if>
+	</select>
+
+	<select id="queryPmRoles" parameterType="map" resultMap="sysRoleBasicResultMap">
+		select
+		<include refid="sysRoleCol" />
+		from SYSROLE r
+		where 1=1
+		<if test="name!=null"> and r.name like '%'||#{name}||'%' </if>
+	</select>
+
+	<select id="findUsersByCondition" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where 1=1
+		<if test="userName!=null"> and u.username=#{userName} </if>
+	</select>
+
+	<select id="login" parameterType="map" resultMap="sysUserResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.username=#{userName}
+		and u.password=#{password}
+		and u.enable=1
+	</select>
+
+	<select id="selectRolesForUser" parameterType="long" resultMap="sysRoleResultMap">
+		select
+		<include refid="sysRoleCol" />
+		,
+		<include refid="sysOrgCol" />
+		from SYSROLE r
+		left join SYSUSERROLE ur on r.id=ur.rid
+		left join DEPT
+		o on r.orgid=o.id
+		where ur.userid=#{u_id}
+		order by ur.isdefault desc
+	</select>
+
+	<select id="selectAllRolesForUser" parameterType="long"
+		resultMap="sysRoleUserMapResultMap">
+		select
+		<include refid="sysRoleCol" />
+		,isnull(ur.isdefault,0) as isDefault,
+		(case when ur.userid is null then 0
+		else 1 end) as isSelected
+		from SYSROLE r
+		left join SYSUSERROLE ur on
+		r.id=ur.rid and ur.userid=#{u_id}
+		order by r.id
+	</select>
+
+	<select id="selectModulesForRole" parameterType="int"
+		resultMap="sysModuleBasicResultMap">
+		select
+		<include refid="sysModuleCol" />
+		from SYSMODULE m
+		left join SYSROLEMODULE rm on m.id=rm.mid
+		where
+		rm.rid=#{r_id} and m.stage=1
+		order by m.stage,m.ordinal
+	</select>
+
+	<select id="selectAllModulesForRole" parameterType="map"
+		resultMap="sysModuleBasicResultMap">
+		select
+		<include refid="sysModuleCol" />
+		,(case when rm.rid is null then 0 else 1 end) as isSelected
+		from
+		SYSMODULE m
+		left join SYSROLEMODULE rm on m.id=rm.mid and
+		rm.rid=#{r_id}
+		where
+		m.parentid=#{m_id}
+		order by m.stage,m.ordinal
+	</select>
+
+	<select id="selectValidModulesForRole" parameterType="int"
+		resultMap="sysModuleBasicResultMap">
+		select
+		<include refid="sysModuleCol" />
+		from SYSMODULE m,SYSROLEMODULE rm
+		where m.id=rm.mid and
+		m.parentid=#{m_id} and rm.rid=#{r_id}
+		order by m.stage,m.ordinal
+	</select>
+
+	<select id="getParentModule" parameterType="int"
+		resultMap="sysModuleBasicResultMap">
+		select
+		<include refid="sysModuleCol" />
+		from SYSMODULE m
+		where m.id=#{m_parentid}
+	</select>
+
+
+
+<select id="selectAllOrgsForUser" parameterType="int"
+		resultMap="sysOrgBasicResultMap">
+		select
+		<include refid="sysOrgCol" />
+		,(case when sysuserid is null then 0 else 1 end) as isSelected
+		from
+		DEPT o,sysuser_org_stat_map so
+		where  o.id=so.OrgID and so.sysuserid=#{u_id}
+		order by isSelected  desc 
+	</select>
+	<!-- <select id="getChildrenModule" parameterType="int" resultMap="sysModuleBasicResultMap"> 
+		select <include refid="sysModuleCol"/> from SYSMODULE m where m.parentid=#{m_id} 
+		</select> -->
+
+
+
+
+	<!-- update -->
+
+	<update id="updateSysUser" parameterType="SysUser">
+		update SYSUSER set updatedate=getDate()
+		<if test="userName!=null">,username=#{userName} </if>
+		<if test="password!=null">,password=#{password} </if>
+		<if test="realName!=null">,realName=#{realName} </if>
+		<if test="py!=null">,py=#{py} </if>
+		<if test="wb!=null">,wb=#{wb} </if>
+		<if test="type!=null">,type=#{type} </if>
+		<if test="enable!=null">,enable=#{enable} </if>
+		<if test="comments!=null">,comments=#{comments} </if>
+		<if test="gender!=null">,gender=#{gender} </if>
+		<if test="deptcode!=null">,deptcode=#{deptcode} </if>
+		<if test="deptname!=null">,deptname=#{deptname} </if>
+		<if test="cellphone!=null">,cellphone=#{cellphone} </if>
+		<if test="telphone!=null">,telphone=#{telphone} </if>
+
+		<if test="email!=null">,email=#{email} </if>
+		<if test="superiors!=null">,superiors=#{superiors} </if>
+		<if test="postname!=null">,postname=#{postname} </if>
+		<if test="entrydate!=null">,entrydate=#{entrydate} </if>
+
+		<if test="canaudit!=null">,canaudit=#{canaudit} </if>
+        <if test="privilege!=null">,privilege=#{privilege} </if>
+
+
+		<where>id=#{id}</where>
+	</update>
+
+	<update id="updateAfterLogin" parameterType="long">
+		update SYSUSER set
+		loginCount=loginCount+1,lastLoginTime=getdate() where id=#{id}
+	</update>
+
+	<update id="updatePassword" parameterType="map">
+		update SYSUSER set updatedate=getdate(),password=#{password}
+		<where>id=#{id}</where>
+	</update>
+
+	<!-- insert -->
+
+
+	<!-- <insert id="insertSysUser" parameterType="SysUser" useGeneratedKeys="true" 
+		keyProperty="id"> -->
+	<!-- insert into SYSUSER -->
+	<!-- (id,username,password,realName,py,createDate,updateDate) -->
+	<!-- values -->
+	<!-- (seq_sysuser.nextval,#{userName},#{password},#{realName},#{py},sysdate,sysdate); -->
+	<!-- </insert> -->
+	<insert id="insertSysUser" parameterType="SysUser">
+		insert into SYSUSER
+		(username,password,realName,py,createDate,updateDate,gender,deptcode,deptname,cellphone,email,superiors,postname,
+		entrydate,canaudit
+		)
+		values
+		(#{userName,jdbcType=VARCHAR},#{password,jdbcType=VARCHAR},#{realName,jdbcType=VARCHAR},#{py,jdbcType=VARCHAR},getdate(),getdate(),#{gender,jdbcType=VARCHAR},#{deptcode,jdbcType=VARCHAR},#{deptname,jdbcType=VARCHAR},#{cellphone,jdbcType=VARCHAR},#{email,jdbcType=VARCHAR},#{superiors,jdbcType=NUMERIC},#{postname,jdbcType=VARCHAR},
+		#{entrydate,jdbcType=DATE},#{canaudit,jdbcType=NUMERIC})
+	</insert>
+
+
+	<insert id="insertSysUsersRolesMapping" parameterType="map">
+		insert
+		into SYSUSERROLE(userid,rid,isdefault)
+		values(#{uid},#{rid},#{isdefault})
+	</insert>
+
+	<!-- delete -->
+	<delete id="deleteAllSysUsersRolesMapping" parameterType="long">
+		delete
+		from SYSUSERROLE where userid=#{uid}
+	</delete>
+</mapper>
+
+
+

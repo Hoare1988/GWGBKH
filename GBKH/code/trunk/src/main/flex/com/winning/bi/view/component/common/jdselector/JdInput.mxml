@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TextInput xmlns:mx="http://www.adobe.com/2006/mxml" text="{_jd}" width="90" creationComplete="init();">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var _jd:String;
+			
+			public var jd:Date;
+			
+			[Bindable]
+			public var textValue:String;
+			
+			private function init():void
+			{
+				var curDate:Date = jd;
+				var year:int = curDate.getFullYear();
+				var jds:String;
+				var jdx:int;
+				if(3>curDate.getMonth()>=0){
+					jds = '一季度';
+					jdx=1;
+				}else if(6>curDate.getMonth()>=3){
+					jds = '二季度';
+					jdx=2;
+				}else if(9>curDate.getMonth()>=6){
+					jds = '三季度';
+					jdx=3;
+				}else{
+					jds = '四季度';
+					jdx=4;
+				}
+				_jd = year+'年'+jds;
+				textValue = year+''+jdx;
+			}	
+		]]>
+	</mx:Script>
+</mx:TextInput>

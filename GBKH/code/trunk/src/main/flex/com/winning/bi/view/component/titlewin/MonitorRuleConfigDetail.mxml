@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="360"
+				height="200"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				title="添加/修改监控规则"
+				icon="{ImagesAssets.EDIT16}"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.MedMonitorRuleEvent;
+			import com.winning.bi.model.domain.AppOption;
+			import com.winning.bi.model.domain.MedMonitorRule;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.model.mlct.MedConfigModelLocator;
+
+			import mx.managers.PopUpManager;
+
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			private var medConfigModel:MedConfigModelLocator=MedConfigModelLocator.getInstance();
+
+			private function init():void
+			{
+				/* if (medConfigModel.editRule != null)
+				{
+					//更新操作
+					mcPara.text=medConfigModel.editRule.mc;
+					jgmsPara.text=medConfigModel.editRule.jgms;
+					wgxwPara.text=medConfigModel.editRule.wgxw;
+					sqlPara.text=medConfigModel.editRule.sql;
+					for each (var option:AppOption in jkdxPara.dataProvider)
+					{
+						if (medConfigModel.editRule.jkdx.id == option.id)
+						{
+							jkdxPara.selectedItem=option;
+							break;
+						}
+					}
+					for each (var option:AppOption in jkmsPara.dataProvider)
+					{
+						if (medConfigModel.editRule.jkms.id == option.id)
+						{
+							jkmsPara.selectedItem=option;
+							break;
+						}
+					}
+					for each (var option:AppOption in zqPara.dataProvider)
+					{
+						if (medConfigModel.editRule.zq.id == option.id)
+						{
+							zqPara.selectedItem=option;
+							break;
+						}
+					}
+					for each (var option:AppOption in yxjPara.dataProvider)
+					{
+						if (medConfigModel.editRule.yxj.id == option.id)
+						{
+							yxjPara.selectedItem=option;
+							break;
+						}
+					}
+				}
+				else
+				{
+					//新增操作
+				} */
+
+			}
+
+			private function close():void
+			{
+				medConfigModel.editRule=null;
+				PopUpManager.removePopUp(this);
+
+			}
+
+			private function save():void
+			{
+				if (medConfigModel.editRule != null)
+				{
+					//更新
+					setPropertyValue();
+					new MedMonitorRuleEvent(MedMonitorRuleEvent.EVENT_UPDATE_MEDMONITORRULE, medConfigModel.editRule).dispatch();
+				}
+				else
+				{
+					//新增
+					medConfigModel.editRule=new MedMonitorRule();
+					setPropertyValue();
+					new MedMonitorRuleEvent(MedMonitorRuleEvent.EVENT_INSERT_MEDMONITORRULE, medConfigModel.editRule).dispatch();
+				}
+			}
+
+
+			private function setPropertyValue():void
+			{
+				/* medConfigModel.editRule.mc=mcPara.text;
+				medConfigModel.editRule.wgxw=wgxwPara.text;
+				medConfigModel.editRule.bz='';
+				medConfigModel.editRule.sql=sqlPara.text;
+				medConfigModel.editRule.jgms=jgmsPara.text;
+				medConfigModel.editRule.yxj=yxjPara.selectedItem as AppOption;
+				medConfigModel.editRule.jkms=jkmsPara.selectedItem as AppOption;
+				medConfigModel.editRule.jkdx=jkdxPara.selectedItem as AppOption;
+				medConfigModel.editRule.zq=zqPara.selectedItem as AppOption; */
+			}
+
+			private function test():void
+			{
+
+			}
+		]]>
+	</mx:Script>
+	<mx:DateFormatter id="df"
+					  formatString="YYYY-MM-DD"/>
+	<mx:VBox width="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 styleName="borderSkinStyle"
+			 height="100%">
+		<mx:TabNavigator width="100%"
+						 creationPolicy="all"
+						 paddingTop="0"
+						 tabWidth="80"
+						 tabHeight="30"
+						 height="100%">
+			<mx:HBox label="信息"
+					 width="100%"
+					 height="100%"
+					 styleName="borderSkinStyle">
+				<mx:VBox height="100%"
+						 paddingRight="0">
+					<mx:Form width="100%"
+							 height="100%"
+							 paddingRight="0">
+						<mx:FormItem label="规则编码：">
+							<mx:TextInput id="bmPara"
+										  width="200"
+										  text="{medConfigModel.editRule==null?'未分配':medConfigModel.editRule.dm}"
+										  editable="false"
+										  backgroundColor="#c0c0c0"/>
+						</mx:FormItem>
+						<mx:FormItem label="规则名称：">
+							<mx:TextArea id="mcPara"
+										 width="200"
+										 height="40"/>
+						</mx:FormItem>
+						<mx:FormItem label="监控对象：">
+							<mx:ComboBox id="jkdxPara"
+										 width="200"
+										 dataProvider="{appModel.jkdxAC}"
+										 labelField="dmmc"/>
+						</mx:FormItem>
+						<mx:FormItem label="监控模式：">
+							<mx:ComboBox id="jkmsPara"
+										 width="200"
+										 dataProvider="{appModel.jkmsAC}"
+										 labelField="dmmc"/>
+						</mx:FormItem>
+						<mx:FormItem label="周期：">
+							<mx:ComboBox id="zqPara"
+										 width="200"
+										 dataProvider="{appModel.jkzqAC}"
+										 labelField="dmmc"/>
+						</mx:FormItem>
+						<mx:FormItem label="优先级：">
+							<mx:ComboBox id="yxjPara"
+										 width="200"
+										 dataProvider="{appModel.yxjAC}"
+										 labelField="dmmc"/>
+						</mx:FormItem>
+						<mx:FormItem label="状态：">
+							<mx:TextInput id="ztPara"
+										  width="200"
+										  text="{medConfigModel.editRule==null?'':medConfigModel.editRule.zt.dmmc}"
+										  editable="false"
+										  backgroundColor="#c0c0c0"/>
+						</mx:FormItem>
+						<mx:FormItem label="创建时间：">
+							<mx:TextInput id="cjsjPara"
+										  width="200"
+										  editable="false"
+										  text="{medConfigModel.editRule==null?'':df.format(medConfigModel.editRule.cjsj)}"
+										  backgroundColor="#c0c0c0"/>
+						</mx:FormItem>
+						<mx:FormItem label="违规行为："
+									 height="100%">
+							<mx:TextArea id="jgmsPara"
+										 width="200"
+										 height="100%"/>
+						</mx:FormItem>
+						<!--<mx:FormItem label="阈值设定：">
+							<mx:TextInput id="yzPara"
+										  width="200"/>
+						</mx:FormItem>
+						<mx:FormItem label="">
+							<mx:Label text="(有多个阈值，用逗号隔开)"
+									  color="red"
+									  fontWeight="bold"/>
+						</mx:FormItem>-->
+					</mx:Form>
+				</mx:VBox>
+				<mx:VBox width="100%"
+						 height="100%">
+					<mx:Form width="100%"
+							 height="100%">
+						<mx:FormItem label="简介:"
+									 horizontalGap="0"
+									 width="100%"
+									 height="100%">
+
+							<mx:TextArea id="wgxwPara"
+										 width="100%"
+										 height="100%"/>
+
+
+						</mx:FormItem>
+					</mx:Form>
+				</mx:VBox>
+			</mx:HBox>
+			<mx:VBox label="运行脚本"
+					 styleName="borderSkinStyle"
+					 width="100%"
+					 height="100%">
+				<mx:Form width="100%"
+						 height="100%">
+					<mx:FormItem label=""
+								 horizontalGap="0"
+								 width="100%"
+								 height="100%">
+						<mx:TextArea id="sqlPara"
+									 width="100%"
+									 height="100%"/>
+					</mx:FormItem>
+				</mx:Form>
+			</mx:VBox>
+		</mx:TabNavigator>
+
+		<mx:HBox width="100%"
+				 height="38"
+				 verticalAlign="middle"
+				 horizontalAlign="right"
+				 paddingRight="18">
+			<common:BtnTest click="test()"/>
+			<common:BtnSave click="save()"/>
+			<common:BtnClose click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

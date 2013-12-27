@@ -1,0 +1,236 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="100%" height="100%" creationComplete="init()" layout="vertical" paddingTop="10"
+		   remove="clearModifyItems">
+
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.ItemEvent;
+			import com.winning.bi.model.domain.Item;
+			import com.winning.bi.model.mlct.ItemMgtModelLocator;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.utils.TimeFormatter;
+			import com.winning.bi.view.component.titlewin.AddItem;
+			import com.winning.bi.view.component.titlewin.EditExamItemsTitle;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			import org.hamcrest.object.nullValue;
+			[Bindable]
+			private var _itemModelLocator:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+			
+			[Bindable]
+			private var btnEnable:Boolean=false;
+			
+			private var parentItem:Item=null;
+			
+			private var alertShowResult:int=0;
+			
+			
+			private function init():void
+			{   
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+//				cItemTree.expandChildrenOf(item1,true);
+			}
+			
+			private function eItem_click():void
+			{
+				var selectItem:Item=cItemTree.selectedItem as Item;
+				btnEnable=selectItem.editable;
+				if(_itemModelLocator.itemMgtWithPermit_AddItemAc.length>0||_itemModelLocator.itemMgtWithPermit_AbolishItemAc.length>0)
+				{
+					if(parentItem!=null&&parentItem.id!=selectItem.parentItem.id)
+					{
+						
+						Alert.show("有修改的项目未保存，请先保存","提示",Alert.YES|Alert.NO,this,alertCallBack);
+						
+						if(alertShowResult==Alert.YES)
+						{
+						  return ;
+						}
+						else if(alertShowResult==Alert.NO)
+						{
+							clearModifyItems();
+						}
+					}
+				}
+				if(selectItem.isBottom)
+				{
+					parentItem=selectItem.parentItem;
+				}else
+				{
+					parentItem=selectItem;
+				}
+				
+				
+				cItemTree.expandChildrenOf(selectItem,true);
+				if(selectItem!=null)
+				{
+					_score.text=selectItem.score.toString()+"(分)";
+					_percentage.text=selectItem.percentage+"(%)"
+					_py.text=selectItem.py;
+					_evaluationStandard.text=selectItem.evaluationStandard;
+					_resource.text=selectItem.resource;
+					_comments.text=selectItem.comments;
+					_createDate.text=TimeFormatter.parse(selectItem.createDate,Constant.TIME_PARTTEN_THREE);
+					_updateDate.text=TimeFormatter.parse(selectItem.updateDate,Constant.TIME_PARTTEN_THREE);
+				}
+			}
+			
+			private function alertCallBack(event:CloseEvent):void
+			{
+				alertShowResult=event.detail;
+			}
+			
+			private function eAdd_click(item:Item):void
+			{
+				var addItem:AddItem=AddItem(PopUpManager.createPopUp(this, AddItem, true));
+				addItem.title="项目添加";
+				addItem.editType=3;
+				addItem.parentItem=item;
+				PopUpManager.centerPopUp(addItem);
+			}
+			
+			private function cabolishButton_click(item:Item):void
+			{
+				if(item!=null)
+				{
+					for each(var itemt:Item  in _itemModelLocator.itemMgtWithPermit_AbolishItemAc)
+					{
+						if(itemt.id==item.id){
+						Alert.show("已经添加作废!","提示",Alert.YES);
+						return;
+						}
+					}
+					item.editType=2;
+					_itemModelLocator.itemMgtWithPermit_AbolishItemAc.addItem(item);
+				}
+				else
+				{
+					Alert.show("选择项目！");
+				}
+			}
+			
+			
+			private function eSave_click():void
+			{
+				if(_itemModelLocator.itemMgtWithPermit_AbolishItemAc.length>0||_itemModelLocator.itemMgtWithPermit_AddItemAc.length>0)
+				{
+					var itemTitile:EditExamItemsTitle=PopUpManager.createPopUp(this,EditExamItemsTitle,null) as EditExamItemsTitle;
+					itemTitile.title="确认修改";
+					itemTitile.parentItem=this.parentItem;
+					itemTitile.addedItems=_itemModelLocator.itemMgtWithPermit_AddItemAc;
+					itemTitile.abolishedItems=_itemModelLocator.itemMgtWithPermit_AbolishItemAc;
+					
+					PopUpManager.centerPopUp(itemTitile);
+				}
+			}
+			
+			private function eCancel_click():void
+			{
+				clearModifyItems();
+			}
+			
+			private function treeLabelFunction(item:Object):String
+			{
+				var s:String =""; 
+				if(item.editable)
+				{
+				  s=Constant.EDITEABLE_FLAG+item.name;
+				}else
+				{
+					s=item.name;
+				}
+				return s;
+			}
+			
+			private function eFlushTree_click():void
+			{
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+			}
+			
+		
+			//删除新增和作废的缓存项目
+			public function clearModifyItems():void
+			{
+				_itemModelLocator.itemMgtWithPermit_AbolishItemAc.removeAll();
+				_itemModelLocator.itemMgtWithPermit_AddItemAc.removeAll();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:HBox width="300" height="100%" styleName="borderSkinStyle">
+				<mx:Tree id="cItemTree" width="100%" height="100%"
+						 dataProvider="{_itemModelLocator.itemTreeAC}"
+						 folderClosedIcon="{ImagesAssets.TREE_CLOSE}"
+						 folderOpenIcon="{ImagesAssets.TREE_OPEN}" itemClick="eItem_click()"
+						 labelFunction="treeLabelFunction"/>
+			</mx:HBox>
+			<mx:VBox width="100%" height="100%" styleName="borderSkinStyle">
+				
+				<mx:HBox width="100%">
+						<mx:Label width="100" text="分      值:"/>
+						<mx:Label id="_score" color="#1E23E1" fontSize="13" text=""/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label width="100" text="比      例:"/>
+					<mx:Label id="_percentage" color="#1E23E1" fontSize="13" text=""/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+						<mx:Label width="100" text="拼 音 码:"/>
+						<mx:Label id="_py" color="#1E23E1" fontSize="13" text=""/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label width="100" text="创建时间:"/>
+					<mx:Label id="_createDate" color="#1E23E1" fontSize="13" text=""/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label width="100" text="更新时间:"/>
+					<mx:Label id="_updateDate" color="#1E23E1" fontSize="13" text=""/>
+				</mx:HBox>
+					<mx:HBox width="100%">
+					<mx:Label width="100" text="评分标准:"/>
+					<mx:TextInput id="_evaluationStandard" width="100%" height="100" color="#1E23E1"
+								  fontSize="13" text=""/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+						<mx:Label width="100" text="数据来源:"/>
+					<mx:TextInput id="_resource" width="100%" height="100" color="#1E23E1"
+								  fontSize="13" text=""/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+						<mx:Label width="100" text="备      注:"/>
+					<mx:TextInput id="_comments" width="100%" height="100" color="#1E23E1"
+								  fontSize="13" text=""/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+	<mx:HBox width="100%" styleName="borderBoxSkinStyle" verticalAlign="middle">
+		
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:ToolBar width="100%">
+			<mx:Button id="cFlushTreeButton" label="刷新" click="eFlushTree_click()"
+					   icon="{ImagesAssets.UPDATE01}"/>
+			<mx:Button id="cAddButton" label="添加" click="eAdd_click(cItemTree.selectedItem as Item)"
+					   enabled="{btnEnable}" icon="{ImagesAssets.ADD}"/>
+			<mx:Button id="caButton" label="作废"
+					   click="cabolishButton_click(cItemTree.selectedItem as Item)"
+					   enabled="{btnEnable}" icon="{ImagesAssets.MODIFY16}"/>
+			<mx:Button id="cSaveButton" label="保存" click="eSave_click()" icon="{ImagesAssets.SAVE16}"/>
+			<mx:Button id="cCancelButton" label="取消" click="eCancel_click()"
+					   icon="{ImagesAssets.CANCEL}"/>
+		</mx:ToolBar>
+	</mx:HBox>
+</mx:Module>

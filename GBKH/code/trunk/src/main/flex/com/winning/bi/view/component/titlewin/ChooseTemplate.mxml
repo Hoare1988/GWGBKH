@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				titleStyleName="twTitleStyle"
+				width="600"
+				height="500"
+				close="close()"
+				layout="vertical"
+				title="选择监控审核模版"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.mlct.AppModelLocator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.TextInput;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			public var textInput:TextInput; 
+
+			[Bindable]
+			public var tn:String="";
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+
+			private function submit():void
+			{
+				if (dataGrid.selectedItem)
+				{
+					textInput.text=dataGrid.selectedItem.mc;
+					close();
+				}
+			}
+
+
+			private function cancel():void
+			{
+				close();
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:VBox width="100%"
+				 height="100%"
+				 verticalGap="0"
+				 styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{appModel.jkshmb}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="代码"
+									   dataField="dm" width=".1"/>
+					<mx:DataGridColumn headerText="名称"
+									   dataField="mc" width=".4"/>
+					<mx:DataGridColumn headerText="说明"
+									   dataField="bz" width=".5"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="38"
+					 verticalAlign="middle"
+					 horizontalAlign="center">
+				<common:BtnSubmit label="确定"
+								  click="submit()"/>
+				<common:BtnCancel label="取消"
+								  click="cancel()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:TitleWindow>

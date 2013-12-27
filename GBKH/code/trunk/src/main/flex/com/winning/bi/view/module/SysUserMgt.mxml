@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   width="100%"
+		   height="100%"
+		   remove="sysMgtModel.clearSysUserMgt()"
+		   xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.SysUserEvent;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.SysMgtModelLocator;
+			import com.winning.bi.utils.AlertUtil;
+			import com.winning.bi.utils.CodeHelper;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.view.component.titlewin.AddUser;
+			import com.winning.bi.view.component.titlewin.EditUser;
+
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.ListEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.validators.Validator;
+
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+
+			private var editingSysUser:SysUser;
+
+			[Bindable]
+			private var addValidatorArr:Array=[];
+			[Bindable]
+			private var editValidatorArr:Array=[];
+
+
+
+			private function colLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var s:String;
+				switch (column.dataField)
+				{
+					case "lastLoginTime":
+						s=dateFormatter.format(item.lastLoginTime);
+						break;
+					case "password":
+						s="******";
+						break;
+					default:
+						break;
+				}
+				return s;
+			}
+
+
+
+
+
+
+			private function doubleClickHandler():void
+			{
+
+				if (dataGrid.selectedItem == null)
+				{
+					Alert.show("请选择要修改的列!!!");
+				}
+				else
+				{
+					var editUser:EditUser=EditUser(PopUpManager.createPopUp(this, EditUser, true));
+					editUser.title="编辑用户";
+					editUser.editingSysUser=dataGrid.selectedItem as SysUser;
+					PopUpManager.centerPopUp(editUser);
+				}
+			}
+
+
+			private function addUserClick():void
+			{
+				var addUser:AddUser=AddUser(PopUpManager.createPopUp(this, AddUser, true));
+				addUser.title="编辑用户";
+				PopUpManager.centerPopUp(addUser);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:DateFormatter id="dateFormatter"
+					  formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingTop="5"
+			 paddingBottom="5">
+		<mx:ApplicationControlBar width="100%"
+								  height="36"
+								  styleName="queryStyle">
+			<mx:Label text="用户名:"/>
+			<mx:TextInput id="usernameTxt"
+						  width="80"/>
+			<mx:Label text="姓名:"/>
+			<mx:TextInput id="realnameTxt"
+						  width="80"/>
+			<mx:Label text="拼音:"/>
+			<mx:TextInput id="pyTxt"
+						  width="80"/>
+			<common:BtnQuery click="new SysUserEvent(SysUserEvent.EVENT_QUERY_USERS,[usernameTxt.text,realnameTxt.text,pyTxt.text]).dispatch()"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%"
+				 height="100%"
+				 styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGrid"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 doubleClick="doubleClickHandler()"
+						 dataProvider="{cPageBar.currentPageData}"
+						 headerRelease="cPageBar.Sort(event);">
+				<mx:columns>
+					<mx:DataGridColumn dataField="userName"
+									   headerText="用户名"/>
+					<mx:DataGridColumn dataField="realName"
+									   headerText="姓名"/>
+					<mx:DataGridColumn dataField="password"
+									   headerText="密码"
+									   labelFunction="colLabelFunction"/>
+					<mx:DataGridColumn dataField="py"
+									   headerText="拼音"/>
+					<mx:DataGridColumn dataField="lastLoginTime"
+									   headerText="最后登录时间"
+									   labelFunction="colLabelFunction"/>
+					<mx:DataGridColumn dataField="loginCount"
+									   headerText="登录次数"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="28"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+
+				<common:BtnAdd id="addBtn"
+							   click="addUserClick()"/>
+				<common:BtnEdit id="editBtn"
+								click="doubleClickHandler()"/>
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_queryUsersAC}"
+								 expand="true"
+								 pageSize="{Constant.PAGESIZE}"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Module>

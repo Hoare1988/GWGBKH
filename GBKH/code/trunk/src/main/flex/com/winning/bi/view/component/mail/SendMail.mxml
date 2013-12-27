@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml" visible="false">
+	<mx:RemoteObject id="sMailSendService"
+					 destination="mailSendService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="sendMail"
+				   result="sendMailCallBack(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.vo.mail.MailArgVO;
+			import com.winning.bi.utils.AlertUtil;
+			
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			public function sendMail(subject:String,content:String,toAddress:String,csAddress:String):void{
+				var argVO:MailArgVO = new MailArgVO();
+				argVO.subject=subject;
+				argVO.content=content;
+				argVO.toAddress=toAddress;
+				argVO.csAddress = csAddress;
+				sMailSendService.sendMail(argVO);
+			}
+			private function sendMailCallBack(event:ResultEvent):void
+			{
+				var flag:Boolean=event.result as Boolean;
+				if(flag)
+					Alert.show('邮件发送成功');
+				else
+					Alert.show('邮件发送失败');
+			}	
+			
+			private function fault(event:FaultEvent):void
+			{
+//				this.parentApplication.fault(event);
+				Alert.show('邮件发送失败');
+				AlertUtil.remoteMsg(event);
+			}
+		]]>
+	</mx:Script>
+</mx:Canvas>

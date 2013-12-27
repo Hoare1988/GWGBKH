@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Button xmlns:mx="http://www.adobe.com/2006/mxml"
+		   icon="{ImagesAssets.PRINTER16}"
+		   height="26"
+		   label="打印">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+		]]>
+	</mx:Script>
+</mx:Button>

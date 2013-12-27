@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd"> 
+<configuration>
+	<!--创建别名-->
+	<typeAliases>
+		<!-- domain -->
+		<typeAlias type="com.winning.bi.domain.sys.SysUser" alias="SysUser" />
+		<typeAlias type="com.winning.bi.domain.sys.SysRole" alias="SysRole" />
+		<typeAlias type="com.winning.bi.domain.sys.SysOrg" alias="SysOrg" />
+		<typeAlias type="com.winning.bi.domain.sys.SysModule" alias="SysModule" />
+		<typeAlias type="com.winning.bi.domain.sys.Item" alias="Item" />
+		<typeAlias type="com.winning.bi.domain.sys.ItemPermission" alias="ItemPermission" />
+		<typeAlias type="com.winning.bi.domain.sys.ExeItem" alias="ExeItem" />
+		<typeAlias type="com.winning.bi.domain.sys.SysUserOrgMapping" alias="SysUserOrgMapping" />
+		<typeAlias type="com.winning.bi.domain.sys.DataLog" alias="DataLog" />
+		
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="com/winning/bi/dao/sys/SysUserDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/SysRoleDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/SysModuleDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/SysOrgDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/ItemDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/ExeItemDao.xml"/>
+		<mapper resource="com/winning/bi/dao/sys/DataLogDao.xml"/>
+	</mappers>
+</configuration>

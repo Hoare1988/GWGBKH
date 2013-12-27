@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 label="模版一"
+		 width="100%"
+		 height="100%"
+		 xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			
+		]]>
+	</mx:Script>
+
+	<mx:ApplicationControlBar width="100%"
+							  height="35"
+							  styleName="queryStyle">
+		<mx:Label text="起始日期:"
+				  fontWeight="bold"/>
+		<mx:DateField id="monthBeginDateField"
+					  width="80"
+					  formatString="YYYY-MM"
+					  yearNavigationEnabled="true"
+					  selectedDate="{new Date()}"
+					  dayNames="[日,一,二,三,四,五,六]"
+					  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>
+		<mx:Label text="截止日期:"
+				  fontWeight="bold"/>
+		<mx:DateField id="monthEndDateField"
+					  width="80"
+					  formatString="YYYY-MM"
+					  yearNavigationEnabled="true"
+					  selectedDate="{new Date()}"
+					  dayNames="[日,一,二,三,四,五,六]"
+					  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>
+		<common:BtnQuery/>
+		<common:BtnExcel/>
+	</mx:ApplicationControlBar>
+
+	<mx:DataGrid width="100%"
+				 height="100%">
+		<mx:columns>
+			<mx:DataGridColumn headerText="显示列一"/>
+			<mx:DataGridColumn headerText="显示列二"/>
+			<mx:DataGridColumn headerText="显示列三"/>
+			<mx:DataGridColumn headerText="显示列四"/>
+			<mx:DataGridColumn headerText="显示列五"/>
+		</mx:columns>
+	</mx:DataGrid>
+
+</mx:VBox>

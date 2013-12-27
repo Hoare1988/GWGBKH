@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Application xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="absolute"
+				width="100%"
+				height="100%"
+				creationComplete="init()"
+				xmlns:control="com.winning.bi.control.*"
+				xmlns:mttj="com.winning.bi.demo.mttj.*"
+				xmlns:delegates="com.winning.bi.control.delegates.*"
+				xmlns:flexlib="http://code.google.com/p/flexlib/"
+				xmlns:common="com.winning.bi.view.component.common.*" xmlns:control1="com.winning.hra.control.*">
+	<mx:Metadata>
+		[ResourceBundle("localization")]
+		[Event(name="langChange", type="flash.events.Event")]
+	</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.SysEvent;
+			import com.winning.bi.control.events.domain.ItemEvent;
+			import com.winning.bi.control.events.view.LanguageEvent;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.utils.AlertUtil;
+			import com.winning.bi.utils.ChartsLicenseHandler;
+			import com.winning.bi.utils.Constant;
+			
+			import mx.controls.Alert;
+			import mx.formatters.Formatter;
+			import mx.graphics.IStroke;
+			import mx.graphics.Stroke;
+			import mx.managers.BrowserManager;
+			import mx.managers.IBrowserManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.utils.URLUtil;
+
+
+			private var $stroke:Stroke;
+			private var $iStroke:IStroke;
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			private function init():void
+			{
+				BrowserManager.getInstance().init("", "中层干部考核");
+				this.resourceManager.localeChain=["zh_CN"];
+				/*加载所有考核名称*/
+				new ItemEvent(ItemEvent.EVENT_FIND_ROOT_ITEM).dispatch();
+				Alert.noLabel="否";
+				Alert.cancelLabel="取消";
+				Alert.yesLabel="确定";
+			}
+
+			public function fault(event:FaultEvent):void
+			{
+				AlertUtil.remoteMsg(event);
+			}
+
+			public function getNumFormatter(percision:int=2):NumberFormatter
+			{
+				if (percision >= 2)
+				{
+					return this.nf2;
+				}
+				else if (percision == 1)
+				{
+					return this.nf1;
+				}
+				else
+				{
+					return this.nf0;
+				}
+			}
+
+
+			public function toggleLocalization(language:int):void
+			{
+				if (language == Constant.LANG_EN)
+				{
+					this.resourceManager.localeChain=["en_US"];
+				}
+				else
+				{
+					this.resourceManager.localeChain=["zh_CN"];
+				}
+				LanguageEvent.dispatcher.dispatchEvent(new LanguageEvent(LanguageEvent.LANG_CHANGE));
+			}
+		]]>
+	</mx:Script>
+
+	<control:DAController/>
+	<delegates:Services/>
+	<mx:Style source="com/winning/bi/assets/styles/style.css"/>
+
+	<mx:Style>
+	   .errorTip
+	   {
+	    fontSize: 12;
+	   }
+	</mx:Style>
+	
+	<mx:Style> 
+		@font-face { 
+			src: local("Arial"); 
+			font-family: EmbeddedArial; 
+		} 
+		
+		ColumnChart { 
+			font-family: EmbeddedArial; 
+		} 
+	</mx:Style>
+
+	<mx:NumberFormatter id="nf0"
+						precision="0"
+						useThousandsSeparator="false"/>
+	<mx:NumberFormatter id="nf1"
+						precision="1"
+						useThousandsSeparator="false"/>
+	<mx:NumberFormatter id="nf2"
+						precision="2"
+						useThousandsSeparator="false"/>
+
+	<flexlib:MDICanvas left="0"
+					   right="0"
+					   top="0" id="cIndexMDICanvas"
+					   bottom="0"
+					   backgroundAlpha="0">
+		<mx:ViewStack id="cMainViewStack"
+					  width="100%"
+					  selectedIndex="{appModel.vsindex}"
+					  height="100%">
+			<!--登录页面	-->
+			<common:LoginView id="cLoginView" />
+			<mx:VBox id="sysVBox"
+					 width="100%"
+					 height="100%"
+					 paddingLeft="0"
+					 paddingRight="0"
+					 verticalGap="0">
+				<!--页眉-->
+				<!--<common:Header/>-->
+				<!--主应用-->
+				<common:Main id="cMain"/>
+				<!--页脚-->
+				<!--<common:Footer/>-->
+			</mx:VBox>
+		</mx:ViewStack>
+	</flexlib:MDICanvas>
+</mx:Application>
+
+
+
+
+
+
+
+

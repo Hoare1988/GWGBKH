@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:button="com.winning.bi.view.component.common.*"
+			    creationComplete="init();"
+			    showCloseButton="true" close="close();"
+				layout="absolute" width="400" height="400">
+	
+	
+	<mx:RemoteObject id="sAuditService"
+					 destination="auditService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="updateAuditTaskRuleListById"
+				   result="updateAuditTaskRuleListByIdCallBack(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+	
+	
+	<mx:RemoteObject id="sIntegrityService"
+					 destination="integrityService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="addToIntegeritySys"
+				   result="addToIntegeritySysCallBack(event)"
+				   fault="fault(event)"/>
+		<mx:method name="addMIHeaderLog"
+				   result="addMIHeaderLogCallBack(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+	
+	
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.domain.AuditTaskRuleList;
+			import com.winning.bi.model.domain.MiHeader;
+			import com.winning.bi.model.domain.MiLevel;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.model.mlct.IntegrityModelLocator;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			public var auditTaskRuleList:AuditTaskRuleList;
+			private var integrityModel:IntegrityModelLocator=IntegrityModelLocator.getInstance();
+			private var appModel:AppModelLocator = AppModelLocator.getInstance();
+			[Bindable]
+			private var levelAC:ArrayCollection;
+			private function init():void{
+				switch(Number(auditTaskRuleList.jkdx)){
+					case MiLevel.TYPE_CBR:
+						levelAC=integrityModel.cbrLevelAC;
+						dj.selectedIndex = auditTaskRuleList.dj;
+						break;
+					case MiLevel.TYPE_YS:
+						levelAC=integrityModel.ysLevelAC;
+						dj.selectedIndex = auditTaskRuleList.dj;
+						break;
+					case MiLevel.TYPE_DSG:
+						levelAC=integrityModel.ydLevelAC;
+						dj.selectedIndex = auditTaskRuleList.dj;
+						break;
+					case MiLevel.TYPE_HOS:
+						levelAC=integrityModel.jgLevelAC;
+						dj.selectedIndex = auditTaskRuleList.dj;
+						break;
+					default:
+						Alert.show("脏数据,无监控对象");
+						break;
+				}
+				
+			}
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}	
+			
+			private function save():void
+			{
+				var kfValue:Number=0;
+				if(auditTaskRuleList){
+					auditTaskRuleList.xgr = Number(appModel.loginUser.id);;
+					auditTaskRuleList.xgrq = new Date();
+					auditTaskRuleList.jhms = jhms.text;
+					auditTaskRuleList.jhjg = jhjg.text;
+					auditTaskRuleList.cfjg = cfjg.text;
+					auditTaskRuleList.zt = zt.selectedItem.value;
+					
+					if(!(zt.selectedItem.value==4||zt.selectedItem.value==5)){
+						auditTaskRuleList.dj = AuditTaskRuleList.ATRLDJ_0;
+					}else{
+						auditTaskRuleList.dj = dj.selectedItem.degree;
+					}
+					sAuditService.updateAuditTaskRuleListById(auditTaskRuleList);
+					var miHeader:MiHeader =new MiHeader();
+//					Alert.show('1');
+					miHeader.type = Number(auditTaskRuleList.jkdx);
+//					Alert.show('2');
+					miHeader.oid = Number(getOid(auditTaskRuleList.jkdx));
+//					Alert.show('3');
+					miHeader.name = getName(auditTaskRuleList.jkdx);
+//					Alert.show('4');
+					miHeader.enable = 1;
+					miHeader.rDate = new Date();
+					if(!(zt.selectedItem.value==4||zt.selectedItem.value==5)){
+						kfValue=0;
+					}else{
+						kfValue=dj.selectedItem.value;
+					}
+					sIntegrityService.addToIntegeritySys(miHeader,auditTaskRuleList.id,kfValue);
+					
+					sIntegrityService.addMIHeaderLog(miHeader,'违反'+(auditTaskRuleList.rule?auditTaskRuleList.rule.mc:'')+';稽核结果为：'+jhjg.text+',情节'+dj.selectedItem.name,-dj.selectedItem.value,1);
+					
+				}
+			}	
+			
+			private function getOid(jkdx:String):Number
+			{
+				var oid:Number;
+				switch(Number(jkdx)){
+					case MiLevel.TYPE_CBR:
+						oid =auditTaskRuleList.header?auditTaskRuleList.header.hzid:null;
+						break;
+					case MiLevel.TYPE_YS:
+						oid = auditTaskRuleList.header?auditTaskRuleList.header.ysid:null;
+						break;
+					case MiLevel.TYPE_DSG:
+					case MiLevel.TYPE_HOS:
+						oid = auditTaskRuleList.header?auditTaskRuleList.header.jgid:null;
+						break;
+					default:
+						break;
+				}
+				return oid;
+			}	
+			
+			private function getName(jkdx:String):String
+			{
+				var name:String;
+				switch(Number(jkdx)){
+					case MiLevel.TYPE_CBR:
+						name = auditTaskRuleList.header?auditTaskRuleList.header.hzmc:null;
+						break;
+					case MiLevel.TYPE_YS:
+						name = auditTaskRuleList.header?auditTaskRuleList.header.ysmc:null;
+						break;
+					case MiLevel.TYPE_DSG:
+					case MiLevel.TYPE_HOS:
+						name = auditTaskRuleList.header?auditTaskRuleList.header.jgmc:null;
+						break;
+					default:
+						break;
+				}
+				return name;
+			}	
+			
+			public function fault(event:FaultEvent):void
+			{
+				this.parentApplication.fault(event);
+			}
+			
+			public function updateAuditTaskRuleListByIdCallBack(event:ResultEvent):void
+			{
+//				Alert.show('更新成功!!');
+				trace('list更新成功');
+			}
+			
+			public function addToIntegeritySysCallBack(event:ResultEvent):void
+			{
+				Alert.show('更新成功!!');
+			}
+			
+			public function addMIHeaderLogCallBack(event:ResultEvent):void
+			{
+			}
+			
+			
+		]]>
+	</mx:Script>
+	<mx:DateFormatter formatString="YYYY-MM-DD" id="df"/>
+	<mx:VBox width="100%" height="100%" 
+			 verticalAlign="middle" horizontalAlign="center"
+			 paddingBottom="20" paddingTop="20"
+			 paddingLeft="20" paddingRight="20">
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="更改人:" width="100"/>
+			<mx:TextInput id="xgr" text="{appModel.loginUser.userName}" enabled="false" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="更改日期:" width="100"/>
+			<mx:TextInput id="xgrq" text="{df.format(new Date())}" enabled="false" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="稽核描述:" width="100"/>
+			<mx:TextArea width="100%" id="jhms" text="{auditTaskRuleList.jhms}" editable="false"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%" >
+			<mx:Label fontWeight="bold" text="稽核状态:" width="100"/>
+			<mx:ComboBox id="zt" width="100%" dataProvider="{AuditTaskRuleList.getListZt()}" selectedIndex="{auditTaskRuleList.zt}"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%" visible="{zt.selectedIndex==4||zt.selectedIndex==5}" includeInLayout="{zt.selectedIndex==4||zt.selectedIndex==5}">
+			<mx:Label fontWeight="bold" text="等级:" width="100"/>
+			<mx:ComboBox id="dj" width="100%" dataProvider="{levelAC}" labelField="name"  selectedIndex="{auditTaskRuleList.dj}"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%" visible="{zt.selectedIndex==4||zt.selectedIndex==5}" includeInLayout="{zt.selectedIndex==4||zt.selectedIndex==5}" horizontalAlign="right">
+			<mx:CheckBox label="是否扣除对应诚信分数"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="稽核结果:" width="100"/>
+			<mx:TextArea width="100%" id="jhjg" text="{auditTaskRuleList.jhjg}"/>
+			<!--
+			<mx:TextInput width="100%" id="jhjg" text="{auditTaskRuleList.jhjg}"/>
+			-->
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="处罚结果:" width="100"/>
+			<mx:TextArea width="100%" id="cfjg" text="{auditTaskRuleList.cfjg}"/>
+			<!--
+			<mx:TextInput width="100%" id="cfjg" text="{auditTaskRuleList.cfjg}" />
+			-->
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+			<button:BtnSave click="save();close();" enabled="{auditTaskRuleList.zt==0||auditTaskRuleList.zt==1}"/>
+			<button:BtnClose click="close();"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

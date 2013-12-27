@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="390"
+				height="420"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				title="新增/修改选项库"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.AppOptionEvent;
+			import com.winning.bi.model.domain.AppOption;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.utils.DpUtil;
+
+			import mx.collections.ArrayCollection;
+			import mx.managers.PopUpManager;
+
+			[Bindable]
+			public var appOption:AppOption=null;
+
+
+			private function init():void
+			{
+				if (appOption != null)
+				{
+					argDm.enabled=false;
+					argLbdm.enabled=false;
+					
+					argLbdm.text=appOption.lbdm;
+					argLbmc.text=appOption.lbmc;
+					argDm.text=appOption.dm;
+					argMc.text=appOption.mc;
+					argCs.text=appOption.cs;
+					argYxbz.selected=DpUtil.get1TrueOr0False(appOption.yxbz);
+					argBz.text=appOption.bz;
+				}
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				if (appOption != null)
+				{
+					appOption.lbdm=argLbdm.text;
+					appOption.lbmc=argLbmc.text;
+					appOption.dm=argDm.text;
+					appOption.mc=argMc.text;
+					appOption.cs=argCs.text;
+					appOption.yxbz=argYxbz.selected == true ? Constant.STR_TRUE : Constant.STR_FALSE;
+					appOption.bz=argBz.text;
+					new AppOptionEvent(AppOptionEvent.EVENT_UPDATE_APPOPTIONS, appOption).dispatch();
+				}
+				else
+				{
+					appOption=new AppOption();
+					appOption.lbdm=argLbdm.text;
+					appOption.lbmc=argLbmc.text;
+					appOption.dm=argDm.text;
+					appOption.mc=argMc.text;
+					appOption.cs=argCs.text;
+					appOption.yxbz=argYxbz.selected == true ? Constant.STR_TRUE : Constant.STR_FALSE;
+					appOption.bz=argBz.text;
+					new AppOptionEvent(AppOptionEvent.EVENT_INSERT_APPOPTIONS, appOption).dispatch();
+				}
+				close();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:Form width="100%"
+				 height="100%">
+			<mx:FormItem label="类别代码:"
+						 horizontalAlign="right">
+				<mx:TextInput id="argLbdm"
+							  width="260"/>
+			</mx:FormItem>
+			<mx:FormItem label="类别名称:"
+						 horizontalAlign="right">
+				<mx:TextInput id="argLbmc"
+							  width="260"/>
+			</mx:FormItem>
+			<mx:FormItem label="代码:"
+						 horizontalAlign="right">
+				<mx:TextInput id="argDm"
+							  width="260"/>
+			</mx:FormItem>
+			<mx:FormItem label="名称:"
+						 horizontalAlign="right">
+				<mx:TextInput id="argMc"
+							  width="260"/>
+			</mx:FormItem>
+			<mx:FormItem label="参数:"
+						 horizontalAlign="right">
+				<mx:TextInput id="argCs"
+							  width="260"/>
+			</mx:FormItem>
+			<mx:FormItem label="是否有效:"
+						 horizontalAlign="right">
+				<mx:CheckBox id="argYxbz"
+							 label=""
+							 selected="true"/>
+			</mx:FormItem>
+			<mx:FormItem label="备注:"
+						 horizontalAlign="right">
+				<mx:TextArea id="argBz"
+							 width="260"
+							 height="120"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%"
+				 height="38"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave click="save()"/>
+			<common:BtnCancel click="close()"
+							  label="关闭"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

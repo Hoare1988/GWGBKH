@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				showCloseButton="true"
+				title="{resourceManager.getString('localization','title_switchRole')}"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				width="320"
+				height="300"
+				xmlns:common="com.winning.bi.view.component.common.*">
+
+	<mx:RemoteObject id="sSysRoleService"
+					 destination="sysRoleService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="findRolesByUser"
+				   result="onFindRolesByUserReturn(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.domain.SysRole;
+			import mx.collections.ArrayCollection;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.utils.AlertUtil;
+			import com.winning.bi.model.domain.SysUser;
+			import mx.controls.Alert;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			import mx.managers.PopUpManager;
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			[Bindable]
+			public var callbackFunction:Function; //回调函数   
+
+			[Bindable]
+			public var roles:ArrayCollection=null;
+
+			private function init():void
+			{
+				sSysRoleService.findRolesByUser(appModel.loginUser);
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function submit():void
+			{
+				if (appModel.loginUser.roles != null && appModel.loginUser.roles.length > 0)
+				{
+					var newRoles:ArrayCollection=new ArrayCollection();
+					var currRole:SysRole=appModel.loginUser.roles.getItemAt(0) as SysRole;
+					if (currRole && currRole.id != dataGrid.selectedItem.id)
+					{
+						for each (var role:SysRole in appModel.loginUser.roles)
+						{
+							if (role != null && role.id == dataGrid.selectedItem.id)
+							{
+								newRoles.addItem(role);
+								break;
+							}
+						}
+						for each (var role:SysRole in appModel.loginUser.roles)
+						{
+							if (role != null && role.id != dataGrid.selectedItem.id)
+							{
+								newRoles.addItem(role);
+							}
+						}
+					}
+					if (newRoles.length == appModel.loginUser.roles.length)
+					{
+						appModel.loginUser.roles=newRoles;
+					}
+				}
+				callbackFunction.call();
+				close();
+			}
+
+			public function onFindRolesByUserReturn(event:ResultEvent):void
+			{
+				roles=event.result as ArrayCollection;
+			}
+
+			public function fault(event:FaultEvent)
+			{
+				AlertUtil.remoteMsg(event);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:DataGrid id="dataGrid"
+					 width="100%"
+					 height="100%"
+					 doubleClick="submit()"
+					 doubleClickEnabled="true"
+					 dataProvider="{roles}">
+			<mx:columns>
+				<mx:DataGridColumn dataField="name"
+								   headerText="{resourceManager.getString('localization','ht_roleName')}"/>
+				<mx:DataGridColumn dataField="description"
+								   headerText="{resourceManager.getString('localization','ht_roleDesc')}"/>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%"
+				 height="40"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSubmit label="{resourceManager.getString('localization','btn_ok')}"
+							  enabled="{dataGrid.selectedItem?true:false}"
+							  click="submit()"/>
+			<common:BtnClose click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

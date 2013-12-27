@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   width="100%"
+		   height="100%"
+		   remove="sysMgtModel.clearSysModuleMgt()"
+		   xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.SysModuleEvent;
+			import com.winning.bi.model.domain.SysModule;
+			import com.winning.bi.model.mlct.SysMgtModelLocator;
+			import com.winning.bi.utils.LVUtil;
+			import com.winning.bi.view.component.titlewin.EditSysModule;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.advancedDataGridClasses.AdvancedDataGridColumn;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.ListEvent;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.controls.Alert;
+
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+
+			private function colLabelFunction(item:Object, column:AdvancedDataGridColumn):String
+			{
+				var s:String;
+				switch (column.dataField)
+				{
+					case "isLeaf":
+						s=LVUtil.getYesOrNoLabel(item.isLeaf);
+						break;
+					case "isMenu":
+						s=LVUtil.getYesOrNoLabel(item.isMenu);
+						break;
+					case "isNav":
+						s=LVUtil.getYesOrNoLabel(item.isNav);
+						break;
+					default:
+						break;
+				}
+				return s;
+			}
+
+			private function addModule(parent:SysModule):void
+			{
+				if (parent != null)
+				{
+					var twin:EditSysModule=EditSysModule(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditSysModule, true));
+					twin.parentModule=parent;
+					PopUpManager.centerPopUp(twin);
+				}
+			}
+
+			private function editModule(module:SysModule):void
+			{
+				if ( module != null)
+				{
+					var twin:EditSysModule=EditSysModule(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditSysModule, true));
+					twin.isAdd=false;
+					twin.parentModule=module.parent;
+					twin.editModule=module;
+					PopUpManager.centerPopUp(twin);
+				}
+			}
+			
+			private function deleteModule(module:SysModule):void
+			{
+				if ( module != null)
+				{
+					Alert.show("是否确认删除?", "确认操作", 3, this, deleteClickHandler)
+					//var index:int=(sysMgtModel.uMgt_queryModulesAC as ArrayCollection).getItemIndex(module);
+					//sysMgtModel.uMgt_queryModulesAC.removeItemAt(index);
+					//cPageBar.SourceData=sysMgtModel.uMgt_queryModulesAC;
+				}
+				
+			}
+			
+			private function deleteClickHandler(event:CloseEvent):void
+			{
+				if (event.detail==Alert.YES){
+					new SysModuleEvent(SysModuleEvent.EVENT_DELETE_MODULE, dataGrid.selectedItem).dispatch();
+				}
+			}
+			
+			protected function itemDoubleClick_Handler(event:ListEvent):void
+			{
+				var module:SysModule = event.target.selectedItem;
+				editModule(module);
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingTop="5"
+			 paddingBottom="5">
+		<mx:ApplicationControlBar width="100%"
+								  height="30"
+								  styleName="queryStyle">
+			<common:BtnQuery click="new SysModuleEvent(SysModuleEvent.EVENT_QUERY_MODULES,null).dispatch()"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%"
+				 height="100%"
+				 styleName="borderSkinStyle">
+			<mx:AdvancedDataGrid id="dataGrid"
+								 width="100%"
+								 height="100%"
+								 defaultLeafIcon="{null}"
+								 folderOpenIcon="{null}" doubleClickEnabled="true"
+								 folderClosedIcon="{null}" itemDoubleClick="itemDoubleClick_Handler(event)"
+								 disclosureClosedIcon="{ImagesAssets.EXPAND16}"
+								 disclosureOpenIcon="{ImagesAssets.COLLAPSE16}"
+								 headerSortSeparatorSkin="mx.skins.ProgrammaticSkin">
+				<mx:dataProvider>
+					<mx:HierarchicalData source="{cPageBar.currentPageData}"
+										 childrenField="children"/>
+				</mx:dataProvider>
+				<mx:columns>
+					<mx:AdvancedDataGridColumn dataField="name"
+											   headerText="模块名称"
+											   width=".2"/>
+					<mx:AdvancedDataGridColumn dataField="path"
+											   headerText="模块路径"
+											   width=".3"/>
+					<mx:AdvancedDataGridColumn dataField="ordinal"
+											   headerText="排序"
+											   width=".1"/>
+					<mx:AdvancedDataGridColumn dataField="level"
+											   headerText="层级"
+											   width=".1"/>
+					<mx:AdvancedDataGridColumn dataField="groupName"
+											   headerText="分组名称"
+											   width=".1"/>
+					<!--<mx:AdvancedDataGridColumn dataField="isMenu"
+						 labelFunction="colLabelFunction"
+						 headerText="是否显示菜单" width=".1"/>-->
+					<!--<mx:AdvancedDataGridColumn dataField="isNav"
+						 labelFunction="colLabelFunction"
+						 headerText="是否显示导航"/>-->
+					<mx:AdvancedDataGridColumn dataField="isLeaf"
+											   headerText="叶子标志"
+											   labelFunction="colLabelFunction"
+											   width=".1"/>
+					<mx:AdvancedDataGridColumn dataField="comments"
+											   headerText="备注"
+											   width=".1"/>
+				</mx:columns>
+			</mx:AdvancedDataGrid>
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				<common:BtnAdd label="添加下级"
+							   click="addModule(dataGrid.selectedItem as SysModule)"
+							   enabled="{dataGrid.selectedItem?true:false}"/>
+				<common:BtnAdd label="添加同级"
+							   click="addModule(dataGrid.selectedItem.parent as SysModule)"
+							   enabled="{dataGrid.selectedItem?true:false}"/>
+				<common:BtnDel label="删除"
+							   click="deleteModule(dataGrid.selectedItem as SysModule)"
+							   enabled="{dataGrid.selectedItem?true:false}"/>
+				<common:BtnEdit label="修改"
+								click="editModule(dataGrid.selectedItem as SysModule)"
+								enabled="{dataGrid.selectedItem?true:false}"/>
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_queryModulesAC}"
+								 expand="true"
+								 pageSize="30"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Module>

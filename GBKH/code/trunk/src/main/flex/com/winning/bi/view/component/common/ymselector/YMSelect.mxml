@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:flex="com.winning.bi.view.component.common.ymselector.*"
+		 width="125" height="24" verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.core.Application;
+			var p:Point;
+			[Bindable]
+			public var month:Date= new Date();
+			
+			public function get text():String
+			{
+				return ss.text;
+			}	
+			
+			private function resetLocal(x:int,y:int):void{
+
+				var popUPWitdth:int = new MonthSelector().width;
+				var popUPHeight:int = new MonthSelector().height;
+				
+				p = new Point(x,y);
+				p=ss.parent.localToGlobal(p);
+				var newX:int=p.x;
+				var newY:int=p.y;
+				if(p.x+popUPWitdth>stage.stageWidth){
+					newX = stage.stageWidth-popUPWitdth;
+				}
+				
+				if(p.y+popUPHeight>stage.stageHeight){
+					newY =stage.stageHeight-popUPHeight;
+				}
+				
+				p = new Point(newX,newY);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<!--<flex:YearSelector id="yy"/><mx:Text text="年"/>-->
+		<flex:MonthInput id="ss" month="{month}"  click="{resetLocal(ss.x,ss.y);MonthSelector.show(p.x,p.y+ss.height,ss);}"/>
+		<mx:Image source="{ImagesAssets.TIMER}" click="{resetLocal(ss.x,ss.y);MonthSelector.show(p.x,p.y+ss.height,ss);}"/>
+	</mx:HBox>
+	
+</mx:VBox>

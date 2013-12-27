@@ -1,0 +1,519 @@
+/* CSS file */
+
+/*Global*/
+Application,VBox,HBox,Label
+{
+	backgroundColor:			#d8f0fe;
+}
+
+.titleWindowStyle
+{
+	font-size:12;
+	font-weight:bold;
+	color:black;
+	border-style:none;
+	background-color:#d8f0fe;
+}
+
+List
+{
+	borderSides:				0;
+	backgroundColor:			#d8f0fe;
+}
+
+.pnlStyle
+{
+	background-color:#36C;
+	text-align:left;
+	font-size:14;
+	font-weight:bold;
+	color:white;
+	border-style:none;
+}
+
+.labelStyle
+{
+	fontSize:					14;
+}
+
+Button,LinkButton
+{
+	fontSize:					12;
+	fontWeight:					normal;
+}
+
+.panelStyleName
+{
+	text-align:center;
+	font-size:14;
+	font-weight:bold;
+	color:white;
+	border-style:none;
+	background-color:#d8f0fe;
+	vertical-align:middle;
+}
+
+Label
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+AdvancedDataGrid
+{
+	fontSize:					12;
+	fontWeight:					normal;
+}
+
+DataGrid
+{
+	fontSize:					12;
+	fontWeight:					normal;
+}
+
+FormItem
+{
+	fontFamily:					Verdana;
+	fontSize:					12;
+	fontWeight:					normal;	
+}
+RadioButton
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+CheckBox
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+ComboBox
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+List
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+	titleStyleName:				twTitleStyle;
+}
+
+.searchBox
+{
+	backgroundColor:			#e8f7ff;
+}
+
+TextInput,TextArea
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+	background-color:			#FFF;
+	border-color:				#c1ced2;
+	theme-color:				#c1ced2;
+}
+
+/*TextArea
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}*/
+
+TitleWindow.titleText
+{
+	fontFamily:					Verdana;
+	fontSize:					12;
+	fontWeight:					bold;
+}
+
+Alert
+{
+	headerColors: 				#B6E0FB, #90BAE4;
+	backgroundColor:			#ffffff;
+	backgroundAlpha: 			0.9;
+	titleStyleName:				alertTitleStyleName;
+	messageStyleName:			alertMessageStyleName;
+	buttonStyleName:			alertButtonStyleName;
+}
+
+ToolTip{
+	fontSize: 12;
+}
+
+.alertMessageStyleName
+{
+	color:						#000000;
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+.alertTitleStyleName
+{
+	color:						#000000;
+	fontFamily:					Verdana,����;
+	fontSize:					12;
+	fontWeight:					bold;	
+}
+
+.alertButtonStyleName
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;	
+/*	skin:						Embed("/./com/winning/presentation/assets/images/page_bg3.jpg");*/
+}
+
+Panel
+{
+	headerColors: 				#B6E0FB, #90BAE4;
+	backgroundAlpha: 			0.7;
+	borderAlpha: 				1;
+	paddingTop: 				10;
+	paddingRight: 				10;
+	paddingLeft: 				10;
+	paddingBottom: 				10;
+	shadowDirection: 			right;
+	borderThicknessTop: 		0;
+	borderThicknessBottom:	 	0;
+	borderThicknessLeft: 		0;
+	borderThicknessRight: 		0;
+}
+
+.searchButton
+{
+	upSkin:						Embed("/./com/winning/presentation/assets/images/search.gif");
+	downSkin:					Embed("/./com/winning/presentation/assets/images/search.gif");
+	overSkin:					Embed("/./com/winning/presentation/assets/images/searchOver.gif");
+	disabledSkin:				Embed("/./com/winning/presentation/assets/images/search.gif");
+}
+
+/* SummaryPage */
+.zskabstyle{
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#6eaae5, #b8eefb;
+	highlightAlphas:		0.0, 0.0;
+	cornerRadius: 			3;
+	shadowDistance:         5;
+	paddingLeft:            5;
+	paddingRight:           5;
+	paddingTop:             15;
+	paddingBottom:          15;
+	horizontalGap:          5;
+	verticalAlign:middle;
+	horizontalAlign:center;
+	shadowDirection:right;
+}
+
+/* skins */
+/*.mixedFadeSkin
+{
+	borderSkin:ClassReference("com.winning.presentation.assets.skins.buttonskins.MixedFadeSkin");
+}
+
+.greyBoxHolderSkin
+{
+	border-skin: ClassReference("com.winning.presentation.assets.skins.containerskins.GreyBoxHolderSkin");
+}
+
+.lightBlueGredientBoxHolderSkin
+{
+	border-skin: ClassReference("com.winning.presentation.assets.skins.containerskins.LightBlueGredientBoxHolderSkin");
+}
+
+.lightRedGredientBoxHolderSkin
+{
+	border-skin: ClassReference("com.winning.presentation.assets.skins.containerskins.LightRedGredientBoxHolderSkin");
+}
+
+.CanvasSkin
+{
+	border-skin: ClassReference("com.winning.presentation.assets.skins.containerskins.CanvasSkin");
+}
+
+.buttonMixedStatesSkin
+{
+	skin:	ClassReference("com.winning.presentation.assets.skins.buttonskins.MixedSkinStates");	
+}
+
+.comboBoxSkin
+{
+	skin: 				ClassReference("com.winning.presentation.assets.skins.comboboxskins.ComboBoxSkin");
+	fontSize:			12;
+	color:				#346734;
+	fontWeight:			normal;
+}*/
+
+.upArrowButton
+{
+	skin:						Embed(source="/./com/winning/presentation/assets/images/uparrow.png");
+	downSkin:					Embed(source="/./com/winning/presentation/assets/images/uparrowdown.png");
+}
+.downArrowButton
+{
+	skin:						Embed(source="/./com/winning/presentation/assets/images/downarrow_v2.png");
+	downSkin:					Embed(source="/./com/winning/presentation/assets/images/downarrowdown_v2.png");
+}
+.restoreArrowButton
+{
+	skin:						Embed(source="/./com/winning/presentation/assets/images/restoreArrow.png");
+	downSkin:					Embed(source="/./com/winning/presentation/assets/images/restoreArrowDown.png");
+}
+.sysLinkButtonStyle 
+{
+	cornerRadius: 0;
+	paddingLeft: 0;
+	paddingRight: 0;
+	paddingTop:0;
+	paddingBottom:0;
+	rollOverColor: #dfeefc;
+	selectionColor: #dfeefc;
+	color: #0000ff;
+	textRollOverColor: #ff0000;
+	textSelectedColor: #ff0000;
+	fontFamily: Verdana,宋体;
+	fontSize: 12;
+	fontWeight: normal;
+	textDecoration: none;
+}
+
+/*header*/
+.topApplicationControlBar
+{
+    fillAlphas: 			0.40, 1.00;
+    fillColors: 			#0065FE,#0066FF;
+    highlightAlphas:		.05, .25;
+    cornerRadius: 			3;
+	shadowDistance:         3;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+	shadowDirection: 		center;
+}
+
+/*menu*/
+.menuApplicationControlBar
+{
+    fillAlphas: 			0.40, 1.00;
+    fillColors: 			#B7DEED, #26B6E2;
+    highlightAlphas:		.05, .25;
+    cornerRadius: 			3;
+	shadowDistance:         1;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+}
+
+.filterApplicationControlBar
+{
+	fillAlphas: 			0.40, 1.00;
+    fillColors: 			#dfeefc, #90BAE4;
+    highlightAlphas:		0.0, 0.0;
+    cornerRadius: 			3;
+	shadowDistance:         3;
+	paddingLeft:            10;
+	paddingRight:           10;
+	horizontalGap:          0;
+	shadowDirection: 		right;
+}
+
+.bottomApplicationControlBar
+{
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#0066FE,#0066FF;
+	highlightAlphas:		.05, .25;
+	cornerRadius: 			3;
+	shadowDistance:         -1;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+	shadowDirection: 		center;
+}
+
+BaseNode
+{
+	linkingGlowColor: #FFFFFF;
+	labelFontFamily : 'Verdana';
+	labelFontColor: #404040;
+	labelFontSize: 12;
+	labelFontWeight: regular;
+}
+
+Link
+{
+	template-bottom-line-color: #B3B3B3;
+	tempalte-line-color: #404040;
+	bottom-line-color: #B3B3B3;
+	line-color: #000000;	
+	labelFontFamily : 'Verdana';
+	labelFontColor: #FFFFFF;
+	labelFontSize: 10;
+	labelFontWeight: normal;
+	lineThickness: 2;
+}
+
+LinkButton
+{
+	color: #0000ff;
+}
+
+.MenuBar
+{
+	fontSize:					12;
+	fontWeight:					bold;
+	horizontalAlign:			left;
+	verticalAlign:				middle;
+	horizontalGap:          	5;
+	cornerRadius:0;
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#0066FF, #0000ff;
+	highlightAlphas:		.05, .25;
+}
+
+.menuTabBar
+{
+	fontSize:					10;
+	fontWeight:					bold;
+	horizontalAlign:			left;
+	horizontalGap:          	5;
+}
+
+.menuTab
+{
+	fontFamily:					Verdana;
+	fontSize:					12;
+	fontWeight:					bold;
+	backgroundColor:			#B7DEED;
+}
+
+.menuLabel
+{
+	fontFamily:					Verdana;
+	fontSize:					12;
+	color:						#FFFFFF;
+	fontWeight:					bold;
+}
+
+/*bottom*/
+.bottomCopyright
+{
+	fontSize:				12;
+	fontWeight:				normal;
+	horizontalAlign:		center;
+	horizontalCenter:		0;
+}
+
+.bottomLinkBtn
+{
+	 color:					blue; 
+	 fontWeight:			normal; 
+	 textDecoration:		underline; 
+}
+
+.title
+{
+	font-family:"����";
+	font-size:32;
+	font-weight:bold;
+}
+.tag
+{
+	font-family:"����";
+	font-size:12;
+	font-weight:bold;
+}
+.grid
+{
+	border-style:solid;
+	border-color:black;
+	border-sides:"left top";
+	horizontal-gap:0;
+	vertical-gap:0;
+}
+.gridRow
+{
+	border-sides:bottom;
+	border-style:solid;
+	border-color:black;
+}
+.gridItem
+{
+	border-sides:right;
+	border-style:solid;
+	border-color:black;
+	horizontal-align:center;		
+	vertical-align:middle;	
+	horizontal-gap:0;
+	vertical-gap:0;
+}
+.filterApplicationControlBar1
+{
+	fillAlphas: 			0.40, 1.00;
+    fillColors: 			#6eaae5, #b8eefb;
+    highlightAlphas:		0.0, 0.0;
+    cornerRadius: 			1;
+	shadowDistance:         1;
+	paddingLeft:            10;
+	paddingRight:           10;
+	paddingTop:             2;
+	paddingBottom:          2;
+	horizontalGap:          0;
+	shadowDirection: 		right;
+}
+
+.twTitleStyle {
+	fontFamily:	Verdana;
+	fontSize:12;
+	fontWeight:bold;
+	cornerRadius: 0;
+}
+
+/*.borderSkinStyle{
+	verticalGap:0;
+	paddingLeft:3;
+	paddingRight:3;
+	paddingBottom:3;
+	paddingTop:3;
+	borderSkin:ClassReference("com.winning.presentation.assets.skins.containerskins.CanvasSkin2");
+}*/
+
+.borderBoxSkinStyle{
+	backgroundColor: #d9eefc;
+}
+
+/*.lkbSkinStyle{
+	borderSkin:ClassReference("com.winning.presentation.assets.skins.buttonskins.LinkButtonSkin");
+}*/
+
+.sysLinkButtonStyle {
+	cornerRadius: 0;
+	paddingLeft: 0;
+	paddingRight: 0;
+	paddingTop:0;
+	paddingBottom:0;
+	rollOverColor: #dfeefc;
+	selectionColor: #dfeefc;
+	color: #0000ff;
+	textRollOverColor: #ff0000;
+	textSelectedColor: #ff0000;
+	fontFamily: Verdana;
+	fontSize: 12;
+	fontWeight: normal;
+	textDecoration: none;
+}

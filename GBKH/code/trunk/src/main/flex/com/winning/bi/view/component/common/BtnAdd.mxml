@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Button xmlns:mx="http://www.adobe.com/2006/mxml"
+		   height="26"
+		   color="white"
+		   skin="{ImagesAssets.BLUE_BUTBG}"
+		   label="新增">
+	<!--icon="{ImagesAssets.ADD16}"-->
+	<mx:Script>
+		<![CDATA[
+			import com.winning.presentation.assets.ImagesAssets;
+		]]>
+	</mx:Script>
+</mx:Button>

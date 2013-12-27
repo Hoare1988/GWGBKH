@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<actionScriptProperties analytics="false" mainApplicationPath="index.mxml" projectUUID="6458083b-a909-4243-bee7-2c2c1db08bd7" version="10">
+  <compiler additionalCompilerArguments="-services &quot;C:\xuchuanhou\WorkSpace_private\GBKH\WebRoot\WEB-INF\flex\services-config.xml&quot; -locale=en_US -target-player=10.0.0" autoRSLOrdering="false" copyDependentFiles="true" flexSDK="Flex 3.2" fteInMXComponents="false" generateAccessible="false" htmlExpressInstall="true" htmlGenerate="true" htmlHistoryManagement="true" htmlPlayerVersionCheck="true" includeNetmonSwc="false" outputFolderPath="WebRoot" removeUnusedRSL="true" sourceFolderPath="code/trunk/src/main/flex" strict="true" targetPlayerVersion="0.0.0" useApolloConfig="false" useDebugRSLSwfs="true" verifyDigests="true" warn="true">
+    <compilerSourcePath>
+      <compilerSourcePathEntry kind="1" linkType="1" path="locale/{locale}"/>
+    </compilerSourcePath>
+    <libraryPath defaultLinkType="0">
+      <libraryPathEntry kind="4" path="">
+        <excludedEntries>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/flex.swc" useDefaultLinkType="false"/>
+          <libraryPathEntry kind="3" linkType="1" path="${PROJECT_FRAMEWORKS}/libs/core.swc" useDefaultLinkType="false"/>
+        </excludedEntries>
+      </libraryPathEntry>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/adapter-actionscript-1.2.2.598.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/as3xls-1.0.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/as3xlsUTF8.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/Cairngorm.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/degrafa.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/degrafa.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/Efflex_v0.03_fx3_fp9.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/flexlib.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/GIFPlayer.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="2" path="code/trunk/src/main/flex/swc/playerglobal.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="3" linkType="1" path="code/trunk/src/main/flex/swc/removelic.swc" useDefaultLinkType="false"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version3libs/Common"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version3libs/FlexProject"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LIB_LOCATION}/version3libs/FlexProject_Extended"/>
+      <libraryPathEntry kind="1" linkType="1" path="${FLEXUNIT_LOCALE_LOCATION}/version3locale/"/>
+    </libraryPath>
+    <sourceAttachmentPath/>
+  </compiler>
+  <applications>
+    <application path="index.mxml"/>
+  </applications>
+  <modules>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/RootExeItemMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/RootExeItemMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysPermissionMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysPermissionMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemPermissionMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemPermissionMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/base/LogView.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/base/LogView.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysModuleMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysModuleMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysOrgMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysOrgMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysUserMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysUserMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/AccessPublish.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/AccessPublish.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ExamMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ExamMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysRoleMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysRoleMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemMgtWithPermision.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemMgtWithPermision.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/AccessResultMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/AccessResultMgt.mxml"/>
+    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ExamMgtNoPermission.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ExamMgtNoPermission.mxml"/>
+  </modules>
+  <buildCSSFiles/>
+  <flashCatalyst validateFlashCatalystCompatibility="false"/>
+</actionScriptProperties>

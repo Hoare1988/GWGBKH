@@ -1,0 +1,217 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:control="com.winning.bi.control.*"
+		   xmlns:delegates="com.winning.bi.control.delegates.*"
+		   xmlns:autoSuggest="com.winning.bi.view.component.common.autoSuggest.*"
+		   xmlns:AdvancedDataGrid="com.winning.bi.view.component.AdvancedDataGrid.*"
+		   xmlns:SubClasses="com.winning.bi.view.component.AdvancedDataGrid.SubClasses.*"
+		   creationComplete="init()"
+		   width="100%"
+		   height="100%"
+		   layout="absolute" xmlns:common="com.winning.bi.view.component.common.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.ExeItemEvent;
+			import com.winning.bi.model.domain.ExeItem;
+			import com.winning.bi.model.domain.Item;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.ItemMgtModelLocator;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.utils.ExportExcelUtil;
+			import com.winning.bi.view.component.common.autoSuggest.SysUserAutoSuggest;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			private var selectExeItem:ExeItem=null;
+			
+			private var _itemModelLocator:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+		
+			
+			private function init()
+			{
+				var rootExeItem:ExeItem=new ExeItem();
+				rootExeItem.type=1;
+				rootExeItem.enable=0;
+				new ExeItemEvent(ExeItemEvent.EVENT_QUERY_ROOT_EXE_ITEM,rootExeItem).dispatch();
+			}
+			
+			private function asLabelFunction(item:Object):String
+			{
+				var s:String="";
+				if (item.hasOwnProperty("name"))
+				{
+					s=item.name;
+				}
+				return s;
+			}
+			
+			private function dLabeFunction(item:Object,column:DataGridColumn):String
+			{
+				var result:String="";
+				switch(column.dataField)
+				{
+					case "item":
+						result=item.item.name;
+						break;
+					case "beAccessedUser":
+						
+						if(column.headerText=="考核对象工号")
+						{
+							result=item.beAccessedUser.userName;
+						}
+						else
+						{
+							result=item.beAccessedUser.realName;
+						}
+						break;
+					case "scoreResult":
+						result= item.scoreResult.toFixed(2);
+						break;
+					case "type":
+						if(item.type==1)
+						{result="年度";
+						}
+						else
+						{result="季度";
+						}
+						break;
+					case "createBy":
+						result=item.createBy.realName;
+						break;
+					case "enable":
+						if(item.enable==1)
+						{
+							result="考核中";
+						}else if(item.enable==0)
+						{
+							result="已存档";
+						}
+						break;
+					default:
+						break;
+				}
+				return result;		
+			}
+			
+			private function cBtnResearch_clickHandler(event:MouseEvent):void
+			{
+				var rootExeItem:ExeItem=new ExeItem();
+				rootExeItem.beAccessedUser=sAutoSuggestUser.selectedItem as SysUser;
+				rootExeItem.item=cComBoxItemName.selectedItem as Item;
+				rootExeItem.typeValue=cAccessYearComBox.selectedItem as String;
+				rootExeItem.enable=0;
+				new ExeItemEvent(ExeItemEvent.EVENT_QUERY_ROOT_EXE_ITEM,rootExeItem).dispatch();
+			}
+			
+			protected function dRootExeItemDatagrid_clickHandler(event:MouseEvent):void
+			{
+				selectExeItem=dRootExeItemDatagrid.selectedItem as ExeItem;
+				if(selectExeItem)
+				{
+					new ExeItemEvent(ExeItemEvent.EVENT_QUERY_EXAMEXCEL_ITEMS_BY_ROOTEXEITEM,selectExeItem).dispatch();
+				}else
+				{
+					Alert.show("请选择考核","提示",Alert.YES);
+				}
+				
+			}
+			
+			private function btn_exportExam_Click(event:MouseEvent):void
+			{
+				if(selectExeItem){
+					var now:Date =new Date();
+					var fileName:String=StringUtil.trim(selectExeItem.typeValue)+"_"+selectExeItem.beAccessedUser.realName+"_"+now.milliseconds.toString();
+					ExportExcelUtil.exportExamToExcel(aExamExcelADG,selectExeItem,fileName);
+				}else
+				{
+					Alert.show("选择考核","提示",Alert.YES);
+				}
+			}
+
+		]]>
+	</mx:Script>
+	
+
+		<mx:HBox width="100%" height="100%">
+			<mx:VBox width="40%"  height="100%">
+				
+				<mx:ApplicationControlBar width="100%" height="60" styleName="queryStyle">
+					<mx:VBox>
+						<mx:HBox>
+							<mx:Label text="考核名称:"/>
+							<mx:ComboBox id="cComBoxItemName" width="200"
+										 dataProvider="{_itemModelLocator.uMgt_queryRootItemAC}"
+										 labelFunction="asLabelFunction"/>
+						</mx:HBox>
+						<mx:HBox>
+							<mx:Label text="考核年份:"/>
+							<mx:ComboBox id="cAccessYearComBox" dataProvider="{Constant.AccessYears}"/>
+							<mx:Label text="被考核人:"/>
+							<autoSuggest:SysUserAutoSuggest id="sAutoSuggestUser" width="60"/>
+							<mx:Button id="cBtnResearch" label="查询" click="cBtnResearch_clickHandler(event)"/>
+						</mx:HBox>
+					</mx:VBox>
+					
+				</mx:ApplicationControlBar>
+				<mx:DataGrid id="dRootExeItemDatagrid" click="dRootExeItemDatagrid_clickHandler(event)"
+							 dataProvider="{_itemModelLocator.exeMgt_queryRootExeItemAC}" width="100%" height="100%">
+					<mx:columns>
+						<mx:DataGridColumn dataField="item" headerText="考核名称"
+										   labelFunction="dLabeFunction">
+							
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="beAccessedUser" headerText="考核对象"
+										   labelFunction="dLabeFunction">
+							
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="beAccessedUser" headerText="考核对象工号"
+										   labelFunction="dLabeFunction">
+							
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="typeValue" headerText="考核类型值">
+							
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		<mx:VBox width="60%"  height="100%">
+			<mx:ApplicationControlBar width="100%" height="60" styleName="queryStyle" horizontalAlign="center">
+				<mx:VBox horizontalAlign="center" >
+					<mx:HBox horizontalAlign="center" >
+						<mx:Spacer width="200"/>
+						<mx:Label fontSize="18" text="{selectExeItem.item.name}" fontWeight="bold" />
+						<common:BtnExcel id="btn_exportExam" click="btn_exportExam_Click(event)"/>
+					</mx:HBox>
+					<mx:HBox horizontalAlign="center" >
+						<mx:Label text="被考核人员:" fontSize="15"/> <mx:Label id="lbl_beAccessed"
+																		  text="{selectExeItem.beAccessedUser.realName}" fontSize="15"/>
+						<mx:Label text="考核 年 份:" fontSize="15"/> <mx:Label id="lbl_typeValue"
+																		   text="{selectExeItem.typeValue}" fontSize="15"/>
+							<mx:Label text="总分:" fontSize="15"/> <mx:Label id="lbl_sumPoint"
+																			   text="{selectExeItem.scoreResult.toFixed(2)}" fontSize="15"/>
+				</mx:HBox>
+				</mx:VBox>
+			</mx:ApplicationControlBar>
+			
+			<AdvancedDataGrid:AdvancedDataGrid id="aExamExcelADG"
+											   dataProvider="{_itemModelLocator.excel_ExeItems}"  height="100%"  selectionMode="multipleCells">
+				<AdvancedDataGrid:groupedColumns>
+					 <SubClasses:AdvancedDataGridColumn dataField="itemAndWeight"
+													
+														headerText="考核项目及权重" width="160" fontWeight="bold" />
+
+					<SubClasses:AdvancedDataGridColumn dataField="firstIndex" headerText="考核一级指标及分数" width="160" fontWeight="bold"/>
+					<SubClasses:AdvancedDataGridColumn dataField="secondIndex" headerText="考核二级指标" width="160" fontWeight="bold"/>
+					<SubClasses:AdvancedDataGridColumn dataField="evaluationStandard" headerText="评分标准"/>
+					<SubClasses:AdvancedDataGridColumn dataField="socre" headerText="分值" width="60"/>
+					<SubClasses:AdvancedDataGridColumn dataField="point" headerText="得分" width="60"/>
+					<SubClasses:AdvancedDataGridColumn dataField="resource" headerText="数据来源"/>
+				</AdvancedDataGrid:groupedColumns>
+			</AdvancedDataGrid:AdvancedDataGrid>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Module>

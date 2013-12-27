@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" >
+	<mx:Metadata>
+</mx:Metadata>
+	<mx:Style> 
+        .myCustomLinkButtonStyleName { 
+            fontWeight: normal; 
+        } 
+  
+        .myCustomButtonStyleName { 
+            fontWeight: normal; 
+        } 
+        .style1
+        {
+        	paddingLeft:0; 
+        	paddingRight:0; 
+        	fontSize:12; 
+        	fontWeight:normal;
+        }
+    </mx:Style>
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.PageEvent;
+			
+			import mx.binding.utils.BindingUtils; 
+			//当前页	
+			[Bindable]
+			public var currentPageNo:int=1;
+			
+			//查询条件
+			public var values:Array;
+			
+			//每页现实记录数
+			public var pageSize:int;
+			
+			//总记录条数
+			[Bindable]
+			public  var total:int;
+			
+			//数据源
+			[Bindable]
+			private var sourceData:Object;
+			//总页数
+			[Bindable]
+			private var totalPages:int;
+			
+			//事件类型
+			public var eventType:String;
+			
+			
+			[Bindable]
+			public function set SourceData(value:Object):void{
+				sourceData=value;
+//				initPage();
+				
+			}
+			
+			public function get SourceData():Object{
+				return sourceData;
+			}
+						
+			private function initPage():void{
+				next_Btn.enabled=true;
+				pre_Btn.enabled=true;
+				if(currentPageNo>=totalPages){
+					next_Btn.enabled=false;
+				}
+				
+				if(currentPageNo<=1){
+					pre_Btn.enabled=false;
+				}
+				
+			}
+			
+
+			
+			
+			public function set TotalPages(total:int):void{
+				totalPages=total%pageSize==0?total/pageSize:total/pageSize+1;
+			}
+			
+			
+			
+			//上一页
+			private function prePage():void
+			{
+				if(currentPageNo>1) currentPageNo--;
+				values.push(currentPageNo);
+				values.push(pageSize);
+				new PageEvent(eventType,values).dispatch();
+//				initPage();
+				values.pop();
+				values.pop();
+			}
+			
+			//下一页
+			
+			private function nextPage():void
+			{
+				currentPageNo++;
+				values.push(currentPageNo);
+				values.push(pageSize);
+				new PageEvent(eventType,values).dispatch();
+//				initPage();
+				values.pop();
+				values.pop();
+			}	
+			//跳转
+			private function gotoPageNo():void
+			{
+				var a:String = num_Txt.text;
+				currentPageNo =Number( num_Txt.text);
+				values.push(currentPageNo);
+				values.push(pageSize);
+				new PageEvent(eventType,values).dispatch();	
+				//initPage();
+				values.pop();
+				values.pop();
+			}	
+		]]>
+	</mx:Script>
+	<mx:Box id="cBox"
+			horizontalGap="1"
+			direction="horizontal"
+			barColor="#020202"
+			verticalAlign="middle">
+		<mx:LinkButton styleName="style1"
+					   labelPlacement="top"
+					   
+					   click="prePage()"
+					   id="pre_Btn" enabled="{currentPageNo>1?true:false}"
+					   label="◀"/>
+		
+		<mx:Text text="{currentPageNo}" id="currPNo"/>
+
+		<mx:LinkButton styleName="style1"
+					   click="nextPage()"
+					   id="next_Btn" enabled="{currentPageNo>=totalPages?false:true}"
+					   label="▶"  />
+		
+		<mx:TextInput paddingTop="0"
+					  restrict="0-9"
+					  paddingBottom="0"
+					  fontSize="12"
+					  id="num_Txt"
+					  width="28"
+					  height="22"/>
+		
+		<mx:Button styleName="style1"
+				   click="gotoPageNo()"
+				   id="goBtn"
+				   label="跳转"
+				   width="32"
+				   useHandCursor="true"
+				   buttonMode="true"
+				   mouseChildren="false" enabled="{1>=totalPages?false:true}"/>		
+		<mx:Text id="totalStr" text="总共{total}条记录;共{totalPages}页"/>
+	</mx:Box>
+</mx:HBox>

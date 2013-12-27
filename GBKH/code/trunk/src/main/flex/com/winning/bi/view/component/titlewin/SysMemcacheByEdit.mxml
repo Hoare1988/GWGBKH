@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="394"
+				height="340"
+				titleStyleName="twTitleStyle"
+				title="系统缓存配置"
+				close="close()"
+			    creationComplete="init()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.SysMemcacheEvent;
+			import com.winning.bi.model.domain.DrugItem;
+			import com.winning.bi.model.domain.SysMemcache;
+			import com.winning.bi.model.domain.SysOrg;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			
+			import flash.net.sendToURL;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ItemClickEvent;
+			import mx.managers.PopUpManager;
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+			public var sysMemcache:SysMemcache;
+			private var hasCache:Number=1;
+			[Bindable]
+			public var operName:String; //操作名称
+			
+			private function init():void{
+				switch(this.operName){
+					case "add":
+						hasCache1.selected=true;
+						break;
+					case "update":
+						code.enabled=false;
+						code.text=sysMemcache.code;
+						namet.text=sysMemcache.name;
+						hasCache=sysMemcache.hasCache;
+						if(sysMemcache.hasCache==1){
+							hasCache1.selected=true;
+						}else{
+							hasCache2.selected=true;
+						}
+						seconds.value=sysMemcache.seconds;
+						break;
+				}
+			}
+			
+			private function handleCard(event:ItemClickEvent):void {
+				hasCache=event.currentTarget.selectedValue;
+			}
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				if(Validator.validateAll(validataArray).length==0){
+					var date:Date=new Date();
+					var dateForm:String=date.getFullYear()+"-"+((date.getMonth()+1)<10?"0"+date.getMonth()+1:date.getMonth()+1)
+					switch(this.operName){
+						case "add":
+							var module:SysMemcache=new SysMemcache();
+							module.name=namet.text;
+							module.code=code.text;
+							module.hasCache=hasCache;
+							module.createDate=new Date();
+							module.seconds=seconds.value;
+							module.creatorId=appModel.loginUser.id;
+							new SysMemcacheEvent(SysMemcacheEvent.INSERT_SYSMEMCACHE, [module]).dispatch();
+							break;
+						case "update":
+							sysMemcache.code=code.text;
+							sysMemcache.name=namet.text;
+							sysMemcache.seconds=seconds.value;
+							sysMemcache.hasCache=hasCache;
+							new SysMemcacheEvent(SysMemcacheEvent.UPDATE_SYSMEMCACHE, [sysMemcache]).dispatch();
+							break;
+						default:
+							break;
+					}
+				close();
+				}
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:Array id="validataArray">
+		<mx:Validator id="codeV" source="{code}" property="text" requiredFieldError="请输入Dao类全名称+方法名！"/>
+	</mx:Array>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:Form width="100%" height="100%">
+			<mx:FormItem label="Dao类全名称+方法名*:" horizontalAlign="right">
+				<mx:TextInput id="code" width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="是否缓存:" horizontalAlign="right">
+				<mx:HBox width="100%">
+					<mx:RadioButtonGroup id="cardtype" itemClick="handleCard(event);"/>
+					<mx:RadioButton groupName="cardtype" id="hasCache1" value="1" 
+									label="是 " width="50" />
+					<mx:RadioButton groupName="cardtype" id="hasCache2" value="0" 
+									label="否" width="100" />
+				</mx:HBox>
+			</mx:FormItem>
+			<mx:FormItem label="缓存时间(秒):" horizontalAlign="right">
+				<mx:NumericStepper id="seconds" minimum="0" maximum="100000000" value="0"/>
+			</mx:FormItem>
+			<mx:FormItem label="备注:" horizontalAlign="right">
+				<mx:TextArea id="namet" width="200" height="140"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="center">
+			<common:BtnSave click="save()"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+		<mx:Spacer height="5"/>
+	</mx:VBox>
+</mx:TitleWindow>

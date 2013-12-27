@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="com.winning.bi.view.component.common.*"
+			    creationComplete="init()" showCloseButton="true"
+			    title="导出EXCEL" close="close()"
+				layout="absolute" width="200" height="100">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.utils.DownLoadUtil;
+			import com.winning.bi.view.module.monitor.MonitorTemplate1;
+			import com.winning.bi.view.module.monitor.MonitorTemplate2;
+			import com.winning.bi.view.module.monitor.MonitorTemplate4;
+			import com.winning.bi.view.module.monitor.MonitorTemplate5;
+			import com.winning.bi.view.module.monitor.MonitorTemplate6;
+			import com.winning.bi.view.module.monitor.MonitorTemplate7;
+			import com.winning.bi.view.module.monitor.MonitorTemplate8;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			private var appModel:AppModelLocator = AppModelLocator.getInstance();
+			public var temFlag:int;
+			private var downloadfile:FileReference;
+			[Bindable]
+			public var serverName:String;
+			[Bindable]
+			public var saveName:String;
+			
+			
+			
+			
+			
+			private function init():void
+			{
+				downloadfile=new FileReference();
+				downloadfile.addEventListener(Event.COMPLETE, downLoadCompleteHandle);
+				downloadfile.addEventListener(IOErrorEvent.IO_ERROR, ioErrorHandler);
+			}	
+			private function ioErrorHandler(event:IOErrorEvent):void
+			{
+				Alert.show("文件下载失败，请联系系统管理员！\n" + event.toString(), "温馨提示");
+			}
+			
+			private function downLoadCompleteHandle(event:Event):void
+			{
+				Alert.okLabel="确认";
+				Alert.show("下载报表成功!", "提示");
+			}
+			
+			private function export():void{
+//				if(temFlag==6){
+//					var temp6:MonitorTemplate6 = this.owner as MonitorTemplate6;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==1){
+//					var temp1:MonitorTemplate1 = this.owner as MonitorTemplate1;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==2){
+//					var temp2:MonitorTemplate2 = this.owner as MonitorTemplate2;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==8){
+//					var temp8:MonitorTemplate8 = this.owner as MonitorTemplate8;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==4){
+//					var temp4:MonitorTemplate4 = this.owner as MonitorTemplate4;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==5){
+//					var temp5:MonitorTemplate5 = this.owner as MonitorTemplate5;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				
+//				if(temFlag==7){
+//					var temp7:MonitorTemplate7 = this.owner as MonitorTemplate7;
+//					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+//				if(temFlag==8){
+//					var temp8:MonitorTemplate8 = this.owner as MonitorTemplate8;
+					DownLoadUtil.proceedWithDownLoad(serverName,saveName,downloadfile);
+//				}
+			}
+			
+			private function close():void{
+				appModel.downloadFlag=0;
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		
+	
+	
+	<mx:Text text="正在为您分析数据，请稍等...." visible="{appModel.downloadFlag!=3}"/>
+	<mx:HBox>
+	<common:BtnExcel click="export();appModel.downloadFlag=0;close();" visible="{appModel.downloadFlag==3}"/>
+	<common:BtnCancel click="close();appModel.downloadFlag=0" visible="{appModel.downloadFlag==3}"/>
+	</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

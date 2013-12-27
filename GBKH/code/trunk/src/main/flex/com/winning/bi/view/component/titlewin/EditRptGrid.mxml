@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="700"
+				height="500"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				title="{title_str}"
+				icon="{ImagesAssets.ADD16}"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.RptGridEvent;
+			import com.winning.bi.model.domain.DbConn;
+			import com.winning.bi.model.bean.LSBean;
+			import com.winning.bi.utils.DpUtil;
+			import com.winning.bi.model.mlct.RptMgtModelLocator;
+			import com.winning.bi.model.domain.RptGrid;
+			import com.winning.bi.utils.CodeHelper;
+			import com.winning.bi.assets.ImagesAssets;
+			import mx.collections.ArrayCollection;
+			import com.winning.bi.utils.Constant;
+			import mx.managers.PopUpManager;
+
+			private var rptMgtModel:RptMgtModelLocator=RptMgtModelLocator.getInstance();
+
+			[Bindable]
+			public var operType:int=0;
+			[Bindable]
+			public var rptGrid:RptGrid;
+			[Bindable]
+			public var title_str:String;
+
+			private function init():void
+			{
+				if (operType == Constant.TW_ADD)
+				{
+					title_str="添加报表";
+					codeTxt.text="未分配";
+					if (rptGrid == null)
+					{
+						rptGrid=new RptGrid();
+					}
+				}
+				else if (operType == Constant.TW_EDIT)
+				{
+					title_str="修改报表";
+					if (rptGrid != null)
+					{
+						codeTxt.text=rptGrid.code;
+						nameTxt.text=rptGrid.name;
+						pyTxt.text=rptGrid.py;
+						descTxt.text=rptGrid.description;
+						sqlTxt.text=rptGrid.sql;
+						groupTxt.text=rptGrid.groupName;
+						for each (var ls:LSBean in scriptTypeTxt.dataProvider as ArrayCollection)
+						{
+							if (ls.value == rptGrid.scriptType)
+							{
+								scriptTypeTxt.selectedItem=ls;
+								break;
+							}
+						}
+						for each (var db:DbConn in dbComb.dataProvider as ArrayCollection)
+						{
+							if (rptGrid.dbConn && db.code == rptGrid.dbConn.code)
+							{
+								dbComb.selectedItem=db;
+								break;
+							}
+						}
+					}
+				}
+
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				rptGrid.name=nameTxt.text;
+				rptGrid.py=pyTxt.text;
+				rptGrid.description=descTxt.text;
+				rptGrid.sql=sqlTxt.text;
+				rptGrid.dbConn=dbComb.selectedItem as DbConn;
+				rptGrid.scriptType=scriptTypeTxt.selectedItem.value;
+				rptGrid.groupName=groupTxt.text;
+
+				if (operType == Constant.TW_ADD)
+				{
+					new RptGridEvent(RptGridEvent.EVENT_ADD_RPTGRID, rptGrid).dispatch();
+				}
+				else if (operType == Constant.TW_EDIT)
+				{
+					new RptGridEvent(RptGridEvent.EVENT_UPDATE_RPTGRID, rptGrid).dispatch();
+				}
+
+				close();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingBottom="10"
+			 paddingTop="10"
+			 paddingLeft="10"
+			 paddingRight="10">
+		<mx:Grid width="100%"
+				 horizontalAlign="center"
+				 verticalAlign="middle"
+				 height="100%">
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="报表编码*:"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextInput id="codeTxt"
+								  width="200"
+								  enabled="false"/>
+					<mx:Label width="100"/>
+					<mx:Label width="200"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="报表名称*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextInput id="nameTxt"
+								  width="200"/>
+					<mx:Label text="拼音码:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextInput id="pyTxt"
+								  text="{CodeHelper.toPinyinCode(nameTxt.text)}"
+								  editable="false"
+								  enabled="false"
+								  width="200"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="分组名称*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextInput id="groupTxt"
+								  width="200"/>
+					<mx:Label width="100"/>
+					<mx:Label width="200"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="描述*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextArea id="descTxt"
+								 height="50"
+								 width="520"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="数据库*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:ComboBox id="dbComb"
+								 dataProvider="{rptMgtModel.rMgt_dbConns}"
+								 labelField="name"
+								 width="200"/>
+					<mx:Label text="脚本类型*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:ComboBox id="scriptTypeTxt"
+								 dataProvider="{DpUtil.getScript()}"
+								 width="200"/>
+				</mx:GridItem>
+			</mx:GridRow>
+			<mx:GridRow width="100%">
+				<mx:GridItem width="100%"
+							 horizontalAlign="center">
+					<mx:Label text="SQL/PROC*:"
+							  textAlign="right"
+							  fontWeight="bold"
+							  width="100"/>
+					<mx:TextArea id="sqlTxt"
+								 height="200"
+								 width="520"/>
+				</mx:GridItem>
+			</mx:GridRow>
+		</mx:Grid>
+		<!--<mx:Form width="100%"
+			 height="100%">
+			 <mx:FormItem label="报表编码*:"
+			 horizontalAlign="right">
+			 <mx:TextInput id="codeTxt"
+			 width="200"
+			 enabled="false"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="报表名称*:"
+			 horizontalAlign="right">
+			 <mx:TextInput id="nameTxt"
+			 width="200"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="拼音码:"
+			 horizontalAlign="right">
+			 <mx:TextInput id="pyTxt"
+			 text="{CodeHelper.toPinyinCode(nameTxt.text)}"
+			 editable="false"
+			 enabled="false"
+			 width="200"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="分组名称*:"
+			 horizontalAlign="right">
+			 <mx:TextInput id="groupTxt"
+			 width="200"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="描述*:"
+			 horizontalAlign="right">
+			 <mx:TextArea id="descTxt"
+			 height="50"
+			 width="360"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="数据库*:"
+			 horizontalAlign="right">
+			 <mx:ComboBox id="dbComb"
+			 dataProvider="{rptMgtModel.rMgt_dbConns}"
+			 labelField="name"
+			 width="200"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="脚本类型*:"
+			 horizontalAlign="right">
+			 <mx:ComboBox id="scriptTypeTxt"
+			 dataProvider="{DpUtil.getScript()}"
+			 width="200"/>
+			 </mx:FormItem>
+			 <mx:FormItem label="SQL/PROC*:"
+			 horizontalAlign="right">
+			 <mx:TextArea id="sqlTxt"
+			 height="200"
+			 width="360"/>
+			 </mx:FormItem>
+			 </mx:Form>-->
+		<mx:HBox width="100%"
+				 height="38"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave click="save()"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

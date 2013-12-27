@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="com.winning.bi.view.component.common.*"
+				width="600" height="500" close="closeTitle()"
+				creationComplete="init()" layout="absolute" showCloseButton="true">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.ExeItemEvent;
+			import com.winning.bi.control.events.domain.ItemEvent;
+			import com.winning.bi.model.domain.ExeItem;
+			import com.winning.bi.model.domain.Item;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.utils.Constant;
+			
+			import mx.charts.chartClasses.NumericAxis;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			
+			[Bindable]
+			public var modifiedItems:ArrayCollection=new ArrayCollection();
+			
+			public var parentItem:Item=null;
+			
+			[Bindable]
+			public var addedItems:ArrayCollection;
+			[Bindable]
+			public var abolishedItems:ArrayCollection;
+			
+			private function init():void
+			{
+				if(addedItems!=null)
+				{
+					modifiedItems=addedItems;
+				}
+			    if(abolishedItems!=null)
+				{
+					for each(var deleteItem:Item in abolishedItems)
+					{
+						modifiedItems.addItem(deleteItem);
+					}
+				}
+			}
+			
+			
+			public function btnSaveClick():void
+			{	
+				var childrents:ArrayCollection=new ArrayCollection();
+				for each(var item:Item in modifiedItems)
+				{
+					if(item.id<1)
+					{
+						childrents.addItem(item);
+					}
+				}
+				for each(var item:Item in parentItem.children)
+				{
+					if(item.editType!=2)
+					{
+						childrents.addItem(item);
+					}
+				}
+				var result:int=validationItemScores(parentItem.score,childrents);
+				
+				if(result==1)
+				{
+					addedItems.removeAll();
+					abolishedItems.removeAll();
+					for each(var item:Item in modifiedItems)
+					{
+						if(item.editType==1)
+						{
+							new ItemEvent(ItemEvent.EVENT_ADD_ITEM,item).dispatch();
+							
+						}else if(item.editType==2)
+						{
+							item.updateBy=AppModelLocator.getInstance().loginUser;
+							abolishedItems.addItem(item);
+						}
+					}
+					
+					if(abolishedItems.length>0)
+					{
+						new ItemEvent(ItemEvent.EVENT_DELETE_ITEM_AC,abolishedItems).dispatch();
+					}
+					
+					
+				}else
+				{
+					Alert.show("分值累加出错，请检查项目分数！","提示",Alert.YES)
+				}
+				
+			}
+			/**
+			 *1:可以保存修改
+			 *2：子项目分数<>父项目分数
+			 * parentScore :父级项目分数，childItems 所有的子项目（所有新增的，去掉作废的）
+			 * 
+			 **/
+			public function validationItemScores(parentScore:Number,childItems:ArrayCollection):int
+			{
+				var sum:Number=0;
+				for each(var item:Item in childItems)
+				{
+					sum+=item.score;			
+				}
+				return parentScore==sum?1:2;
+			}
+			
+			public function cLabelFunction(item:Object, column:DataGridColumn):String
+			{
+			    var s:String="";
+				if(item.editType==1)
+				{
+				   s="新增";
+				}
+				else if(item.editType==2)
+				{
+					s="作废";
+				}
+				return s;
+			}
+			
+			
+			public function closeTitle():void
+			{
+				this.modifiedItems.removeAll();
+				this.addedItems.removeAll();
+				this.abolishedItems.removeAll();
+				PopUpManager.removePopUp(this)
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:VBox id="editBox" width="100%" height="100%">
+		<mx:DataGrid id="cSysUserDG" width="100%" height="100%" dataProvider="{modifiedItems}">
+			<mx:columns>
+				<mx:DataGridColumn id="cIsSlectedUserDGC" width="35" headerText="删除"
+								   textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<common:BtnCancel click="btnclose1_clickHandler(event)">
+								<mx:Script>
+									<![CDATA[
+										import com.winning.bi.model.domain.Item;
+										
+										protected function btnclose1_clickHandler(event:MouseEvent):void
+										{
+											var deleteIndex:int=0;
+											if(outerDocument.modifiedItems!=null)
+											{
+												deleteIndex=outerDocument.modifiedItems.getItemIndex(data);
+												outerDocument.modifiedItems.removeItemAt(deleteIndex);
+											}
+										}
+									]]>
+								</mx:Script>
+							</common:BtnCancel>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>	
+				<mx:DataGridColumn dataField="name" headerText="指标名称"  width="90">
+				</mx:DataGridColumn>	
+				<mx:DataGridColumn dataField="score" headerText="分值" width="35">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn dataField="resource" headerText="数据来源" >
+				</mx:DataGridColumn>
+				<mx:DataGridColumn dataField="evaluationStandard" headerText="评分标准">
+				</mx:DataGridColumn>
+				<mx:DataGridColumn dataField="editType" width="40" headerText="类型" labelFunction="cLabelFunction">
+				</mx:DataGridColumn>
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%" height="40" horizontalAlign="center" verticalAlign="middle">
+			<common:BtnSave click="btnSaveClick()"/>
+			<common:BtnCancel click="closeTitle()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

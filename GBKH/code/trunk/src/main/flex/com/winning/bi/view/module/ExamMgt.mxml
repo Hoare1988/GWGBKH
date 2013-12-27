@@ -1,0 +1,298 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:common="com.winning.bi.view.component.common.*"
+		   xmlns:code="http://code.google.com/p/flexlib/"
+		   width="100%" height="100%" creationComplete="init()" 
+		   layout="vertical" paddingTop="10"
+		   xmlns:autoSuggest="com.winning.bi.view.component.common.autoSuggest.*">
+	
+	<mx:DateFormatter id="dateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.control.events.domain.ExeItemEvent;
+			import com.winning.bi.control.events.domain.ItemEvent;
+			import com.winning.bi.model.domain.ExeItem;
+			import com.winning.bi.model.domain.Item;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.model.mlct.ItemMgtModelLocator;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.utils.TimeFormatter;
+			import com.winning.bi.view.component.titlewin.AddItem;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.events.ListEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			import mx.utils.StringUtil;
+			
+			import org.hamcrest.object.nullValue;
+			
+			[Bindable]
+			private var _itemModelLocator:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+			
+			[Bindable]
+			private var rootItems:ArrayCollection=new ArrayCollection;
+			
+			private var modifiedExeItems:ArrayCollection=new ArrayCollection();
+			
+			public var defaultStr:String="*****";
+			
+			private var selectExeItem:ExeItem=null;
+			
+			private function init():void
+			{   
+				
+			}
+			
+			private function eItem_click():void
+			{
+				 selectExeItem=cItemTree.selectedItem as ExeItem
+				cItemTree.expandChildrenOf(selectExeItem,true);
+				if(selectExeItem!=null)
+				{
+					_score.text=selectExeItem.item.score.toString()+"(分)";
+					_percentage.text=selectExeItem.item.percentage+"%"
+					_py.text=selectExeItem.item.py;
+					_evaluationStandard.text=selectExeItem.item.evaluationStandard;
+					_resource.text=selectExeItem.item.resource;
+					_comments.text=selectExeItem.item.comments;
+					_createDate.text=TimeFormatter.parse(selectExeItem.item.createDate,Constant.TIME_PARTTEN_THREE);
+					_updateDate.text=TimeFormatter.parse(selectExeItem.item.updateDate,Constant.TIME_PARTTEN_THREE);
+					if(selectExeItem.item.editable)
+					{
+						_scoreResult.text=String(selectExeItem.scoreResult);
+					}
+					else 
+					{
+						_scoreResult.text=defaultStr;
+					}
+					
+				}
+				
+			}
+			
+			private function asLabelFunction(item:Object):String
+			{
+				var s:String="";
+				if (item.hasOwnProperty("name"))
+				{
+					s=item.name;
+				}
+				return s;
+			}
+			private function treeLabelFunction(item:Object):String
+			{
+				var exeItem:ExeItem=item as ExeItem;
+				
+				var result:String=exeItem.item.name;
+//				var result:String=exeItem.item.name+"("+exeItem.item.score +"分)";
+				if(exeItem.item.editable)
+				{
+					var s:String='@@@@@@'+result;
+					result=s;
+				}
+				return result;
+			}
+			private function eFlushTree_click():void
+			{
+				//new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+			}
+			
+			protected function cBtnResearch_clickHandler(event:MouseEvent):void
+			{
+				var exeItem:ExeItem=new ExeItem();
+				
+				if(sAutoSuggestUser.text!=null&&StringUtil.trim(sAutoSuggestUser.text)!="")
+				{
+					exeItem.beAccessedUser=sAutoSuggestUser.selectedItem as SysUser ;
+				}
+				
+				exeItem.item=cComBoxItemName.selectedItem as Item;
+				exeItem.typeValue=cAccessYearComBox.selectedItem as String;
+				exeItem.isRootExeItem=Constant.TRUE;
+				new ExeItemEvent(ExeItemEvent.EVENT_FIND_EXEITEM_BY_CONDITION,exeItem).dispatch();
+			}
+			
+			public function eSave_click():void
+			{	
+				  CursorManager.showCursor();
+				  var savedAC:ArrayCollection=new ArrayCollection();
+				  for each(var exeitem:ExeItem in _itemModelLocator.childExeItemAC)
+				  {
+					  if(exeitem.item.editable){
+						  exeitem.updateBy= AppModelLocator.getInstance().loginUser;
+						  savedAC.addItem(exeitem);
+					  }
+				  }
+				  if(savedAC.length>0){
+				  new ExeItemEvent(ExeItemEvent.EVENT_UPDATE_EXEITEMLIST_GRADE,savedAC).dispatch();
+				  }
+				
+			}
+			
+			
+			public function doubleClickHandler():void
+			{
+			}
+			
+			public function _scoreResultChange(event:Event):void
+			{
+				if(selectExeItem.item.editable)
+				{
+					var scoreResult:String=_scoreResult.text;
+					if(new Number(scoreResult)>selectExeItem.item.score)
+					{
+						Alert.show("分数超过边界","错误");
+						return;
+					}
+					
+					selectExeItem.scoreResult=Number(StringUtil.trim(_scoreResult.text));
+//					for each(var item:ExeItem  in modifiedExeItems)
+//					{
+//						if(item.id==selectExeItem.id)
+//						{
+//							item.enable=0;
+//							break;
+//						}
+//					}
+//					var modifyItem:ExeItem=new ExeItem();
+//					modifyItem.id=selectExeItem.id;
+//					modifyItem.enable=1;
+//					modifyItem.scoreResult=Number(StringUtil.trim(_scoreResult.text));
+//					modifiedExeItems.addItem(modifyItem);
+				}else
+				{
+					_scoreResult.text=defaultStr
+				}
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%">
+		<mx:HDividedBox width="100%" height="100%">
+			<mx:VBox width="620" height="100%" styleName="borderSkinStyle">
+				<mx:ApplicationControlBar width="100%" height="30" styleName="queryStyle">
+					<mx:Label text="考核年份:"/>
+					<mx:ComboBox id="cAccessYearComBox" dataProvider="{Constant.AccessYears}"/>
+					<mx:Label text="考核名称:"/>
+					<mx:ComboBox id="cComBoxItemName" width="200" dataProvider="{_itemModelLocator.uMgt_queryRootItemAC}"
+								 labelFunction="asLabelFunction"/>
+					<mx:Label text="被考核人:"/>
+					<autoSuggest:SysUserAutoSuggest id="sAutoSuggestUser" width="60"/>
+					<mx:Button id="cBtnResearch" label="查询" click="cBtnResearch_clickHandler(event)"/>
+				</mx:ApplicationControlBar>
+				
+				<mx:Tree id="cItemTree"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{_itemModelLocator.exeItemTreeAC}"
+						 labelFunction="treeLabelFunction"
+						 folderClosedIcon="{ImagesAssets.TREE_CLOSE}"
+						 folderOpenIcon="{ImagesAssets.TREE_OPEN}"
+						 itemClick="eItem_click()"/>
+			</mx:VBox>
+			<mx:VBox width="100%"
+					 height="100%"
+					 styleName="borderSkinStyle">
+				
+				<mx:HBox width="100%">
+					<mx:Label text="分      值:" width="100"/>
+					<mx:Label text=""
+							  id="_score"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="比      例:" width="100"/>
+					<mx:Label text=""
+							  id="_percentage"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+					<mx:Label text="拼 音 码:"  width="100"/>
+					<mx:Label text=""
+							  id="_py"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="创建时间:"  width="100"/>
+					<mx:Label  text=""
+							   id="_createDate"
+							   fontSize="13"
+							   color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox  width="100%">
+					<mx:Label text="更新时间:"  width="100"/>
+					<mx:Label  text=""
+							   id="_updateDate"
+							   fontSize="13"
+							   color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="评分标准:" width="100"/>
+					<mx:TextInput  text=""
+								   id="_evaluationStandard"
+								   editable="false"
+								   fontSize="13"
+								   width="100%"
+								   height="100"
+								   color="#1E23E1"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+					<mx:Label text="数据来源:"  width="100"/>
+					<mx:TextInput  text=""
+								   id="_resource"
+								   editable="false"
+								   fontSize="13"
+								   height="100"
+								   width="100%"
+								   color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="备      注:" width="100"/>
+					<mx:TextInput  text=""
+								   id="_comments"
+								   fontSize="13"
+								   editable="false"
+								   height="100"
+								   width="100%"
+								   color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="得   分:" width="100"/>
+					<mx:TextInput  text=""
+								   id="_scoreResult"
+								   fontSize="13"
+								   width="50"
+								   change="_scoreResultChange(event)"
+								   color="#1E23E1"/>
+					<mx:Label text="分"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+	<mx:HBox width="100%"
+			 verticalAlign="middle"
+			 styleName="borderBoxSkinStyle">
+		
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:ToolBar width="100%">
+			<mx:Button id="cSaveButton"
+					   label="保存"
+					   click="eSave_click()"
+					   icon="{ImagesAssets.SAVE16}"/>
+		</mx:ToolBar>
+	</mx:HBox>
+</mx:Module>

@@ -1,0 +1,187 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="com.winning.bi.view.component.common.*"
+				width="340" height="50%" close="close()" creationComplete="init()" layout="absolute"
+				showCloseButton="true">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.ItemEvent;
+			import com.winning.bi.model.domain.Item;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.model.mlct.ItemMgtModelLocator;
+			import com.winning.bi.utils.Constant;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			
+			public var parentItem:Item=null;
+			//1: add  2:update  3:createItem ，不保存到库中
+			public var editType:int=1;
+			
+			public var appModelLocat:AppModelLocator=com.winning.bi.model.mlct.AppModelLocator.getInstance();
+			
+			public var itemModelLocat:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+			
+			private function init():void
+			{
+				if(editType==2)
+				{
+					nameTxt.text=StringUtil.trim(parentItem.name);
+					scoreTxt.text=StringUtil.trim(parentItem.score.toFixed(2));
+					percentageTxt.text=parentItem.percentage.toFixed(2);
+					evaluationStandardTxt.text=StringUtil.trim(parentItem.evaluationStandard);
+					resourceTxt.text=StringUtil.trim(parentItem.resource);
+					commentsTxt.text=StringUtil.trim(parentItem.comments);
+					sortNumStepper.value=parentItem.sortNum;
+				}
+				else if(parentItem){
+				  sortNumStepper.value=parentItem.getMaxSortNumFromChild();
+				  resourceTxt.text=StringUtil.trim(parentItem.resource);
+				}
+			}
+			
+			private function saveUserClick():void
+			{
+					if(editType==1||editType==3){
+						if(StringUtil.trim(nameTxt.text)==""||StringUtil.trim(scoreTxt.text)=="")
+						{
+							Alert.show("名称或分值不能为空！");
+						}
+						else{
+							var item:Item =new Item();
+							item.isBottom=Constant.TRUE;
+							item.isRoot=Constant.FALSE;
+							item.name=StringUtil.trim(nameTxt.text);
+							
+							item.score= Number(StringUtil.trim(scoreTxt.text));
+							item.percentage=Number(StringUtil.trim(percentageTxt.text));
+							item.sortNum=sortNumStepper.value;
+							item.enable=1;
+							item.createBy=appModelLocat.loginUser;
+							item.updateBy=appModelLocat.loginUser;
+							item.evaluationStandard=StringUtil.trim(evaluationStandardTxt.text);
+							item.resource=StringUtil.trim(resourceTxt.text);
+							//item.sortNum=parentItem.getMaxSortNumFromChild()+1;
+							item.comments=StringUtil.trim(commentsTxt.text);
+							if(editType==1){
+							if(parentItem!=null)
+							{
+								item.parentItem=parentItem;
+							new ItemEvent(ItemEvent.EVENT_ADD_ITEM,item).dispatch();
+							}
+							else{
+								new ItemEvent(ItemEvent.EVENT_ADD_ROOT_ITEM,item).dispatch();
+							}
+							}else if(editType==3)
+							{
+								/**不保存到库中**/
+								item.editType=1;//新增
+								itemModelLocat.itemMgtWithPermit_AddItemAc.addItem(item);
+							}
+						}
+					}else if(editType==2)
+					{
+						if(StringUtil.trim(resourceTxt.text).length!=0){
+							parentItem.resource=StringUtil.trim(resourceTxt.text);
+						}
+						
+						if(StringUtil.trim(nameTxt.text))
+						{
+							parentItem.name=StringUtil.trim(nameTxt.text);
+						}
+						parentItem.score=Number(StringUtil.trim(scoreTxt.text));
+						parentItem.percentage=Number(StringUtil.trim(percentageTxt.text))
+						parentItem.comments=StringUtil.trim(commentsTxt.text);
+						parentItem.evaluationStandard=StringUtil.trim(evaluationStandardTxt.text);
+						
+						parentItem.sortNum=sortNumStepper.value;
+						new ItemEvent(ItemEvent.EVENT_UPDATE_ITEM,parentItem).dispatch();
+					}
+				close();
+			}
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+			
+			protected function scoreTxt_mouseOutHandler(event:MouseEvent):void
+			{
+//				if(scoreTxt.text==null||scoreTxt.text=="")
+//				{
+//					scoreTxt.setFocus();
+//				}
+//				else
+//				{
+					//TODO  判断逻辑待定
+//					var score:Number=Number(StringUtil.trim(scoreTxt.text));
+//					if(parentItem.isBottom&&score>parentItem.score)
+//					{
+//						Alert.show(Constant.ALERT_CONTENT_FZYC,"提示");
+//						scoreTxt.setFocus();
+//					}
+//				}
+			}
+			
+			protected function scoreTxt_changeHandler(envet:Event):void
+			{
+				if(parentItem!=null&&StringUtil.trim(scoreTxt.text)!=null&&StringUtil.trim(scoreTxt.text).length>0)
+				{
+					//percentageTxt.text=Number(scoreTxt.text)*100/parentItem.score as String;
+				}
+			}
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox id="editBox" width="100%" height="100%" horizontalAlign="center" paddingBottom="20"
+			 paddingLeft="20" paddingRight="20" paddingTop="20">
+		<mx:VBox width="95%" height="100%">
+			<mx:VBox width="100%" height="100%">
+				<mx:HBox>
+					<mx:Label text="名    称*:"/>
+					<mx:TextInput id="nameTxt"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label id="lbl_score" text="分    值*:"/>
+					<mx:TextInput id="scoreTxt" change="scoreTxt_changeHandler(event)"
+								  mouseOut="scoreTxt_mouseOutHandler(event)"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label id="lbl_percentage" text="比    例*:"/>
+					<mx:TextInput id="percentageTxt"/>
+					<mx:Label id="lbl_percentage_comments" text="(%)"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label id="lbl_sortNum" text="排    序*:"/>
+					<mx:NumericStepper id="sortNumStepper" maximum="100" minimum="1" stepSize="1"
+									   value="1"/>
+				</mx:HBox>
+				
+				
+				<mx:VBox width="100%">
+					<mx:Label text="评分标准:"/>
+					<mx:TextArea id="evaluationStandardTxt" width="100%" height="90" text=""/>
+				</mx:VBox>
+				<mx:VBox width="100%">
+					<mx:Label text="数据来源:"/>
+					<mx:TextArea id="resourceTxt" width="100%" height="70" text=""/>
+				</mx:VBox>
+				<mx:VBox width="100%">
+					<mx:Label text="备注:"/>
+					<mx:TextArea id="commentsTxt" width="100%" height="70" text=""/>
+					
+				</mx:VBox>
+			</mx:VBox>
+		</mx:VBox>
+		<mx:HBox width="95%" height="20%" horizontalAlign="center" verticalAlign="middle">
+			<common:BtnSave click="saveUserClick()"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+
+</mx:TitleWindow>

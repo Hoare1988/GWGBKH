@@ -1,0 +1,316 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   paddingTop="10"
+		   width="100%"
+		   paddingBottom="10"
+		   creationComplete="init()"
+		   height="100%"
+		   xmlns:common="com.winning.bi.view.component.common.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.SysOrgEvent;
+			import com.winning.bi.control.events.domain.SysUserEvent;
+			import com.winning.bi.model.domain.SysOrg;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.domain.SysUserOrgMapping;
+			import com.winning.bi.model.mlct.SysMgtModelLocator;
+			import com.winning.bi.utils.CollectionUtil;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.view.component.titlewin.EditSysOrg;
+			
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.SortField;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+			
+			private function init():void
+			{
+				var params:Array=new Array(2);
+				params[0]=null;
+				params[1]=null;
+				new SysOrgEvent(SysOrgEvent.EVENT_QUERY_ORGS,params).dispatch();
+			} 
+			
+			
+			private function doubleClickHandler():void
+			{
+				
+				if (dataGrid.selectedItem == null)
+				{
+					Alert.show("请选择要修改的列!!!");
+				}
+				else
+				{
+					var editUser:EditSysOrg=EditSysOrg(PopUpManager.createPopUp(this, EditSysOrg, true));
+					editUser.title="编辑科室";
+					editUser.editSysOrg=dataGrid.selectedItem as SysOrg;
+					PopUpManager.centerPopUp(editUser);
+				}
+			}
+			
+			public function addOrgClick():void
+			{
+				var editUser:EditSysOrg=EditSysOrg(PopUpManager.createPopUp(this, EditSysOrg, true));
+				editUser.title="新增科室";
+				PopUpManager.centerPopUp(editUser);
+			}
+			
+			private function savePmUserOrgMappings(sysUser:Object):void
+			{
+				var selectUser:SysUser= userDataGrid.selectedItem as SysUser;
+				var saveUserOrg:Boolean=false;
+				if(selectUser!=null)
+				{
+					for each(var sysorg:SysOrg in sysMgtModel.uMgt_QueryOrgsAC)
+					{
+						if(sysorg.isSelected&&sysorg.neeSave)
+						{
+						 var  userOrg:SysUserOrgMapping=new SysUserOrgMapping();
+						 userOrg.org=sysorg;
+						 userOrg.user=selectUser;
+						 new SysOrgEvent(SysOrgEvent.EVENT_ADD_USER_ORG_MAP,userOrg).dispatch();
+						 saveUserOrg=true;
+						}
+					}
+				}
+				if(!saveUserOrg)
+				{
+					Alert.show("选择用户或科室"," 提示");
+				}
+			}
+			
+			
+			private function colLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var s:String;
+				switch (column.dataField)
+				{
+					case "createDate":
+						s=dateFormatter.format(item.createDate);
+						break;
+					case "updateDate":
+						s=dateFormatter.format(item.updateDate);
+						break;
+					default:
+						break;
+				}
+				return s;
+			}
+			
+			private function onUserItemClick():void
+			{
+				var selectOrgs:ArrayCollection=(userDataGrid.selectedItem as SysUser).orgs;
+				for each(var outOrg:SysOrg in sysMgtModel.uMgt_QueryOrgsAC)
+				{
+					var hasFound:Boolean=false;
+					
+				   if(selectOrgs!=null&&selectOrgs.length>0)
+				   {
+				      for each(var innOrg:SysOrg in selectOrgs)
+					  {
+						  if(outOrg.id==innOrg.id)
+						  {
+							  hasFound=true;
+						  }
+					  }
+				   }
+				   
+				   if(hasFound)
+				   {
+					   outOrg.isSelected=true;
+					   outOrg.neeSave=false;
+				   }else
+				   {
+					   outOrg.isSelected=false; 
+				   }
+				}
+				var sort:Sort=new Sort(); 
+				sort.fields=[new SortField("isSelected",false,true,null)];
+				sysMgtModel.uMgt_QueryOrgsAC.sort=sort;
+				sysMgtModel.uMgt_QueryOrgsAC.refresh();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:DateFormatter id="dateFormatter"
+					  formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:TabNavigator width="100%"
+					 height="100%"
+					 creationPolicy="all">
+	<mx:HBox label="科室管理"
+			 width="100%"
+			 height="100%">
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingTop="5"
+			 paddingBottom="5">
+		<mx:ApplicationControlBar width="100%"
+								  height="36"
+								  styleName="queryStyle">
+			<mx:Label text="名称:"/>
+			<mx:TextInput id="nameTxt"
+						  width="80"/>
+			<mx:Label text="拼音:"/>
+			<mx:TextInput id="pyTxt"
+						  width="80"/>
+			<common:BtnQuery click="new SysOrgEvent(SysOrgEvent.EVENT_QUERY_ORGS,[nameTxt.text,pyTxt.text]).dispatch()"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%"
+				 height="100%"
+				 styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGrid"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 doubleClick="doubleClickHandler()"
+						 dataProvider="{cPageBar.currentPageData}"
+						 headerRelease="cPageBar.Sort(event);">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name"
+									   headerText="名称"/>
+					<mx:DataGridColumn dataField="py"
+									   headerText="拼音"/>
+					<mx:DataGridColumn dataField="createDate"
+									   headerText="创建时间"
+									   labelFunction="colLabelFunction"/>
+					<mx:DataGridColumn dataField="createDate"
+									   headerText="修改时间"
+									   labelFunction="colLabelFunction"/>
+					<mx:DataGridColumn dataField="comments"
+									   headerText="备注"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="28"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				
+				<common:BtnAdd id="addBtn"
+							   click="addOrgClick()"/>
+				<common:BtnEdit id="editBtn"
+								click="doubleClickHandler()"/>
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_QueryOrgsAC}"
+								 expand="true"
+								 pageSize="{Constant.PAGESIZE}"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+	</mx:HBox>
+	<mx:HBox label="人员科室分配"
+				 width="100%"
+				 height="100%">
+		<mx:VBox width="50%"
+				 height="100%">
+			<mx:ApplicationControlBar width="100%"
+									  height="30"
+									  styleName="queryStyle">
+				<mx:Label text=" 人员 名称:"/>
+				<mx:TextInput id="sysusernameTxt"
+							  width="80"/>
+				<common:BtnQuery id="cUserQueryBtn"
+								 click="new SysUserEvent(SysUserEvent.EVENT_QUERY_USERS,[sysusernameTxt.text,null,null]).dispatch()"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid id="userDataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{cPageBarRoles.currentPageData}"
+						 itemClick="onUserItemClick()">
+				<mx:columns>
+					<mx:DataGridColumn dataField="userName"
+									   headerText="用户名(工号)"/>
+					<mx:DataGridColumn dataField="realName"
+									   headerText="用户姓名"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBarRoles"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_queryUsersAC}"
+								 expand="true"
+								 pageSize="30"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox width="50%"
+				 height="100%">
+			<mx:ApplicationControlBar width="100%"
+									  height="30"
+									  styleName="queryStyle">
+				<mx:Label text="{userDataGrid.selectedItem?'【'+userDataGrid.selectedItem.realName+'】分配科室':''}"
+						  color="green"/>
+				<common:BtnSave click="savePmUserOrgMappings(userDataGrid.selectedItem as SysUser)"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid id="cOrgDataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{sysMgtModel.uMgt_QueryOrgsAC}">
+				<mx:columns>
+					<mx:DataGridColumn id="cIsSlectedRoleDGC"
+									   dataField="isSelected"
+									   headerText="选择"
+									   textAlign="center"
+									   width=".25">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:CheckBox selected="{data.isSelected}"
+											 change="onChange()">
+									<mx:Script>
+										<![CDATA[
+											import com.winning.bi.utils.Constant;
+											
+											private function onChange()
+											{
+												if (this.selected)
+												{
+													data.isSelected=Constant.TRUE;
+												}
+												else
+												{
+													data.isSelected=Constant.FALSE;
+													data.isDefault=Constant.FALSE;
+												}
+											}
+										]]>
+									</mx:Script>
+								</mx:CheckBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn dataField="name"
+									   headerText="科室名称"
+									   width=".5"/>
+					</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				<mx:Spacer width="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+  </mx:TabNavigator>
+</mx:Module>

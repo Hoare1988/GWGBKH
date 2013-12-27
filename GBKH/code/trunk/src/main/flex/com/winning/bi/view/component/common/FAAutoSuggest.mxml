@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:AutoSuggest xmlns:mx="http://www.adobe.com/2006/mxml"
+					xmlns:common="com.winning.bi.view.component.common.*"
+					dataProvider="{searchedItems}"
+					change="eItemSearch_Change()"
+					keyUp="eAutoSugest_KeyUp()"
+					labelField="name"
+					width="150" 
+					autoCompleteSuggest="false">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.DiseaseEvent;
+			import com.winning.bi.control.events.domain.OrganizationEvent;
+			import com.winning.bi.demo.sqd.DpFactory;
+			import com.winning.bi.model.domain.Organization;
+			import com.winning.bi.model.mlct.DiseaseModelLocator;
+			import com.winning.bi.model.mlct.OrganizationModelLocator;
+			import com.winning.bi.utils.Constant;
+			
+			import mx.collections.ArrayCollection;
+			import mx.utils.StringUtil;
+			private var organizationModel:OrganizationModelLocator=OrganizationModelLocator.getInstance();
+			private var diseaseModel:DiseaseModelLocator=DiseaseModelLocator.getInstance();
+
+			[Bindable]
+			private var searchedItems:ArrayCollection=new ArrayCollection();
+			
+			private var _isOnlyPharmacy:Boolean=false;
+			
+			private var _isOnlyHospital:Boolean=false;
+			
+			private var _isOnlyDisease:Boolean=false;
+			
+			private var _isOnlyPatient:Boolean=false;
+			
+			private var _isOnlyDoctor:Boolean=false;
+			
+			public function get isOnlyPharmacy():Boolean
+			{
+				return _isOnlyPharmacy;
+			}
+			
+			public function set isOnlyPharmacy(value:Boolean):void
+			{
+				_isOnlyPharmacy= value;
+			}
+			
+			public function get isOnlyHospital():Boolean
+			{
+				return _isOnlyPharmacy;
+			}
+			
+			public function set isOnlyHospital(value:Boolean):void
+			{
+				_isOnlyHospital= value;
+			}
+			
+			public function get isOnlyDisease():Boolean
+			{
+				return _isOnlyDisease;
+			}
+			
+			public function set isOnlyDisease(value:Boolean):void
+			{
+				_isOnlyDisease= value;
+			}
+			
+			public function get isOnlyPatient():Boolean
+			{
+				return _isOnlyPatient;
+			}
+			
+			public function set isOnlyPatient(value:Boolean):void
+			{
+				_isOnlyPatient= value;
+			}
+			
+			public function get isOnlyDoctor():Boolean
+			{
+				return _isOnlyDoctor;
+			}
+			
+			public function set isOnlyDoctor(value:Boolean):void
+			{
+				_isOnlyDoctor= value;
+			}
+
+			private function eItemSearch_Change():void
+			{
+				if (this.willToChange)
+				{
+					organizationModel.searchOrgInitACFunction=initSearchItemAC;
+					diseaseModel.searchDisInitACFunction=initSearchItemAC;
+					this.willToChange=false;
+					this.text=this.text.replace(' ','');
+                    if(this.text=='')
+					{
+						searchedItems.removeAll();
+					}
+					else
+					{
+						switch(this.text.substr(0,1))
+						{
+							case 'O':
+							case 'o':
+								new OrganizationEvent(OrganizationEvent.EVENT_QUERY_ORGANIZATIONS_FOR_AUTOSUGGEST,[StringUtil.trim(this.text.substr(1))==''?null:this.text.substr(1),StringUtil.trim(this.text.substr(1))==''?null:this.text.substr(1),_isOnlyHospital,isOnlyPharmacy]).dispatch()
+								break;
+							case 'D':
+							case 'd':
+								new DiseaseEvent(DiseaseEvent.EVENT_FIND_DISEASE_FOR_AUTOSUGGEST,[StringUtil.trim(this.text.substr(1))==''?null:this.text.substr(1),null]).dispatch();
+								break;
+							default:
+								break;
+						}
+					}
+				}
+			}
+
+			public function initSearchItemAC(returnItemAC:ArrayCollection):void
+			{
+				searchedItems.removeAll();
+				searchedItems=returnItemAC;
+				if(searchedItems!=null && searchedItems.length>0)
+				super.open();
+			}
+			
+			private function eAutoSugest_KeyUp():void
+			{
+				this.willToChange=true;
+				this.textInput.setSelection(this.text.length,this.text.length);
+				//this.textInput.setFocus();
+			}
+		]]>
+	</mx:Script>
+</common:AutoSuggest>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:List xmlns:mx="http://www.adobe.com/2006/mxml" creationComplete="init();"  itemClick="selectHandler(event)" labelField="name" width="150">
+	<mx:Script>
+		<![CDATA[
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.controls.TextInput;
+			import mx.core.Application;
+			import mx.events.FlexMouseEvent;
+			import mx.managers.PopUpManager;
+			
+			public var parentD;
+			
+			private function init():void{
+				this.addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE,hideHandler);
+			}
+			
+			public static function show(x:Number,y:Number,dp:ArrayCollection,app,par):SearchList{
+				var apl=Application.application;
+				var selector:SearchList = PopUpManager.createPopUp(apl,SearchList) as SearchList;
+				selector.owner = app;
+				selector.parentD = par;
+				selector.x = x;
+				selector.y = y;
+				selector.dataProvider = dp;
+				selector.invalidateDisplayList();
+				return selector;
+			}
+			
+
+			
+			private function hideHandler(event):void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function selectHandler(event:Event):void{
+				(owner as TextInput).text = this.selectedItem.name;
+				parentD?parentD.selectItem=this.selectedItem:null;
+				hideHandler(null);
+			}
+		]]>
+	</mx:Script>
+</mx:List>

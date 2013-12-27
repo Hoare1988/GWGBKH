@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<service id="remoting-service" 
+    class="flex.messaging.services.RemotingService">
+
+    <adapters>
+        <adapter-definition id="java-object" class="flex.messaging.services.remoting.adapters.JavaAdapter" default="true"/>
+    	<!-- gilead blazeds -->
+		<adapter-definition id="persistent-adapter"
+			class="net.sf.gilead.blazeds.adapter.PersistentAdapter">
+			<properties>
+				<persistence-factory>
+					<class>
+						com.winning.utils.spring.SpringApplicationContext
+					</class>
+					<singleton>true</singleton>
+					<method>getSessionFactory</method>
+				</persistence-factory>
+				<stateless>false</stateless>
+			</properties>
+		</adapter-definition>
+    </adapters>
+
+    <default-channels>
+        <channel ref="my-amf"/>
+    </default-channels>
+   
+	<destination id="sysUserService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>sysUserServiceImpl</source> 
+        </properties> 
+	</destination>
+	
+	<destination id="sysRoleService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>sysRoleServiceImpl</source> 
+        </properties> 
+	</destination>
+	
+	<destination id="sysModuleService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>sysModuleServiceImpl</source> 
+        </properties> 
+	</destination>
+	
+	<destination id="itemService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>itemServiceImpl</source> 
+        </properties> 
+	</destination>
+
+	<destination id="sysOrgService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>sysOrgServiceImpl</source> 
+        </properties> 
+	</destination>
+	<destination id="exeItemService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>exeItemServiceImpl</source> 
+        </properties> 
+	</destination>
+	
+	<destination id="dataLogService"> 
+        <properties> 
+        	<factory>springFactory</factory>    
+            <source>dataLogServiceImpl</source> 
+        </properties> 
+	</destination>
+	
+</service>

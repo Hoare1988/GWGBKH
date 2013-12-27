@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:RoundCornerTextInput xmlns:mx="http://www.adobe.com/2006/mxml"  width="75" 
+			  xmlns:common="com.winning.bi.view.component.common.*"
+			  textAlign="center" editable="false" cornerRadius="3"
+			  creationComplete="init()" restrict="0-9" maxChars="4" text="{_month}">
+
+
+	
+	<mx:Script>
+		<![CDATA[
+			import mx.binding.utils.BindingUtils;
+			import mx.controls.Alert;
+			import mx.controls.Button;
+			import mx.controls.DateField;
+			import mx.controls.LinkButton;
+			import mx.core.Application;
+			import mx.events.FlexEvent;
+			
+			var btnPlus:LinkButton = new LinkButton();
+			var btnMinus:LinkButton = new LinkButton();
+			
+			public var xml:String;
+			
+			[Bindable]
+			private var _month:String;
+			[Bindable]
+			public var month:Date;
+			
+			
+			
+			private function init():void{
+				
+				this._month = DateField.dateToString(month,'YYYY-MM');
+				
+				BindingUtils.bindSetter(f,this,'month');
+			}
+			private function f(a:Object):void
+			{
+				this._month = DateField.dateToString(month,'YYYY-MM');
+			}	
+			
+			private function updateButtonStyle(button:LinkButton):void{
+				button.setStyle("fontSize",12);
+				button.setStyle("cornerRadius",3);
+				button.setStyle("paddingLeft",0);
+				button.setStyle("paddingRight",0);
+			}
+			    	
+		]]>
+	</mx:Script>
+</common:RoundCornerTextInput>

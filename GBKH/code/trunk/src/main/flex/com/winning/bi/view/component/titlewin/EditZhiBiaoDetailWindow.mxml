@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				close="eWindow_close()"
+				titleStyleName="twTitleStyle"
+				width="800"
+				height="380"
+				title="临床指标规则配置明细"
+				showCloseButton="true"
+				layout="vertical"
+				horizontalAlign="center"
+				paddingLeft="5"
+				paddingRight="5"
+				verticalAlign="middle"
+				creationComplete="init()"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.view.component.renderer.ExeOrderOperateRenderer;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.LinkButton;
+			import mx.core.IUIComponent;
+			import mx.events.ListEvent;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+
+			private function init():void
+			{
+				appModel.exp="";
+				appModel.zhibiaos=new ArrayCollection([{name: 'HCG', relation: '>', value: '500', unit: 'IU/L'}]);
+				appModel.zhibiao2s=new ArrayCollection([{name: '刮宫术', code: '31120150'}]);
+			}
+
+			private function eAdd_click():void
+			{
+				var twin:EditZhiBiaoWindow=EditZhiBiaoWindow(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditZhiBiaoWindow, true));
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function eAdd2_click():void
+			{
+				var twin:EditTextWindow=EditTextWindow(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditTextWindow, true));
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function eDel_click():void
+			{
+				if (mmDataGrid.selectedItem)
+				{
+					appModel.zhibiaos.removeItemAt(appModel.zhibiaos.getItemIndex(mmDataGrid.selectedItem));
+				}
+			}
+
+			private function eDel2_click():void
+			{
+				if (mmDataGrid2.selectedItem)
+				{
+					appModel.zhibiao2s.removeItemAt(appModel.zhibiao2s.getItemIndex(mmDataGrid2.selectedItem));
+				}
+			}
+
+			private function eDel3_click(event:MouseEvent):void
+			{
+				appModel.exp=appModel.exp.substring(0, appModel.exp.length - 1);
+			}
+
+			private function eClick(event:MouseEvent):void
+			{
+				var dd:Button=event.currentTarget as Button;
+				appModel.exp+=dd.label;
+			}
+
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function eSubmitClose_click():void
+			{
+				eSubmit_click();
+				eWindow_close();
+			}
+
+			private function eSubmit_click():void
+			{
+				var obj:Object=new Object();
+				obj['name']=nameTextInput.text;
+				obj['code']=codeTextInput.text;
+				obj['status']=statusTextInput.text;
+				obj['version']="v1.0";
+				obj['updateDate']="2012-06-18";
+				appModel.zhibiaoguizhe.addItem(obj);
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:Label text="规则代码"/>
+		<mx:TextInput id="codeTextInput"/>
+		<mx:Label text="规则名称"/>
+		<mx:TextInput id="nameTextInput"/>
+		<mx:Label text="状态"/>
+		<mx:TextInput id="statusTextInput"/>
+	</mx:HBox>
+	<mx:HBox>
+		<mx:VBox>
+			<mx:DataGrid id="mmDataGrid"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 dataProvider="{appModel.zhibiaos}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name"
+									   headerText="项目"/>
+					<mx:DataGridColumn dataField="relation"
+									   headerText="关系"/>
+					<mx:DataGridColumn dataField="value"
+									   headerText="数值"/>
+					<mx:DataGridColumn dataField="unit"
+									   headerText="单位"/>
+					<mx:DataGridColumn itemRenderer="{new ClassFactory(ExeOrderOperateRenderer)}"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox>
+				<mx:Label text="表达式"/>
+				<mx:TextInput width="400"
+							  id="expTextInput"
+							  text="{appModel.exp}"/>
+				<mx:LinkButton icon="{ImagesAssets.DEL16}"
+							   click="eDel3_click(event)"/>
+			</mx:HBox>
+			<mx:HBox>
+				<common:BtnAdd label="添加"
+						   click="eAdd_click()"/>
+				<common:BtnDel label="删除"
+						   click="eDel_click()"/>
+				<mx:Button label="&amp;"
+						   click="eClick(event)"/>
+				<mx:Button label="|"
+						   click="eClick(event)"/>
+				<mx:Button label="("
+						   click="eClick(event)"/>
+				<mx:Button label=")"
+						   click="eClick(event)"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:Spacer width="40"
+				   height="100%"/>
+		<mx:VBox>
+			<mx:DataGrid id="mmDataGrid2"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 dataProvider="{appModel.zhibiao2s}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="code"
+									   headerText="医保代码"/>
+					<mx:DataGridColumn dataField="name"
+									   headerText="项目名称"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox>
+				<common:BtnAdd label="添加"
+							   click="eAdd2_click()"/>
+				<common:BtnDel label="删除"
+							   click="eDel2_click()"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox>
+		<common:BtnSubmit label="完成"
+						  click="eSubmitClose_click()"/>
+	</mx:HBox>
+</mx:TitleWindow>
+

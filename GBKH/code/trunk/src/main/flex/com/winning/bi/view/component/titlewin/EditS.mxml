@@ -1,0 +1,322 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:button="com.winning.bi.view.component.common.*"
+			   creationComplete="init();"
+			    showCloseButton="true" close="close();"
+			    title="{miHeader?miHeader.name:'-'}"
+			    label="{miHeader?miHeader.name:'-'}"
+				layout="absolute" width="200" height="400">
+	
+	
+	
+	<mx:RemoteObject id="aIntegrityService"
+					 destination="integrityService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="updateMiHeader"
+				   result="updateMiHeaderCallBack(event)"
+				   fault="fault(event)"/>
+		
+		<mx:method name="addMIHeaderLog"
+				   result="addMIHeaderLogCallBack(event)"
+				   fault="fault(event)"/>
+		
+		<mx:method name="findMiHeaderLogs"
+				   result="findMiHeaderLogsCallBack(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+	
+
+	
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.assets.ImagesAssets;
+			import com.winning.bi.model.bean.LSBean;
+			import com.winning.bi.model.domain.MiHeader;
+			import com.winning.bi.model.vo.AvgCostVO;
+			import com.winning.bi.utils.Constant;
+			import com.winning.bi.utils.LabelFunctionFactory;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			public var miHeader:MiHeader;
+			
+			public var initFs:Number;
+			
+			[Bindable]
+			public var avgCostAC:ArrayCollection;
+			
+			[Bindable]
+			private var historyAC:ArrayCollection;
+			
+//			public var afLys:ArrayCollection=new ArrayCollection();
+//			public var mfLys:ArrayCollection=new ArrayCollection();
+			
+			[Bindable]
+			private var dpA:ArrayCollection = Constant.addPoitAC;
+			
+			[Bindable]
+			private var dpM:ArrayCollection = Constant.minusPoitAC;
+			private function init():void
+			{
+				aIntegrityService.findMiHeaderLogs(miHeader.id);
+				
+			}	
+			
+		
+			private function save():void
+			{
+				var reason:String;
+//				if(typeCom.selectedIndex ==0){
+//					for each(var obj:Object in afLys){
+//						reason+=obj.reason+'(加'+obj.value+'分);';
+//					}
+//				}
+//				
+//				if(typeCom.selectedIndex ==1){
+//					for each(var obj:Object in mfLys){
+//						reason+=obj.reason+'(减'+obj.value+'分);';
+//					}
+//				}
+				
+				reason = ly.text;
+				miHeader.value = Number(syf.text);
+				aIntegrityService.updateMiHeader(miHeader);
+				aIntegrityService.addMIHeaderLog(miHeader,reason,typeCom.selectedIndex ==0?int(kfz.text):(-int(kfz.text)),2);//2手动
+			}	
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}	
+			
+			public function fault(event:FaultEvent):void
+			{
+				this.parentApplication.fault(event);
+			}
+			
+			private function updateMiHeaderCallBack(event:ResultEvent):void
+			{
+				close();
+			}
+			
+			private function addMIHeaderLogCallBack(event:ResultEvent):void
+			{
+				close();
+			}
+			
+			private function findMiHeaderLogsCallBack(event:ResultEvent):void
+			{
+				historyAC = event.result as ArrayCollection;
+			}
+			
+			
+			
+			private function findAvgCostVOsForDoctorCallBack(event:ResultEvent):void
+			{
+				avgCostAC = event.result as ArrayCollection;
+			}
+			
+			private function colLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var s:String=null;
+				switch(column.dataField){
+					case 'bl':
+						s = item.bl*100+'%';
+						break;
+					case 'type':
+						s = item.type==1?'自动':'手动';
+						break;
+					default:
+						break;
+				}
+				return s;
+			}	
+			
+			
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%" height="100%" 
+			 paddingBottom="10" paddingLeft="10"
+			 paddingTop="10" paddingRight="10"
+			 verticalAlign="middle" horizontalAlign="center">
+		<mx:VBox width="100%" height="40%"  styleName="borderSkinStyle">
+			<mx:HBox width="100%" height="25" >
+				<mx:Label text="历史记录" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:DataGrid width="100%" height="100%" dataProvider="{historyAC}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="reason" headerText="扣/加分原因"/>
+					<mx:DataGridColumn dataField="value" headerText="扣/加分"/>
+					<mx:DataGridColumn dataField="type" headerText="扣/加分类型" labelFunction="colLabelFunction"/>
+					<mx:DataGridColumn dataField="createDate" headerText="扣/加分日期" labelFunction="{LabelFunctionFactory.fullTimeLabelFunction}"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		
+		<mx:VBox width="100%" height="120"  styleName="borderSkinStyle">
+			<mx:HBox width="100%" height="25" >
+				<mx:Label text="均次费" fontWeight="bold"/>
+			</mx:HBox>
+			<mx:DataGrid width="100%" height="100%" dataProvider="{avgCostAC}">
+				<mx:columns>
+					<!--		科室类型（门、住）、当前均次费、增长幅度、科室均次费、去年均次费-->
+					<mx:DataGridColumn dataField="jgmc"
+									   headerText="机构名称"/>
+					<mx:DataGridColumn dataField="ksmc"
+									   headerText="科室名称"/>
+					<mx:DataGridColumn dataField="ysmc"
+									   headerText="医生姓名"/>
+					<mx:DataGridColumn dataField="jzlx"
+									   headerText="考核类型"/>
+					<mx:DataGridColumn dataField="bl"
+									   labelFunction="colLabelFunction"
+									   headerText="相较上年涨幅"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+		
+		<mx:VBox width="100%" height="60%"  styleName="borderSkinStyle">
+			<mx:HBox width="100%" height="25" >
+				<!--<mx:ComboBox dataProvider="{vs}" id="typeCom"/>-->
+				<mx:LinkBar dataProvider="{vs}" id="typeCom" color="blue"/>
+				<mx:Spacer width="100%"/>
+			</mx:HBox>
+			
+			<mx:ViewStack width="100%" height="100%" id="vs">
+				<mx:VBox width="100%" height="100%" label="[加分]">
+					<mx:DataGrid width="100%" height="100%" dataProvider="{Constant.addPoitAC}">
+						<mx:columns>
+							<mx:DataGridColumn width="20" dataField="isSelected" headerText="">
+								<mx:itemRenderer>
+									<mx:Component>
+										<mx:CheckBox click="changeHander();">
+											<mx:Script>
+												<![CDATA[
+													import mx.collections.ArrayCollection;
+													import mx.controls.Alert;
+													
+													private function changeHander():void
+													{
+														data.isSelected=!data.isSelected;
+														var temp:ArrayCollection;
+														if (this.selected)
+														{
+															outerDocument.kfz.text =  (Number(outerDocument.kfz.text)+Number(data.value)).toString();
+															outerDocument.syf.text = (Number(outerDocument.syf.text)+Number(data.value)).toString();
+////															outerDocument.afLys.addItem(data);
+//															temp = outerDocument.afLys;
+//															outerDocument.afLys = temp;
+															if(outerDocument.ly.text.indexOf(data.reason)<0)
+																outerDocument.ly.text+=data.reason+'(加'+data.value+'分);';
+														}else{
+															outerDocument.syf.text = (Number(outerDocument.syf.text)-Number(data.value)).toString();
+															outerDocument.kfz.text =  (Number(outerDocument.kfz.text)-Number(data.value)).toString();
+															if(outerDocument.ly.text.indexOf((data.reason+'(加'+data.value+'分);'))>=0){
+																var tp:String = outerDocument.ly.text;
+																tp=tp.replace((data.reason+'(加'+data.value+'分);'),'');
+																outerDocument.ly.text=tp;
+															}
+															
+															
+														}
+													}
+												]]>
+											</mx:Script>
+										</mx:CheckBox>
+									</mx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
+							
+							<mx:DataGridColumn headerText="加分原因" dataField="reason"/>
+							<mx:DataGridColumn headerText="应加分数" dataField="value"/>
+							<mx:DataGridColumn headerText="备注" dataField="ps"/>
+							
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+				
+				<mx:VBox width="100%" height="100%" label="[扣分]">
+					<mx:DataGrid width="100%" height="100%" dataProvider="{Constant.minusPoitAC}">
+						<mx:columns>
+							<mx:DataGridColumn width="20" dataField="isSelected" headerText="">
+								<mx:itemRenderer>
+									<mx:Component>
+										<mx:CheckBox click="changeHander();">
+											<mx:Script>
+												<![CDATA[
+													import mx.controls.Alert;
+													import mx.collections.ArrayCollection;
+													private function changeHander():void
+													{
+														data.isSelected=!data.isSelected;
+														var temp:ArrayCollection;
+														if (this.selected)
+														{
+															outerDocument.kfz.text =  (Number(outerDocument.kfz.text)+Number(data.value)).toString();
+															outerDocument.syf.text = (Number(outerDocument.syf.text)-Number(data.value)).toString();
+															if(outerDocument.ly.text.indexOf(data.reason)<0)
+																outerDocument.ly.text+=data.reason+'(减'+data.value+'分);';
+														}else{
+															outerDocument.syf.text = (Number(outerDocument.syf.text)+Number(data.value)).toString();
+															outerDocument.kfz.text =  (Number(outerDocument.kfz.text)-Number(data.value)).toString();
+															if(outerDocument.ly.text.indexOf((data.reason+'(减'+data.value+'分);'))>=0){
+																var tp:String = outerDocument.ly.text;
+																tp=tp.replace((data.reason+'(减'+data.value+'分);'),'');
+																outerDocument.ly.text=tp;
+															}
+														}
+													}
+												]]>
+											</mx:Script>
+										</mx:CheckBox>
+									</mx:Component>
+								</mx:itemRenderer>
+							</mx:DataGridColumn>
+							
+							<mx:DataGridColumn headerText="扣分原因" dataField="reason"/>
+							<mx:DataGridColumn headerText="应扣分数" dataField="value"/>
+							<mx:DataGridColumn headerText="备注" dataField="ps"/>
+							
+						</mx:columns>
+					</mx:DataGrid>
+				</mx:VBox>
+			</mx:ViewStack>
+			
+			
+			
+			<mx:HBox width="100%" height="90">
+				<mx:TextArea width="100%" height="100%" id="ly"/>
+				<mx:VBox width="250" height="100%" verticalAlign="middle" horizontalAlign="center">
+					<mx:HBox width="100%" height="100%">
+						<mx:Label text="初始值:" width="60"/>
+						<mx:TextInput width="50" text="{miHeader.value}" id="csz" editable="false"/>
+						<mx:Label text="扣/加分:" width="60" />
+						<mx:TextInput width="50" text="{0}"  id="kfz" editable="false"/>
+					</mx:HBox>
+					<mx:HBox width="100%" height="100%">
+						<mx:Label text="操作后:" width="60"/>
+						<mx:TextInput width="50" text="{miHeader.value}"  id="syf" editable="false"/>
+					</mx:HBox>
+					<mx:HBox width="100%" height="100%">
+						<button:BtnSubmit click="save();" width="100%"/>
+						<mx:Image source="{ImagesAssets.PHONE16}"
+								  toolTip="短信通知"
+								  buttonMode="true"/>
+						<mx:Image source="{ImagesAssets.EMAIL16}"
+								  toolTip="邮件通知"
+								  buttonMode="true"/>
+					</mx:HBox>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:TitleWindow>

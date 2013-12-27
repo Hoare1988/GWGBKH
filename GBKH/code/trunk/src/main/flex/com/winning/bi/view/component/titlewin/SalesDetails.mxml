@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:button="com.winning.bi.view.component.common.*" titleStyleName="twTitleStyle"
+				width="800" height="500" close="close()" layout="vertical" showCloseButton="true">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.mlct.AnalysisModelLocator;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			private var modelLocator:AnalysisModelLocator=AnalysisModelLocator.getInstance();
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}		  
+
+		]]>
+	</mx:Script>
+	<mx:NumberFormatter id="nf" precision="2" useThousandsSeparator="false"/>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingTop="5">
+			<mx:VBox width="100%"
+					 height="100%"
+					 verticalGap="0"
+					 styleName="borderSkinStyle">
+				<mx:DataGrid id="dataGridJg" width="100%"
+							 height="100%"
+							 dataProvider="{pageDateBar.currentPageData}">
+					<mx:columns>
+						<mx:DataGridColumn dataField="recordDate"
+										   headerText="就诊日期"/>
+						<mx:DataGridColumn dataField="patientName"
+										   headerText="参保人"/>
+						<mx:DataGridColumn dataField="drugCode"
+										   headerText="药品编码"/>
+						<mx:DataGridColumn dataField="drugName"
+										   headerText="药品名称"/>
+						<mx:DataGridColumn dataField="price"
+										   headerText="单价"/>
+						<mx:DataGridColumn dataField="num"
+										   headerText="数量"/>
+						<mx:DataGridColumn dataField="totalMoney"
+										   headerText="总金额"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%" horizontalAlign="right">
+					<button:PagedBar id="pageDateBar" height="30" cornerRadius="3" expand="true"
+									 paddingTop="3" pageSize="15" horizontalAlign="right" 
+									 SourceData="{modelLocator.medicalCareSalesDetailsAC}"/>
+				</mx:HBox>
+			</mx:VBox>
+	</mx:VBox>
+</mx:TitleWindow>

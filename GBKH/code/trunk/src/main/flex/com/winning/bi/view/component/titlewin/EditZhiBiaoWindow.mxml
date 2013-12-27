@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				close="eWindow_close()"
+				titleStyleName="twTitleStyle"
+				width="400"
+				height="250"
+				showCloseButton="true"
+				layout="vertical"
+				horizontalAlign="center"
+				paddingLeft="5"
+				paddingRight="5"
+				verticalAlign="middle"
+				creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.model.mlct.AppModelLocator;
+			
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+			public function init():void
+			{
+			}
+			
+			private function eSubmitClose_click():void
+			{
+				eSubmit_click();
+				eWindow_close();
+			}
+			
+			private function eSubmit_click():void
+			{
+				var obj:Object = new Object();
+				obj['name']=cTextInput.text;
+				obj['relation']=cRelationTextInput.text;
+				obj['value']=cValueTextInput.text;
+				obj['unit']=cUnitTextInput.text;
+				appModel.zhibiaos.addItem(obj);
+			}
+			
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="项目:"/>
+		<mx:TextInput id="cTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="关系:"/>
+		<mx:TextInput id="cRelationTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="数值:"/>
+		<mx:TextInput id="cValueTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="单位:"/>
+		<mx:TextInput id="cUnitTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Button label="确定"
+				   click="eSubmitClose_click()"/>
+		<mx:Button label="取消"
+				   click="eWindow_close()"/>
+	</mx:HBox>
+</mx:TitleWindow>
+

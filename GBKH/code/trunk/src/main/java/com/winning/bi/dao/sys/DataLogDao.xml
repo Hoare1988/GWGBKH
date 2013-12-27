@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.winning.bi.dao.sys.DataLogDao">
+
+	<resultMap id="dataLogBasicResultMap" type="DataLog">
+		<id property="id" column="d_id" javaType="Integer" />
+		<result property="value" column="d_value" javaType="string" />
+		<result property="serviceID" column="d_serviceID" javaType="string" />
+		<result property="type" column="d_type" javaType="Integer" />
+
+		<result property="serviceID" column="d_serviceID" javaType="string" />
+		<result property="createDate" column="d_createDate" javaType="Date" />
+		<result property="updateDate" column="d_updateDate" javaType="Date" />
+		<result property="createBy" column="d_createBy" javaType="Date" />
+		<result property="comments" column="d_comments" javaType="String" />
+		
+		<association property="updateBy" column="d_updateBy"  javaType="SysUser" select="getUpdateUser" />
+		<association property="createBy" column="d_createBy"  javaType="SysUser" select="getCreateUser" />
+	</resultMap>
+	
+	
+	<resultMap id="sysUserBasicResultMap" type="SysUser">
+		<id property="id" column="u_id" javaType="long" />
+		<result property="userName" column="u_userName" javaType="string" />
+		<result property="password" column="u_password" javaType="string" />
+		<result property="realName" column="u_realName" javaType="string" />
+		<result property="py" column="u_py" javaType="string" />
+		<result property="wb" column="u_wb" javaType="string" />
+		<result property="comments" column="u_comments" javaType="string" />
+		<result property="enable" column="u_enable" javaType="int" />
+		<result property="type" column="u_type" javaType="int" />
+		<result property="lastLoginTime" column="u_lastlogintime"
+			javaType="date" />
+		<result property="loginCount" column="u_logincount" javaType="int" />
+
+		<result property="gender" column="u_gender" javaType="string" />
+		<result property="deptcode" column="u_deptcode" javaType="string" />
+		<result property="deptname" column="u_deptname" javaType="string" />
+		<result property="cellphone" column="u_cellphone" javaType="string" />
+		<result property="telphone" column="u_telphone" javaType="string" />
+		<result property="email" column="u_email" javaType="string" />
+		<result property="superiors" column="u_superiors" javaType="long" />
+		<result property="postname" column="u_postname" javaType="string" />
+		<result property="entrydate" column="u_entrydate" javaType="date" />
+		<result property="canaudit" column="u_canaudit" javaType="int" />
+        <result property="privilege" column="u_privilege" javaType="int" />
+	</resultMap>
+	
+	<sql id="dataLogCol">
+		d.id as d_id,
+		d.value as d_value,
+		d.serviceID as d_serviceID,
+		d.type as d_type,
+		d.createDate as d_createDate,
+		d.updateDate as d_updateDate,
+		d.createBy as d_createBy,
+		d.updateBy as d_updateBy,
+		d.comments as d_comments
+	</sql>
+	
+	<sql id="sysUserCol">
+		u.id as u_id,
+		u.username as u_userName,
+		u.password as
+		u_password,
+		u.realName as u_realName,
+		u.py as u_py,
+		u.wb as u_wb,
+		u.enable as u_enable,
+		u.type as u_type,
+		u.lastlogintime as
+		u_lastlogintime,
+		u.logincount as u_logincount,
+		u.comments as u_comments,
+		u.gender as u_gender,
+		u.deptcode as u_deptcode,
+		u.deptname as
+		u_deptname,
+		u.cellphone as u_cellphone,
+		u.telphone as u_telphone,
+		u.email as u_email,
+		u.superiors as u_superiors,
+		u.postname as
+		u_postname,
+		u.entrydate as u_entrydate,
+		u.canaudit as u_canaudit,
+		u.privilege as u_privilege
+	</sql>
+		
+	<!-- select-->
+	
+	<select id="getUpdateUser" parameterType="int" resultMap="sysUserBasicResultMap">
+		select
+			<include refid="sysUserCol"/>
+	       from SYSUSER u 
+	       where id=#{d_updateBy} 
+	</select>
+	
+	<select id="getCreateUser" parameterType="int" resultMap="sysUserBasicResultMap">
+		select
+			<include refid="sysUserCol"/>
+	       from SYSUSER u 
+	       where id=#{d_createBy} 
+	</select>
+	
+	<!-- update-->
+	<!-- insert-->
+	<insert id="saveDataLog" parameterType="DataLog">
+		insert into DataLog(type,value,serviceID,createDate,updateDate,createBy,updateBy,comments) 
+		values(#{type},#{value},#{serviceID},getDate(),getDate(),#{createBy.id},#{updateBy.id},#{comments})
+	</insert>
+
+	<!-- delete-->
+	
+</mapper>

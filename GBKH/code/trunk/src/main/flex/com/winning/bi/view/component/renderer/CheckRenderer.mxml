@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml"
+	click="onClick(event)">
+	<mx:Script>
+		<![CDATA[
+			
+			public function onClick(event:Event):void{
+				data.isSelected=!data.isSelected;
+			}
+			
+			public function get isSelected():Boolean
+			{
+				return data.isSelected;
+			}
+		]]>
+	</mx:Script>
+</mx:CheckBox>

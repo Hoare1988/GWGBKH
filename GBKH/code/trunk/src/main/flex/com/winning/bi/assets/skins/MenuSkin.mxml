@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphicBorderSkin xmlns:mx="http://www.adobe.com/2006/mxml"
+				   xmlns="http://www.degrafa.com/2007">
+	
+	<mx:Script>
+		<![CDATA[
+			override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void
+			{
+				super.updateDisplayList(unscaledWidth, unscaledHeight);
+				awidth=unscaledWidth;
+				aheight=unscaledHeight;
+			}
+			
+			[Bindable]
+			private var awidth:Number=0;
+			[Bindable]
+			private var aheight:Number=0;
+		]]>
+	</mx:Script>
+	
+	<fill>
+		<SolidFill id="mainFill"
+				   color="0x0066FF"/>
+	</fill>
+	
+	<geometry>
+		
+		<RoundedRectangleComplex id="roundRectangle"
+								 fill="{mainFill}"
+								 width="{awidth}"
+								 height="{aheight}"
+								 topLeftRadius="4" 
+								 topRightRadius="4"
+								 bottomLeftRadius="4"
+								 bottomRightRadius="4"/>
+		
+	</geometry>
+	
+</GraphicBorderSkin>

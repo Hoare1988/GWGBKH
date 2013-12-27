@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<GraphicBorderSkin 
+					xmlns:mx="http://www.adobe.com/2006/mxml" 
+                    xmlns="http://www.degrafa.com/2007" >
+
+    <mx:Script>
+        <![CDATA[
+            
+             override protected function updateDisplayList(unscaledWidth:Number, unscaledHeight:Number):void{
+                super.updateDisplayList(unscaledWidth, unscaledHeight);
+                awidth = unscaledWidth;
+                aheight = unscaledHeight;
+                }
+            
+	            [Bindable] private var awidth	:Number	=	0;
+	            [Bindable] private var aheight	:Number	=	0;
+        ]]>
+    </mx:Script>
+
+    <fills>
+    	<!--<SolidFill 	id="mainFill" alpha=".8" color="0xD1EFFB"/>-->
+    	<SolidFill 	id="mainFill" alpha=".8" color="0xB6E0FB,0x90BAE4"/>
+    </fills>
+
+    <geometry>
+    	
+    	<RoundedRectangleComplex 	id="roundRectangle"
+    					   			fill="{mainFill}"
+    								width="{awidth}" height="{aheight}" 
+    								topLeftRadius="0" topRightRadius="0"
+                            		bottomLeftRadius="0" bottomRightRadius="0"/>
+    	
+    </geometry>
+    
+    <filters>
+	    <filters:DropShadowFilter xmlns:filters='flash.filters.*' 
+      	  angle='45'
+          blurX='4' blurY='4'
+          distance='1'
+          alpha='0.6' color='#000000' 
+          knockout='false' quality='1'
+          strength='1' inner='false' hideObject='false'/>
+    </filters>
+
+</GraphicBorderSkin>

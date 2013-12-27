@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<plugins:TitledBorderBox xmlns:mx="http://www.adobe.com/2006/mxml"
+						 xmlns:plugins="com.winning.bi.view.component.common.plugins.*"
+						 width="500"
+						 height="70%"
+						 layout="absolute">
+	
+	
+	
+	<mx:Script>
+		<![CDATA[
+			
+			
+			
+			
+		]]>
+	</mx:Script>
+<mx:HBox>
+	<mx:HBox height="100%"
+			 width="300"
+			 styleName="borderSkinStyle">
+		<mx:Tree id="cItemTree"
+				 width="100%"
+				 height="100%"
+				 dataProvider="{_itemModelLocator.itemTreeAC}"
+				 labelFunction="treeLabelFunction"
+				 folderClosedIcon="{ImagesAssets.TREE_CLOSE}"
+				 folderOpenIcon="{ImagesAssets.TREE_OPEN}"
+				 itemClick="eItem_click()"/>
+	</mx:HBox>
+	<mx:VBox>
+		
+	</mx:VBox>
+	<mx:HBox>
+		
+	</mx:HBox>
+	
+</mx:HBox>
+	
+</plugins:TitledBorderBox>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:CheckBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+			 click="onClick(event)"
+			 >
+	<mx:Script>
+		<![CDATA[
+			public function onClick(event:Event):void
+			{
+				data.ischecked=!data.ischecked;
+			}
+
+			public function get ischecked():Boolean
+			{
+				return data.ischecked;
+			}
+		]]>
+	</mx:Script>
+</mx:CheckBox>

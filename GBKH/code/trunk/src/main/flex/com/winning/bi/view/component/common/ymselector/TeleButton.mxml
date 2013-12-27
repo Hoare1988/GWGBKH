@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+	 width="100%" height="100%" horizontalCenter="true" verticalCenter="true">
+	<mx:Script>
+		<![CDATA[
+//			private function init():void{
+//				this.setStyle("color",0x00CCFF);
+//			}
+//			private function changeColor():void{
+//				this.setStyle("backgroundColor","#3366FF");
+//			}
+//			
+//			private function removeColor():void{
+//				this.setStyle("backgroundColor","");
+//			}
+		]]>
+	</mx:Script>
+	<mx:LinkButton id="link" label="{this.label}" width="100%" height="100%" horizontalCenter="true" verticalCenter="true"/>
+</mx:Canvas>

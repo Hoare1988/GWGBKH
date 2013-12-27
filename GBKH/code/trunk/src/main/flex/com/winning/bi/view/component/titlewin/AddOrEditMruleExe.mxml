@@ -1,0 +1,250 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="com.winning.bi.view.component.common.*"
+				showCloseButton="true"
+				close="removeAllChildren();close();" 
+				layout="absolute"
+				width="300"
+				height="400">
+
+
+	<mx:RemoteObject id="xMruleExeService"
+					 destination="mruleExeService"
+					 concurrency="single" 
+					 showBusyCursor="true">
+
+		<mx:method name="addExe"
+				   fault="fault(event)"
+				   result="addExeCallBack(event)"/>
+
+		<mx:method name="updateExe"
+				   fault="fault(event)"
+				   result="updateExeCallBack(event)"/>
+	</mx:RemoteObject>
+
+	<mx:Script>
+		<![CDATA[
+			import com.degrafa.geometry.Line;
+			import com.winning.bi.model.domain.MRuleExe;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.utils.AlertUtil;
+			import com.winning.bi.utils.DateFormatterUtil;
+			import com.winning.bi.view.component.flexdev.diagrammer.BaseNode;
+			import com.winning.bi.view.component.flexdev.diagrammer.Link;
+			import com.winning.bi.view.module.rules.MRuleExeCreate;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			
+
+			private var mRuleExePage:MRuleExeCreate;
+			[Bindable]
+			public var mRuleExe:MRuleExe;
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			private var ids:String='';
+			
+			public var isEdit:Boolean;
+			
+			var formatter:DateFormatter;
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				mRuleExePage=this.owner as MRuleExeCreate;
+				var cl:Array=mRuleExePage.diagrammer.getChildren();
+				var linkNodes:ArrayCollection=new ArrayCollection();
+				var fromNodes:ArrayCollection=new ArrayCollection();
+				var toNodes:ArrayCollection=new ArrayCollection();
+				var links:ArrayCollection=new ArrayCollection();
+				var nodes:ArrayCollection=new ArrayCollection();
+				var orderLinks:ArrayCollection=new ArrayCollection();
+				var firstNode:BaseNode;
+				var lastNode:BaseNode;
+
+
+				for each (var link:Object in cl)
+				{
+					if (link instanceof Link)
+					{
+						links.addItem(link);
+					}else if(link instanceof BaseNode){
+						nodes.addItem(link);
+					}
+				}
+
+				if (links.length > 0)
+				{
+					for each (var ll:Link in links)
+					{
+						fromNodes.addItem(ll.fromNode);
+						toNodes.addItem(ll.toNode);
+					}
+
+					for each (var fNode:BaseNode in fromNodes)
+					{
+						if (!toNodes.contains(fNode))
+						{
+							firstNode=fNode;
+							break;
+						}
+
+					}
+
+					for each (var lNode:BaseNode in toNodes)
+					{
+						if (!fromNodes.contains(lNode))
+						{
+							lastNode=lNode;
+							break;
+						}
+					}
+
+
+					getRuleIds(links, firstNode);
+					ids+=lastNode.name;
+				}
+				else 
+				{
+					if(nodes.length>0){
+						lastNode = firstNode = nodes.getItemAt(0) as BaseNode;
+						ids = lastNode.name;
+					}
+				}
+				
+				if(isEdit){
+					mRuleExe.createById=appModel.loginUser.id;
+					mRuleExe.jobName=jobName.text;
+					mRuleExe.comments=comments.text;
+					mRuleExe.ruleIds=ids;
+					mRuleExe.autoExe=Number(autoExe.selectedValue);
+					mRuleExe.zt = '1';
+					mRuleExe.exeDate=DateFormatterUtil.convertToDate(exeTime.text);
+					xMruleExeService.updateExe(mRuleExe);
+				}else{
+					var mRuleExe1:MRuleExe = new MRuleExe();
+					mRuleExe1.createById=appModel.loginUser.id;
+					mRuleExe1.jobName=jobName.text;
+					mRuleExe1.comments=comments.text;
+					mRuleExe1.ruleIds=ids;
+					mRuleExe1.autoExe=Number(autoExe.selectedValue);
+					mRuleExe1.zt = MRuleExe.ZT_0;
+					mRuleExe1.exeDate=DateFormatterUtil.convertToDate(exeTime.text);
+					addMruleExe(mRuleExe1);
+				}
+				close();
+			}
+
+			public function addMruleExe(mruleE:MRuleExe):void
+			{
+				xMruleExeService.addExe(mruleE);
+			}
+
+			public function addExeCallBack(event:ResultEvent):void
+			{
+				(this.owner as MRuleExeCreate).query();
+				Alert.show('新增成功');
+			}
+
+			public function updateExeCallBack(event:ResultEvent):void
+			{
+				(this.owner as MRuleExeCreate).query();
+				Alert.show('更新成功');
+			}
+
+			public function fault(event:FaultEvent):void
+			{
+				this.parentApplication.fault(event);
+			}
+
+			public function getRuleIds(links:ArrayCollection, firstNode:BaseNode):void
+			{
+
+				for each (var lin:Link in links)
+				{
+					if (lin.fromNode == firstNode)
+					{
+						ids+=lin.fromNode.name + ',';
+						firstNode=lin.toNode;
+						getRuleIds(links, firstNode);
+					}
+				}
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:DateFormatter id="df" formatString="YYYY-MM-DD JJ:NN:SS"/>
+	
+	<mx:VBox width="100%"
+			 height="100%"
+			 paddingBottom="10"
+			 paddingLeft="10"
+			 paddingRight="10"
+			 paddingTop="10"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<mx:HBox width="100%"
+				 height="100%">
+			<mx:Label text="创建者:"
+					  width="80"/>
+			<mx:TextInput id="createBy"
+						  text="{appModel.loginUser.userName}"
+						  editable="false"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%">
+			<mx:Label text="任务名称:"
+					  width="80"/>
+			<mx:TextInput id="jobName" text="{mRuleExe.jobName}"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%">
+			<mx:Label text="任务描述:"
+					  width="80"/>
+			<mx:TextArea id="comments" text="{mRuleExe.comments}"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%">
+			<mx:Label text="自动执行:"
+					  width="80"/>
+			<mx:RadioButtonGroup id="autoExe"/>
+			<mx:RadioButton groupName="autoExe"
+							label="是" id="rr"
+							value="1" selected="{mRuleExe.autoExe==1}"/>
+			<mx:RadioButton groupName="autoExe"
+							label="否"
+							value="0"
+							selected="{!rr.selected}" />
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%" includeInLayout="{rr.selected}" visible="{rr.selected}">
+			<mx:Label width="80"
+					  text="执行时间:"/>
+			<common:TimeChooser id="exeTime"
+								width="100%" text="{df.format(mRuleExe.exeDate)}"/>
+		</mx:HBox>
+
+		<mx:HBox width="100%"
+				 height="100%"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave click="save();"/>
+			<common:BtnCancel click="close();"/>
+		</mx:HBox>
+
+	</mx:VBox>
+</mx:TitleWindow>

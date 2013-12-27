@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.winning.bi.dao.sys.SysOrgDao">
+
+	<resultMap id="sysOrgBasicResultMap" type="SysOrg">
+		<id property="id" column="o_id" javaType="int" />
+		<result property="name" column="o_name" javaType="string" />
+		<result property="py" column="o_py" javaType="string" />
+		<result property="code" column="o_code" javaType="string" />
+		<result property="comments" column="o_comments" javaType="string" />
+		<result property="createDate" column="o_createDate" javaType="date" />
+		<result property="updateDate" column="o_updateDate" javaType="date" />
+	</resultMap>
+
+	<resultMap id="sysUserBasicResultMap" type="SysUser">
+		<id property="id" column="u_id" javaType="long" />
+		<result property="userName" column="u_userName" javaType="string" />
+		<result property="password" column="u_password" javaType="string" />
+		<result property="realName" column="u_realName" javaType="string" />
+		<result property="py" column="u_py" javaType="string" />
+		<result property="wb" column="u_wb" javaType="string" />
+		<result property="comments" column="u_comments" javaType="string" />
+		<result property="enable" column="u_enable" javaType="int" />
+		<result property="type" column="u_type" javaType="int" />
+		<result property="lastLoginTime" column="u_lastlogintime"
+			javaType="date" />
+		<result property="loginCount" column="u_logincount" javaType="int" />
+		<result property="gender" column="u_gender" javaType="string" />
+		<result property="deptcode" column="u_deptcode" javaType="string" />
+		<result property="deptname" column="u_deptname" javaType="string" />
+		<result property="cellphone" column="u_cellphone" javaType="string" />
+		<result property="telphone" column="u_telphone" javaType="string" />
+		<result property="email" column="u_email" javaType="string" />
+		<result property="superiors" column="u_superiors" javaType="long" />
+		<result property="postname" column="u_postname" javaType="string" />
+		<result property="entrydate" column="u_entrydate" javaType="date" />
+		<result property="canaudit" column="u_canaudit" javaType="int" />
+        <result property="privilege" column="u_privilege" javaType="int" />
+	</resultMap>
+
+	<resultMap id="sysUserResultMap" type="SysUser" extends="sysUserBasicResultMap">
+		<collection property="roles" column="u_id" ofType="SysRole"
+			select="selectRolesForUser" />
+	</resultMap>
+
+	<resultMap id="sysUserWithAllRolesResultMap" type="SysUser"
+		extends="sysUserBasicResultMap">
+		<collection property="roles" column="u_id" ofType="SysRole"
+			select="selectAllRolesForUser" />
+	</resultMap>
+
+	
+	<resultMap id="sysUserOrgMapping" type="SysUserOrgMapping">
+		<association property="user" column="uo_SysUserID"
+			javaType="SysUser" select="getUserByID" />
+		<association property="org" column="uo_OrgID"
+			javaType="SysOrg" select="getOrgByID" />
+	</resultMap>
+
+
+	<sql id="sysOrgCol">
+		o.id as o_id,
+		o.name as o_name,
+		o.py as o_py,
+		o.code as o_code,
+		o.comments as o_comments ,
+		o.createDate as o_createDate,
+		o.updateDate as o_updateDate
+	</sql>
+	
+	<sql id="sysUserCol">
+		u.id as u_id,
+		u.username as u_userName,
+		u.password as
+		u_password,
+		u.realName as u_realName,
+		u.py as u_py,
+		u.wb as u_wb,
+		u.enable as u_enable,
+		u.type as u_type,
+		u.lastlogintime as
+		u_lastlogintime,
+		u.logincount as u_logincount,
+		u.comments as u_comments,
+		u.gender as u_gender,
+		u.deptcode as u_deptcode,
+		u.deptname as
+		u_deptname,
+		u.cellphone as u_cellphone,
+		u.telphone as u_telphone,
+		u.email as u_email,
+		u.superiors as u_superiors,
+		u.postname as
+		u_postname,
+		u.entrydate as u_entrydate,
+		u.canaudit as u_canaudit,
+		u.privilege as u_privilege
+	</sql>
+	<sql id="sysUserOrgMappingCol">
+	    uo.sysUserID as uo_sysUserID,
+	    uo.OrgID as uo_OrgID
+	</sql>
+
+	<!-- select -->
+	<select id="findSysOrgById" parameterType="long"
+		resultMap="sysOrgBasicResultMap">
+		select
+		<include refid="sysOrgCol" />
+		from Dept o
+		where o.enable=1 and o.id=#{id}
+	</select>
+
+	<select id="queryByCondition" parameterType="map"
+		resultMap="sysOrgBasicResultMap">
+		select
+		<include refid="sysOrgCol" />
+		from Dept o
+		where o.enable=1
+		<if test="name!=null"> and o.name like '%${name}%' </if>
+		<if test="py!=null"> and o.py like '%${py}' </if>
+	</select>
+
+	<select id="queryPmUsers" parameterType="map"
+		resultMap="sysUserWithAllRolesResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.enable=1
+		<if test="userName!=null"> and u.username like '%${userName}%' </if>
+		<if test="realName!=null"> and u.realName like '%${realName}%' </if>
+		<if test="py!=null"> and u.py like #{py}||'%' </if>
+	</select>
+
+   <select id="getUserByID" parameterType="int" resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SysUser 
+		where id=#{uo_SysUserID}
+		
+	</select>
+	
+	 <select id="getOrgByID" parameterType="int" resultMap="sysOrgBasicResultMap">
+		select
+		<include refid="sysOrgCol" />
+		from dept o 
+		where id=#{uo_OrgID}
+		
+	</select>
+
+	<select id="findUsersByCondition" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where 1=1
+		<if test="userName!=null"> and u.username=#{userName} </if>
+	</select>
+
+    <select id="findSysUserOrgMapByCondition" parameterType="map" resultMap="sysUserOrgMapping">
+    	select 
+    	<include refid="sysUserOrgMappingCol"/>
+    	from sysuser_org_stat_map  uo 
+    	 where uo.sysuserID=#{SysUserID} and uo.OrgID=#{OrgID}
+    </select>
+    
+    <select id="findUserByOrgAndStation" parameterType="map" resultMap="sysUserBasicResultMap">
+    	select <include refid="sysUserCol"/>
+    	 from sysuser u,(select ID from Dept 
+    	 <if test="orgName!=null"> where name like '%${orgName}%' </if>
+    	  )B, 
+    	   SysUser_org_Stat_Map uo 
+				where uo.SysuserID=u.ID and uo.orgID=B.ID 
+				<if test="station!=null">and uo.Station=#{station}</if>
+    </select>
+	<!-- update -->
+
+	<update id="updateSysOrg" parameterType="SysOrg">
+		update dept set updateDate=getDate() 
+		<if test="name!=null"> ,name=#{name}</if>
+		<if test="py!=null"> ,py=#{py}</if>
+		<if test="comments!=null"> ,comments=#{comments}</if>
+		where id=#{id}	
+	</update>
+	
+	
+	<!-- insert -->
+	
+	<insert id="insertUserOrgMapping" parameterType="SysUserOrgMapping">
+		insert
+		into sysuser_org_stat_map(sysUserID,OrgID)
+		values(#{user.id},#{org.id})
+	</insert>
+	
+	<insert id="insertSysOrg" parameterType="SysOrg">
+		insert into Dept(name,py,enable,updateDate,createDate,comments)
+		values(#{name},#{py},1,getDate(),getDate(),#{comments})
+	</insert>
+	
+	
+	<!-- delete -->
+
+</mapper>
+
+
+

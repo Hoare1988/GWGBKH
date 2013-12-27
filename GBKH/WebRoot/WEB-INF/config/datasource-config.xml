@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<datasources groupName="local" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../schema/datasource-config.xsd">
+	<group name="local">
+		<datasource name="breezeCode" connectionType="jdbc">
+			<description>breezeCode</description>
+			<driverClass idleTime="1000" threadStickiness="true"
+				autoClose="true" timeOut="5000" releaseBy="2" incrementBy="5"
+				minConnection="3" maxConnection="20" defaultPool="false">oracle.jdbc.driver.OracleDriver
+			</driverClass>
+			<connectionUrl name="test0">jdbc:oracle:thin:@127.0.0.1:1521:orcl
+			<!-- jdbc:oracle:thin:@192.168.164.148:1521:orcl -->
+			</connectionUrl>
+			<userName>yaojian</userName>
+			<password>yaojian</password>
+			<validatorQuery>select * from BZ_SYS_RSTYPE</validatorQuery>
+			<detectLeaks pollThreadTime="5000" leakTime="10000"
+				detect="false">
+				hx.database.smartpool.LeakDetectorImpl</detectLeaks>
+		</datasource>
+	
+		<datasource name="breeze" connectionType="jdbc" default="true">
+			<description>breeze</description>
+			<driverClass idleTime="1000" threadStickiness="true"
+				autoClose="true" timeOut="5000" releaseBy="2" incrementBy="5"
+				minConnection="3" maxConnection="20" defaultPool="false">oracle.jdbc.driver.OracleDriver
+			</driverClass>
+			<connectionUrl name="test0">jdbc:oracle:thin:@127.0.0.1:1521:orcl
+			</connectionUrl>
+			<userName>yaojian</userName>
+			<password>yaojian</password>
+			<validatorQuery>SELECT * FROM BZ_CODE</validatorQuery>
+			<detectLeaks pollThreadTime="5000" leakTime="10000"
+				detect="false"> hx.database.smartpool.LeakDetectorImpl</detectLeaks>
+		</datasource>
+		
+		
+	</group>
+	<group name="136">
+		<datasource name="breezeCode" connectionType="jdbc">
+			<description>breezeCode</description>
+			<driverClass idleTime="1000" threadStickiness="true"
+				autoClose="true" timeOut="5000" releaseBy="2" incrementBy="5"
+				minConnection="3" maxConnection="5" defaultPool="false">oracle.jdbc.driver.OracleDriver
+			</driverClass>
+			<connectionUrl name="test0">jdbc:oracle:thin:@192.168.164.59:1521:orcl
+			</connectionUrl>
+			<userName>yaojian</userName>
+			<password>yaojian</password>
+			<validatorQuery>select * from BZ_SYS_RSTYPE</validatorQuery>
+			<detectLeaks pollThreadTime="5000" leakTime="10000"
+				detect="false">
+				hx.database.smartpool.LeakDetectorImpl</detectLeaks>
+		</datasource>
+		<datasource name="breeze" connectionType="jdbc" default="true">
+			<description>breeze</description>
+			<driverClass idleTime="1000" threadStickiness="true"
+				autoClose="true" timeOut="5000" releaseBy="2" incrementBy="5"
+				minConnection="3" maxConnection="5" defaultPool="false">oracle.jdbc.driver.OracleDriver
+			</driverClass>
+			<connectionUrl name="test0">jdbc:oracle:thin:@192.168.164.59:1521:orcl
+			</connectionUrl>
+			<userName>yaojian</userName>
+			<password>yaojian</password>
+			<validatorQuery>SELECT * FROM BZ_CODE</validatorQuery>
+			<detectLeaks pollThreadTime="5000" leakTime="10000"
+				detect="false"> hx.database.smartpool.LeakDetectorImpl</detectLeaks>
+		</datasource>
+	</group>
+</datasources>
+

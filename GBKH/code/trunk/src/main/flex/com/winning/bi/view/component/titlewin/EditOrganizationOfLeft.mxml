@@ -1,0 +1,210 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="360"
+				height="475"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				title="编辑操作"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="com.winning.bi.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.bi.control.events.domain.DrugItemEvent;
+			import com.winning.bi.control.events.domain.OrganizationEvent;
+			import com.winning.bi.model.domain.DrugItem;
+			import com.winning.bi.model.domain.Organization;
+			import com.winning.bi.model.domain.SysUser;
+			import com.winning.bi.model.mlct.AppModelLocator;
+			import com.winning.bi.model.mlct.DrugItemModelLocator;
+			import com.winning.bi.model.mlct.OrganizationModelLocator;
+			import com.winning.bi.utils.Constant;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			private var organizationModel:OrganizationModelLocator=OrganizationModelLocator.getInstance();
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			[Bindable]
+			public var editModule:Organization;
+			[Bindable]
+			public var operName:String; //操作名称
+			
+			private function init():void
+			{
+				switch(this.operName){
+					case "update_left":
+						jgdm.text=editModule.jgdm;
+						jgmc.text=editModule.jgmc;
+						for each(var object:Object in appModel.jglx)
+						{
+							if(object.dm==editModule.jglx)
+							{
+								jglx.selectedItem=object;
+								break;
+							}
+						}
+						for each(var object:Object in appModel.jglb)
+						{
+							if(object.dm==editModule.jglb)
+							{
+								jglb.selectedItem=object;
+								break;
+							}
+						}
+						for each(var object:Object in appModel.jgdj)
+						{
+							if(object.dm==editModule.jgdj)
+							{
+								jgdj.selectedItem=object;
+								break;
+							}
+						}
+						sjzgjg.text=editModule.sjzgjg+"";
+						jjlx.text=editModule.jjlx;
+						pjyd.text=editModule.pjyd;
+						lxgb.text=editModule.lxgb;
+						ettc.text=editModule.ettc;
+						edyjsc.text=editModule.edyjsc;
+						qy.text=editModule.qy;
+						break;
+					default:
+						break;
+				}
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				if(Validator.validateAll(validataArray).length==0){
+					switch(this.operName){
+						case "add_left":
+							var module:Organization=new Organization();
+							module.jgdm=jgdm.text;
+							module.jgmc=jgmc.text;
+							module.jglx=jglx.selectedItem.dm;
+							module.jglb=jglb.selectedItem.dm;
+							module.jgdj=jgdj.selectedItem.dm;
+							module.sjzgjg=sjzgjg.text as Number;
+							module.jjlx=jjlx.text;
+							module.pjyd=pjyd.text;
+							module.lxgb=lxgb.text;
+							module.ettc=ettc.text;
+							module.edyjsc=edyjsc.text;
+							module.qy=qy.text;
+							new OrganizationEvent(OrganizationEvent.INSERT_ORGANIZATION, [module]).dispatch();
+							break;
+						case "update_left":
+							editModule.jgdm=jgdm.text;
+							editModule.jgmc=jgmc.text;
+							editModule.jglx=jglx.selectedItem.dm;
+							editModule.jglb=jglb.selectedItem.dm;
+							editModule.jgdj=jgdj.selectedItem.dm;
+							editModule.sjzgjg=sjzgjg.text as Number;
+							editModule.jjlx=jjlx.text;
+							editModule.pjyd=pjyd.text;
+							editModule.lxgb=lxgb.text;
+							editModule.ettc=ettc.text;
+							editModule.edyjsc=edyjsc.text;
+							editModule.qy=qy.text;
+							new OrganizationEvent(OrganizationEvent.UPDATE_ORGANIZATION, [editModule]).dispatch();
+							break;
+						default:
+							break;
+					}
+					close();
+				}
+			}
+		]]>
+	</mx:Script>
+
+
+	
+	<mx:Array id="validataArray">
+	    <mx:Validator id="codeV" source="{jgdm}" property="text" requiredFieldError="请输入机构代码！"/>
+		<mx:Validator id="nameV" source="{jgmc}" property="text" requiredFieldError="请输入机构名称！"/>
+	</mx:Array>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:Form width="100%"
+				 height="100%">
+			<mx:FormItem label="机构代码*:"
+						 horizontalAlign="right">
+				<mx:TextInput id="jgdm"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="机构名称*:"
+						 horizontalAlign="right">
+				<mx:TextInput id="jgmc"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="机构类型:"
+						 horizontalAlign="right">
+				<mx:ComboBox id="jglx" dataProvider="{appModel.jglx}" labelField="mc" width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="机构类别:"
+						 horizontalAlign="right">
+				<mx:ComboBox id="jglb" dataProvider="{appModel.jglb}" labelField="mc" width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="机构等级:"
+						 horizontalAlign="right">
+				<mx:ComboBox id="jgdj" dataProvider="{appModel.jgdj}" labelField="mc" width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="上级主管机构:"
+						 horizontalAlign="right">
+				<mx:TextInput id="sjzgjg"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="经济类型:"
+						 horizontalAlign="right">
+				<mx:TextInput id="jjlx"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="评价药店:"
+						 horizontalAlign="right">
+				<mx:TextInput id="pjyd"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="离休干部:"
+						 horizontalAlign="right">
+				<mx:TextInput id="lxgb"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="儿童统筹:"
+						 horizontalAlign="right">
+				<mx:TextInput id="ettc"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="二等乙级伤残:"
+						 horizontalAlign="right">
+				<mx:TextInput id="edyjsc"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="区域:"
+						 horizontalAlign="right">
+				<mx:TextInput id="qy"
+							  width="200"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%"
+				 height="38"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave id="btnSave" click="save()"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>
