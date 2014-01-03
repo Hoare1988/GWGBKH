@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:ApplicationControlBar xmlns:mx="http://www.adobe.com/2006/mxml"
+						  height="24"
+						  width="100%"
+						  bottom="0"
+						  left="0"
+						  right="0"
+						  dock="false"
+						  paddingLeft="10"
+						  paddingRight="10"
+						  horizontalGap="0"
+						  verticalAlign="middle"
+						  verticalCenter="0"
+						  styleName="footerStyle">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.mlct.AppModelLocator;
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+		]]>
+	</mx:Script>
+	<mx:Label id="cLabel"
+			  text="{resourceManager.getString('localization','labelcopyright')}"/>
+	<mx:Spacer width="100%"/>
+	<!--<mx:VRule height="{cLabel.height*0.75}"/>
+	<mx:Label text="{'【机构:&#160;'+(appModel.loginUser.roles.getItemAt(0)!=null?appModel.loginUser.roles.getItemAt(0).sysOrg.name:'')+'】'}"/>
+	<mx:VRule height="{cLabel.height*0.75}"/>
+	<mx:Label text="{'【角色:&#160;'+(appModel.loginUser.roles.getItemAt(0)!=null?appModel.loginUser.roles.getItemAt(0).name:'')+'】'}"/>-->
+
+	<mx:filters>
+		<flash.filters:GlowFilter id='glowFilter'
+								  xmlns:flash.filters='flash.filters.*'
+								  blurX='6'
+								  blurY='6'
+								  alpha='1'
+								  color='#ffffff'
+								  knockout='false'
+								  quality='1'
+								  strength='1'
+								  inner='false'/>
+	</mx:filters>
+</mx:ApplicationControlBar>

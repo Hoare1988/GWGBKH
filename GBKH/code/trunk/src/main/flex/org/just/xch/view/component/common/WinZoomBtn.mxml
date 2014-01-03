@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:LinkButton xmlns:mx="http://www.adobe.com/2006/mxml"
+	paddingLeft="0" paddingRight="0" 
+	toolTip="最大化" label="" icon="{WIN_MAX}" toggle="true" click="zoomBtnClick()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.view.AnalysisWarningEvent;
+			
+			import mx.collections.ArrayCollection;
+			
+			[Bindable]
+			public var stateName:String="";
+			[Embed(source="org/just/xch/assets/images/win_zi.png")] 
+			public static const WIN_MAX:Class;
+			[Embed(source="org/just/xch/assets/images/win_zo.png")] 
+			public static const WIN_MIN:Class;
+			
+			private function zoomBtnClick():void{
+				var ac:ArrayCollection=new ArrayCollection();
+				var state:String="";
+				if(this.selected){
+					this.setStyle("icon",WIN_MIN);
+					this.toolTip="还原";
+					state=stateName;
+					this.dispatchEvent(new AnalysisWarningEvent(AnalysisWarningEvent.EVENT_MAX_VIEW,state,true));
+				}else{
+					this.setStyle("icon",WIN_MAX);
+					this.toolTip="最大化";
+					this.dispatchEvent(new AnalysisWarningEvent(AnalysisWarningEvent.EVENT_NORMAL_VIEW,state,true));
+				}
+			}
+		]]>
+	</mx:Script>
+</mx:LinkButton>

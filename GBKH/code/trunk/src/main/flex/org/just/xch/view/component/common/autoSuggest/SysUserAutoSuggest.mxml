@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:AutoSuggest 
+	xmlns:mx="http://www.adobe.com/2006/mxml" 
+	xmlns:common="org.just.xch.view.component.common.*"
+	dataProvider="{searchedSysUsers}"
+	change="eItemSearch_Change()"
+	keyDown="eAutoSugest_KeyDown()"
+	labelFunction="asLabelFunction"
+	width="80"
+	autoCompleteSuggest="true">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.SysUserEvent;
+			import org.just.xch.model.domain.SysUser;
+			
+			import mx.collections.ArrayCollection;
+			import mx.utils.StringUtil;
+			
+			import org.just.xch.model.mlct.SysMgtModelLocator;
+			
+			[Bindable]
+			private var searchedSysUsers:ArrayCollection=new ArrayCollection();
+			
+			private function eItemSearch_Change():void
+			{
+				if (this.willToChange)
+				{
+					SysMgtModelLocator.getInstance().searchUserInitACFunction=initSearchItemAC;
+					this.willToChange=false;
+					new SysUserEvent(SysUserEvent.EVENT_QUERY_USERS_BY_PY,this.text).dispatch();
+				}
+			}
+			
+			private function asLabelFunction(item:Object):String
+			{
+				var s:String="";
+				if (item.hasOwnProperty("realName"))
+				{
+					s=item.realName;
+				}
+				return s;
+			}
+			
+			public function initSearchItemAC(returnItemAC:ArrayCollection):void
+			{
+				searchedSysUsers.removeAll();
+				for each (var item:Object in returnItemAC)
+				{
+					searchedSysUsers.addItem(item);
+				}
+			}
+			
+			private function eAutoSugest_KeyDown():void
+			{
+				this.willToChange=true;
+			}
+		]]>
+	</mx:Script>
+</common:AutoSuggest>

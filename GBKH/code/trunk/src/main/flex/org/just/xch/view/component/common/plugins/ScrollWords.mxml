@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml" width="100%" height="100%">
+	<mx:Script>
+ 
+		<![CDATA[
+			//滚动条字幕
+			
+			public var text:String='示例文字';
+			public var scrollTime:int = 10000;
+			public var fontSize:int = 13;
+			public var fontColor:uint = 0xFF0033;
+			private function init():void{
+				move_up.xFrom = cs.width;   
+				move_up.xTo = 0-moveText.width; 
+				move_up.repeatCount = 0; //loop 
+				move_up.repeatDelay = 0; //loop time 
+				move_up.duration = scrollTime; //the time of scroll once 
+				move_up.play(); 
+			}
+			private function move_pause():void 
+				
+			{ 
+				
+				move_up.pause();  //pause 
+				
+			} 
+			private function move_resume():void 
+				
+			{ 
+				
+				move_up.resume(); //start from the pause position 
+			} 
+			
+		]]>
+		
+	</mx:Script>
+	
+	
+	
+	
+	<mx:Move id="move_up" target="{moveText}" /> 
+	<mx:HBox id="cs" width="100%"  left="0" top="0" height="100%" 
+			 verticalScrollPolicy="off" mouseOver="move_pause()" mouseOut="move_resume()">
+		<mx:Text id="moveText" 
+				 
+				 text="{text}" verticalCenter="0" fontSize="{fontSize}" color="{fontColor}"> 
+			
+		</mx:Text> 
+	</mx:HBox>
+</mx:HBox>

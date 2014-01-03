@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 creationComplete="init();"
+		 visible="false" includeInLayout="false">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.domain.MRule;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.vo.MethodVO;
+			import org.just.xch.model.vo.condition.QHeaderVO;
+			import org.just.xch.model.vo.condition.QueryArgVO;
+			import org.just.xch.utils.DownLoadUtil;
+			import org.just.xch.utils.DpUtil;
+			import org.just.xch.utils.ExportExcelUtil;
+			import org.just.xch.utils.TimeFormatter;
+			import org.just.xch.view.component.titlewin.WaitWin;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.DataGrid;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			import mx.modules.ModuleLoader;
+			import org.just.xch.model.domain.SysModule;
+			[Bindable]
+			public var mrule:MRule;
+			[Bindable]
+			public var method:MethodVO=new MethodVO();
+			[Bindable]
+			public var argVO:QHeaderVO;
+			
+			[Bindable]
+			public var headers:Array;
+			
+			[Bindable]
+			public var serName:String;
+			
+			[Bindable]
+			public var methName:String;
+			
+			
+			[Bindable]
+			public var itemId;
+			
+			[Bindable]
+			public var dataGrid:DataGrid;
+			
+			[Bindable]
+			public var xlsName:String;
+			
+			private var appModel:AppModelLocator = AppModelLocator.getInstance();
+			private var downloadfile:FileReference;
+			public function init():void
+			{
+				var qQrg:QueryArgVO=new QueryArgVO();
+				qQrg.qHeaderVO = argVO;
+				method.vo = qQrg;
+				downloadfile = new FileReference();
+			}	
+			
+			public function exportHeader(mHeaders:ArrayCollection):void
+			{
+				if(mHeaders&&mHeaders.length>0){
+					exportHeaderHandler();
+					var waitWin:WaitWin=WaitWin(PopUpManager.createPopUp(DisplayObject(this.parentApplication), WaitWin, true));
+					waitWin.owner=this;
+					waitWin.temFlag=1;
+					waitWin.saveName=method.titleName;
+					waitWin.serverName=method.fileName;
+					PopUpManager.centerPopUp(waitWin);
+				}else{
+					Alert.show("无导出数据");
+				}
+			}	
+			/**
+			 * 
+			 * 
+			 * */
+			 
+			private function exportHeaderHandler():void
+			{
+				var qQrg:QueryArgVO=new QueryArgVO();
+				
+				qQrg.qHeaderVO = argVO;
+				method.className=serName;
+				method.methodName=methName;
+				method.titleName=mrule.mc+DpUtil.random4Num() + TimeFormatter.parse(new Date(), "MMDDHHNNSS");
+				method.fileName=mrule.id+DpUtil.random4Num() + TimeFormatter.parse(new Date(), "MMDDHHNNSS");
+				method.vo=qQrg;
+				method.headers=headers;
+				method.fieldNames=new ArrayCollection(['data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data8', 'data9', 'data10', 'data11', 'data12']);
+				DownLoadUtil.exportHandler(method, downloadfile);
+			}
+			
+			
+			public function exportDetails():void
+			{
+				
+					exportDetailsHandler();
+					var waitWin:WaitWin=WaitWin(PopUpManager.createPopUp(DisplayObject(this.parentApplication), WaitWin, true));
+					waitWin.owner=this;
+					waitWin.temFlag=1;
+					waitWin.saveName=method.titleName;
+					waitWin.serverName=method.fileName;
+					PopUpManager.centerPopUp(waitWin);
+			}
+			
+			private function exportDetailsHandler():void
+			{
+				var qQrg:QueryArgVO=new QueryArgVO();
+				qQrg.itemId=itemId;
+				method.className=serName;
+				method.methodName=methName;
+				method.titleName=mrule.mc+DpUtil.random4Num() + TimeFormatter.parse(new Date(), "MMDDHHNNSS");
+				method.fileName=mrule.id+DpUtil.random4Num() + TimeFormatter.parse(new Date(), "MMDDHHNNSS");
+				method.vo=qQrg;
+				method.headers=headers;
+				method.fieldNames=new ArrayCollection(['data1', 'data2', 'data3', 'data4', 'data5', 'data6', 'data7', 'data8', 'data9', 'data10', 'data11', 'data12']);
+				DownLoadUtil.exportHandler(method, downloadfile);
+			}	
+			
+			
+			
+			public function isDownDetailHandler(event:Event):void {
+				Alert.noLabel="否";
+				Alert.okLabel="是";
+				Alert.yesLabel="是";
+				Alert.show("是否打印项目明细?", "导出表单", 3,Sprite(this.parentApplication), alertClickHandler);
+			}
+			
+			private function alertClickHandler(event:CloseEvent):void
+			{
+				if (event.detail==Alert.YES){
+					exportDetails();
+				}
+					
+				else
+					ExportExcelUtil.exportObjectToExcelByDg(dataGrid,'购药记录  '+xlsName);
+			}	
+		]]>
+	</mx:Script>
+</mx:HBox>

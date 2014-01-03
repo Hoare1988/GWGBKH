@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<flexlib:MDIWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				   xmlns:flexlib="http://code.google.com/p/flexlib/"
+				   layout="absolute"
+				   width="100%"
+				   height="100%"
+				   paddingTop="0"
+				   paddingBottom="0"
+				   paddingLeft="0"
+				   paddingRight="0"
+				   verticalScrollPolicy="off"
+				   horizontalScrollPolicy="off"
+				   xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var source:String='';
+
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%"
+			 height="100%"
+			 horizontalAlign="center"
+			 verticalAlign="middle">
+		<common:IFrame id="iFrame"
+					   source="{source}"
+					   paddingTop="30"
+					   paddingRight="30"
+					   paddingBottom="30"
+					   paddingLeft="30"
+					   width="100%"
+					   height="100%"/>
+
+	</mx:HBox>
+</flexlib:MDIWindow>

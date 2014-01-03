@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="140" height="100" cornerRadius="2" 
+		 shadowDistance="2" shadowDirection="center" dropShadowEnabled="true" backgroundAlpha="1" backgroundColor="white"
+		creationComplete="init()" xmlns:components="org.just.xch.view.component.common.ymselector.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.controls.TextInput;
+			import mx.core.Application;
+			import mx.events.FlexMouseEvent;
+			import mx.managers.PopUpManager;
+			public static const WIN_WIDTH:Number = 280;
+			public static const WIN_HEIGHT:Number = 200;
+			
+			public var _owner:DisplayObjectContainer;
+			
+			public static var sourceTxt:String;
+			
+			private function init():void{
+				this.addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE,hideHandler);
+			}
+			
+			private function hideHandler(event):void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function selectHandler(event:MouseEvent):void{
+				(owner as TextInput).text = year.text+"-"+event.target.label;
+				hideHandler(null);
+			}
+			
+			public static function show(x:Number,y:Number,app):MonthSelector{
+				var apl=Application.application;
+				sourceTxt=app.text as String;
+				var selector:MonthSelector = PopUpManager.createPopUp(apl,MonthSelector) as MonthSelector;
+				selector.owner = app;
+				selector.x = x;
+				selector.y = y;
+				var month:String=(app.text as String).substr((app.text as String).length-2,2);
+				switch(month)
+				{
+					case '01':
+						selector.btn1.link.enabled=false;
+						break;
+					case '02':
+						selector.btn2.link.enabled=false;
+						break;
+					case '03':
+						selector.btn3.link.enabled=false;
+						break;
+					case '04':
+						selector.btn4.link.enabled=false;
+						break;
+					case '05':
+						selector.btn5.link.enabled=false;
+						break;
+					case '06':
+						selector.btn6.link.enabled=false;
+						break;
+					case '07':
+						selector.btn7.link.enabled=false;
+						break;
+					case '08':
+						selector.btn8.link.enabled=false;
+						break;
+					case '09':
+						selector.btn9.link.enabled=false;
+						break;
+					case '10':
+						selector.btn10.link.enabled=false;
+						break;
+					case '11':
+						selector.btn11.link.enabled=false;
+						break;
+					case '12':
+						selector.btn12.link.enabled=false;
+						break;
+				}
+				selector.invalidateDisplayList();
+				return selector;
+			}
+			
+			private function addYear():void{
+				var y:int = int(year.text);
+				y++;
+				year.text = y.toString();
+				if(year.text!=sourceTxt.substr(0,4))
+					enableAllBtn();
+				else
+				{
+					disableBtn(sourceTxt.substr(5,2));
+				}
+			}
+			
+			private function minusYear():void{
+				var y:int = int(year.text);
+				y--;
+				year.text = y.toString();
+				if(year.text!=sourceTxt.substr(0,4))
+					enableAllBtn();
+				else
+				{
+					disableBtn(sourceTxt.substr(5,2));
+				}
+			}
+			
+			private function enableAllBtn():void
+			{
+				btn1.link.enabled=true;
+				btn2.link.enabled=true;
+				btn3.link.enabled=true;
+				btn4.link.enabled=true;
+				btn5.link.enabled=true;
+	            btn6.link.enabled=true;
+				btn7.link.enabled=true;
+				btn8.link.enabled=true;
+				btn9.link.enabled=true;
+				btn10.link.enabled=true;
+				btn11.link.enabled=true;
+				btn12.link.enabled=true;
+			}
+			
+			private function disableBtn(month:String):void
+			{
+				switch(month)
+				{
+					case '01':
+						btn1.link.enabled=false;
+						break;
+					case '02':
+						btn2.link.enabled=false;
+						break;
+					case '03':
+						btn3.link.enabled=false;
+						break;
+					case '04':
+						btn4.link.enabled=false;
+						break;
+					case '05':
+						btn5.link.enabled=false;
+						break;
+					case '06':
+						btn6.link.enabled=false;
+						break;
+					case '07':
+						btn7.link.enabled=false;
+						break;
+					case '08':
+						btn8.link.enabled=false;
+						break;
+					case '09':
+						btn9.link.enabled=false;
+						break;
+					case '10':
+						btn10.link.enabled=false;
+						break;
+					case '11':
+						btn11.link.enabled=false;
+						break;
+					case '12':
+						btn12.link.enabled=false;
+						break;
+					default:
+						break;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="20" 
+			 horizontalAlign="center" verticalAlign="middle" borderColor="#cccccc" 
+			 backgroundColor="#E6E8FA" dropShadowEnabled="true" shadowDirection="center" shadowDistance="1">
+		<!--<mx:LinkButton color="#0099FF" label="&lt;&lt;" width="40" height="24" click="minusYear();"/>-->
+		<mx:Button icon="{ImagesAssets.BTN_L}" click="minusYear();" width="18" height="18"/>
+		<mx:Spacer width="100%"/>
+		<mx:Text fontWeight="bold" id="year" text="{sourceTxt.substr(0,4)}" width="50"/>
+		<!--<mx:LinkButton color="#0099FF" label="&gt;&gt;" width="40" height="24" click="addYear();"/>-->
+		<mx:Spacer width="100%"/>
+		<mx:Button id="ssx"  icon="{ImagesAssets.BTN_R}" click="addYear();" width="18" height="18"/>
+	</mx:HBox>
+	<mx:VBox width="100%" height="100%">
+		
+	
+	<mx:HBox width="100%" height="100%">
+		<components:TeleButton id="btn1" label="01" click="selectHandler(event)" />
+		<components:TeleButton id="btn2" label="02" click="selectHandler(event)" />
+		<components:TeleButton id="btn3" label="03" click="selectHandler(event)" />
+		<components:TeleButton id="btn4" label="04" click="selectHandler(event)" />
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%">
+		<components:TeleButton id="btn5" label="05" click="selectHandler(event)" />
+		<components:TeleButton id="btn6" label="06" click="selectHandler(event)" />
+		<components:TeleButton id="btn7" label="07" click="selectHandler(event)" />
+		<components:TeleButton id="btn8" label="08" click="selectHandler(event)" />
+	</mx:HBox>
+	<mx:HBox width="100%" height="100%">
+		<components:TeleButton id="btn9" label="09" click="selectHandler(event)" />
+		<components:TeleButton id="btn10" label="10" click="selectHandler(event)" />
+		<components:TeleButton id="btn11" label="11" click="selectHandler(event)" />
+		<components:TeleButton id="btn12" label="12" click="selectHandler(event)" />
+	</mx:HBox>
+	</mx:VBox>
+	<mx:Spacer/>
+</mx:VBox>

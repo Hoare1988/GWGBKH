@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<common:AutoSuggest xmlns:mx="http://www.adobe.com/2006/mxml"
+					xmlns:common="org.just.xch.view.component.common.*"
+					dataProvider="{searchedItems}"
+					change="eItemSearch_Change()"
+					keyDown="eAutoSugest_KeyDown()"
+					labelField="name"
+					width="150"
+					autoCompleteSuggest="false">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.OrganizationEvent;
+			import org.just.xch.model.mlct.OrganizationModelLocator;
+			import org.just.xch.model.vo.AutoSuggestVO;
+			import org.just.xch.utils.Constant;
+			
+			import mx.collections.ArrayCollection;
+			import mx.utils.StringUtil;
+			private var organizationModel:OrganizationModelLocator=OrganizationModelLocator.getInstance();
+
+			[Bindable]
+			private var searchedItems:ArrayCollection=new ArrayCollection();
+			
+			private var _isOnlyPharmacy:Boolean=false;
+			
+			private var _isOnlyHospital:Boolean=false;
+			
+			public function get isOnlyPharmacy():Boolean
+			{
+				return _isOnlyPharmacy;
+			}
+			
+			public function set isOnlyPharmacy(value:Boolean):void
+			{
+				_isOnlyPharmacy= value;
+			}
+			
+			public function get isOnlyHospital():Boolean
+			{
+				return _isOnlyPharmacy;
+			}
+			
+			public function set isOnlyHospital(value:Boolean):void
+			{
+				_isOnlyHospital= value;
+			}
+
+			private function eItemSearch_Change():void
+			{
+				if (this.willToChange)
+				{
+					organizationModel.searchOrgInitACFunction=initSearchItemAC;
+					this.willToChange=false;
+
+					new OrganizationEvent(OrganizationEvent.EVENT_QUERY_ORGANIZATIONS_FOR_AUTOSUGGEST,[this.text==''?null:this.text,this.text==''?null:this.text,_isOnlyHospital,isOnlyPharmacy]).dispatch()
+				}
+			}
+
+			public function initSearchItemAC(returnItemAC:ArrayCollection):void
+			{
+				searchedItems.removeAll();
+				searchedItems=returnItemAC;
+				if(searchedItems!=null && searchedItems.length>0)
+					super.open();
+			}
+			
+			private function eAutoSugest_KeyDown():void
+			{
+				this.willToChange=true;
+				this.textInput.setSelection(this.text.length,this.text.length);
+			}
+		]]>
+	</mx:Script>
+</common:AutoSuggest>

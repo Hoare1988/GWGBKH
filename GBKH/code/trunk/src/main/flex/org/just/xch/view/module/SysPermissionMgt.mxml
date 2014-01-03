@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   paddingTop="10"
+		   width="100%"
+		   paddingBottom="10"
+		   creationComplete="init()"
+		   remove="sysMgtModel.clearSysPermissionMgt()"
+		   height="100%"
+		   xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.domain.SysModule;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.utils.AlertUtil;
+			import mx.controls.Alert;
+			import org.just.xch.model.domain.SysRole;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.model.mlct.SysMgtModelLocator;
+			import org.just.xch.control.events.domain.SysUserEvent;
+			import org.just.xch.control.events.domain.SysRoleEvent;
+
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+
+			private function init():void
+			{
+				cPmUserQueryBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+				cPmRoleQueryBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+
+			private function savePmUserRoleMappings(user:SysUser):void
+			{
+				if (user)
+				{
+					var snull:Boolean=true;
+					var exists:Boolean=false;
+					for each (var role:SysRole in user.roles)
+					{
+						if (role.isSelected == Constant.TRUE && snull)
+						{
+							snull=false;
+						}
+						if (role.isSelected == Constant.TRUE && role.isDefault == Constant.TRUE)
+						{
+							exists=true;
+							break;
+						}
+					}
+
+					if (!snull && !exists)
+					{
+						AlertUtil.showMessages("必须勾选一个默认角色");
+					}
+					else
+					{
+						new SysUserEvent(SysUserEvent.EVENT_INSERT_PMUSERS, userDataGrid.selectedItem as SysUser).dispatch();
+					}
+				}
+
+			}
+
+			private function savePmRoleModuleMappings(role:SysRole):void
+			{
+				new SysRoleEvent(SysRoleEvent.EVENT_INSERT_PMROLES, roleDataGrid.selectedItem as SysRole).dispatch();
+			}
+
+			private function onRoleItemClick():void
+			{
+				// 必须要先进行验证  
+				cCheckTree.validateNow();
+
+				// 展开所有tree上的节点  
+				for each (var item:Object in cCheckTree.dataProvider)
+				{
+					cCheckTree.expandChildrenOf(item, true);
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:TabNavigator width="100%"
+					 height="100%"
+					 creationPolicy="all">
+		<mx:HBox label="用户角色分配"
+				 width="100%"
+				 height="100%">
+			<mx:VBox width="50%"
+					 height="100%">
+				<mx:ApplicationControlBar width="100%"
+										  height="30"
+										  styleName="queryStyle">
+					<mx:Label text="用户名:"/>
+					<mx:TextInput id="usernameTxt"
+								  width="80"/>
+					<mx:Label text="拼音:"/>
+					<mx:TextInput id="pyTxt"
+								  width="80"/>
+					<common:BtnQuery id="cPmUserQueryBtn"
+									 click="new SysUserEvent(SysUserEvent.EVENT_QUERY_PMUSERS,[usernameTxt.text,null,pyTxt.text]).dispatch()"/>
+				</mx:ApplicationControlBar>
+				<mx:DataGrid id="userDataGrid"
+							 width="100%"
+							 height="100%"
+							 dataProvider="{cPageBar.currentPageData}"
+							 itemClick="">
+					<mx:columns>
+						<mx:DataGridColumn dataField="userName"
+										   headerText="用户名"/>
+						<mx:DataGridColumn dataField="realName"
+										   headerText="真实姓名"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%"
+						 height="30"
+						 verticalAlign="middle"
+						 paddingLeft="10"
+						 paddingRight="10">
+					<mx:Spacer width="100%"/>
+					<common:PagedBar id="cPageBar"
+									 cornerRadius="3"
+									 right="0"
+									 paddingTop="3"
+									 SourceData="{sysMgtModel.uMgt_queryPmUsersAC}"
+									 expand="true"
+									 pageSize="30"
+									 height="100%"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="50%"
+					 height="100%">
+				<mx:ApplicationControlBar width="100%"
+										  height="30"
+										  styleName="queryStyle">
+					<mx:Label text="{userDataGrid.selectedItem?userDataGrid.selectedItem.userName+'【'+userDataGrid.selectedItem.realName+'】分配角色':''}"
+							  color="green"/>
+					<common:BtnSave click="savePmUserRoleMappings(userDataGrid.selectedItem as SysUser)"/>
+				</mx:ApplicationControlBar>
+
+				<mx:DataGrid id="cRoleDataGrid"
+							 width="100%"
+							 height="100%"
+							 dataProvider="{userDataGrid.selectedItem.roles}">
+					<mx:columns>
+						<mx:DataGridColumn id="cIsSlectedRoleDGC"
+										   dataField="isSelected"
+										   headerText="选择"
+										   textAlign="center"
+										   width=".25">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:CheckBox selected="{data.isSelected}"
+												 change="onChange()">
+										<mx:Script>
+											<![CDATA[
+												import org.just.xch.utils.Constant;
+
+												private function onChange()
+												{
+													if (this.selected)
+													{
+														data.isSelected=Constant.TRUE;
+													}
+													else
+													{
+														data.isSelected=Constant.FALSE;
+														data.isDefault=Constant.FALSE;
+													}
+												}
+											]]>
+										</mx:Script>
+									</mx:CheckBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+						<mx:DataGridColumn dataField="name"
+										   headerText="角色"
+										   width=".5"/>
+						<mx:DataGridColumn id="cIsDefaultRoleDGC"
+										   dataField="isDefault"
+										   headerText="默认"
+										   textAlign="center"
+										   width=".25">
+							<mx:itemRenderer>
+								<mx:Component>
+									<mx:CheckBox selected="{data.isDefault}"
+												 change="onChange()">
+										<mx:Script>
+											<![CDATA[
+												import org.just.xch.model.domain.SysRole;
+												import mx.collections.ArrayCollection;
+												import org.just.xch.utils.Constant;
+
+												private function onChange()
+												{
+													if (this.selected)
+													{
+														if (data.isSelected == Constant.FALSE)
+														{
+															this.selected=false;
+															data.isDefault=Constant.FALSE;
+															return;
+														}
+														data.isDefault=Constant.TRUE;
+														var roles:ArrayCollection=this.outerDocument.cRoleDataGrid.dataProvider as ArrayCollection;
+														for each (var role:SysRole in roles)
+														{
+															if (role.id != data.id)
+															{
+																role.isDefault=Constant.FALSE;
+															}
+														}
+													}
+													else
+													{
+														data.isDefault=Constant.FALSE;
+													}
+												}
+											]]>
+										</mx:Script>
+									</mx:CheckBox>
+								</mx:Component>
+							</mx:itemRenderer>
+						</mx:DataGridColumn>
+					</mx:columns>
+				</mx:DataGrid>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox label="角色模块分配"
+				 width="100%"
+				 height="100%">
+			<mx:VBox width="50%"
+					 height="100%">
+				<mx:ApplicationControlBar width="100%"
+										  height="30"
+										  styleName="queryStyle">
+					<mx:Label text="角色名:"/>
+					<mx:TextInput id="rolenameTxt"
+								  width="80"/>
+					<common:BtnQuery id="cPmRoleQueryBtn"
+									 click="new SysRoleEvent(SysRoleEvent.EVENT_QUERY_PMROLES,[rolenameTxt.text]).dispatch()"/>
+				</mx:ApplicationControlBar>
+				<mx:DataGrid id="roleDataGrid"
+							 width="100%"
+							 height="100%"
+							 dataProvider="{cPageBarRoles.currentPageData}"
+							 itemClick="onRoleItemClick()">
+					<mx:columns>
+						<mx:DataGridColumn dataField="name"
+										   headerText="角色名"/>
+						<mx:DataGridColumn dataField="description"
+										   headerText="角色描述"/>
+					</mx:columns>
+				</mx:DataGrid>
+				<mx:HBox width="100%"
+						 height="30"
+						 verticalAlign="middle"
+						 paddingLeft="10"
+						 paddingRight="10">
+					<mx:Spacer width="100%"/>
+					<common:PagedBar id="cPageBarRoles"
+									 cornerRadius="3"
+									 right="0"
+									 paddingTop="3"
+									 SourceData="{sysMgtModel.uMgt_queryPmRolesAC}"
+									 expand="true"
+									 pageSize="30"
+									 height="100%"/>
+				</mx:HBox>
+			</mx:VBox>
+			<mx:VBox width="50%"
+					 height="100%">
+				<mx:ApplicationControlBar width="100%"
+										  height="30"
+										  styleName="queryStyle">
+					<mx:Label text="{roleDataGrid.selectedItem?'【'+roleDataGrid.selectedItem.name+'】分配模块':''}"
+							  color="green"/>
+					<common:BtnSave click="savePmRoleModuleMappings(roleDataGrid.selectedItem as SysRole)"/>
+				</mx:ApplicationControlBar>
+				<common:CheckTree id="cCheckTree"
+								  labelField="name"
+								  checkBoxStateField="isSelected"
+								  width="100%"
+								  height="100%"
+								  defaultLeafIcon="{null}"
+								  folderClosedIcon="{null}"
+								  folderOpenIcon="{null}"
+								  dataProvider="{roleDataGrid.selectedItem?roleDataGrid.selectedItem.modules:null}">
+				</common:CheckTree>
+			</mx:VBox>
+		</mx:HBox>
+	</mx:TabNavigator>
+</mx:Module>

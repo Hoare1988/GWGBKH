@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				close="eWindow_close()"
+				titleStyleName="twTitleStyle"
+				width="400"
+				height="250"
+				showCloseButton="true"
+				layout="vertical"
+				horizontalAlign="center"
+				paddingLeft="5"
+				paddingRight="5"
+				verticalAlign="middle"
+				creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.mlct.AppModelLocator;
+			
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+			public function init():void
+			{
+				cTextInput.text=this.data as String;
+			}
+			
+			private function eSubmitClose_click():void
+			{
+				eSubmit_click();
+				eWindow_close();
+			}
+			
+			private function eSubmit_click():void
+			{
+			}
+			
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%" height="100%">
+		<mx:Label text="内容:"/>
+		<mx:TextArea id="cTextInput" width="100%" height="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Button label="确定"
+				   click="eWindow_close()"/>
+	</mx:HBox>
+</mx:TitleWindow>
+

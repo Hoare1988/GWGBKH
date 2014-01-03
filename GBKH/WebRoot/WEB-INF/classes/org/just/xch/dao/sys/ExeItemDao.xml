@@ -1,0 +1,294 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.just.xch.dao.sys.ExeItemDao">
+
+	<resultMap id="exeItemBasicResultMap" type="ExeItem">
+		<id property="id" column="ei_id" javaType="Long" />
+		<result property="enable" column="ei_enable" javaType="int" />
+		<result property="isRootExeItem" column="ei_isRoot" javaType="int" />
+		<result property="type" column="ei_type" javaType="int" />
+		<result property="typeValue" column="ei_typeValue" javaType="String" />
+		<result property="scoreResult" column="ei_point" javaType="double" />
+		
+		<result property="enable" column="ei_enable" javaType="int" />
+		<result property="createDate" column="ei_createDate" javaType="date" />
+		<result property="updateDate" column="ei_updateDate" javaType="date" />
+		<result property="comments" column="ei_comments" javaType="string" />
+		
+		<!-- association property="rootExeItem" column="ei_RootID" javaType="ExeItem" select="getRootExeItem" /-->
+		<association property="item" column="ei_itemID" javaType="Item" select="getItem" />
+		<association property="beAccessedUser" column="ei_beAccessedUserID" javaType="SysUser" select="getBeAccessedUser"/>
+		<association property="createBy" column="ei_createBy" javaType="SysUser" select="getCreateUser"/>
+		<association property="updateBy" column="ei_updateBy" javaType="SysUser" select="getUpdateUser"/>
+		<association property="parentExeItem" column="ei_parentID"
+			javaType="ExeItem" select="getParentExeItem" />
+	</resultMap>
+ 
+	<resultMap id="sysUserBasicResultMap" type="SysUser">
+		<id property="id" column="u_id" javaType="long" />
+		<result property="userName" column="u_userName" javaType="string" />
+		<result property="password" column="u_password" javaType="string" />
+		<result property="realName" column="u_realName" javaType="string" />
+		<result property="py" column="u_py" javaType="string" />
+		<result property="wb" column="u_wb" javaType="string" />
+		<result property="comments" column="u_comments" javaType="string" />
+		<result property="enable" column="u_enable" javaType="int" />
+		<result property="type" column="u_type" javaType="int" />
+		<result property="lastLoginTime" column="u_lastlogintime"
+			javaType="date" />
+		<result property="loginCount" column="u_logincount" javaType="int" />
+
+		<result property="gender" column="u_gender" javaType="string" />
+		<result property="deptcode" column="u_deptcode" javaType="string" />
+		<result property="deptname" column="u_deptname" javaType="string" />
+		<result property="cellphone" column="u_cellphone" javaType="string" />
+		<result property="telphone" column="u_telphone" javaType="string" />
+		<result property="email" column="u_email" javaType="string" />
+		<result property="superiors" column="u_superiors" javaType="long" />
+		<result property="postname" column="u_postname" javaType="string" />
+		<result property="entrydate" column="u_entrydate" javaType="date" />
+		<result property="canaudit" column="u_canaudit" javaType="int" />
+        <result property="privilege" column="u_privilege" javaType="int" />
+	</resultMap>
+	
+	<resultMap id="itemBasicResultMap" type="Item">
+		<id property="id" column="i_id" javaType="int" />
+		<result property="name" column="i_name" javaType="string" />
+		<result property="py" column="i_py" javaType="string" />
+		<result property="enable" column="i_enable" javaType="int" />
+		<result property="score" column="i_score" javaType="float" />
+		<result property="percentage" column="i_percentage" javaType="float" />
+		<result property="evaluationStandard" column="i_evaluationStandard"
+			javaType="string" />
+		<result property="createDate" column="i_createDate" javaType="date" />
+		<result property="updateDate" column="i_updateDate" javaType="date" />
+		<result property="isRoot" column="i_isRoot" javaType="int" />
+		<result property="isBottom" column="i_isBottom" javaType="int" />
+		<result property="sortNum" column="i_sortNum" javaType="int" />
+		<result property="resource" column="i_resource" javaType="string" />
+		<result property="comments" column="i_comments" javaType="string" />
+	</resultMap>
+ 
+	<sql id="exeItemCol">
+		ei.id as ei_id,
+		ei.itemID as ei_itemID,
+		ei.beAccessedUserID as ei_beAccessedUserID,
+		ei.type as ei_type,
+		ei.isRoot as ei_isRoot,
+		ei.typeValue as ei_typeValue,
+		ei.point as ei_point,
+		ei.parentid as ei_parentID,
+		ei.RootID as ei_RootID,
+		ei.comments as ei_comments ,
+		ei.enable as ei_enable,
+		ei.createBy as ei_createBy,
+		ei.updateBy as ei_updateBy,
+		ei.createDate as ei_createDate,
+		ei.updateDate as ei_updateDate
+	</sql>
+	
+	<sql id="itemCol">
+		i.id as i_id,
+		i.name as i_name,
+		i.py as i_py,
+		i.enable as i_enable,
+		i.score as i_score,
+		i.percentage as i_percentage,
+		i.evaluationStandard as i_evaluationStandard,
+		i.isRoot as i_isRoot,
+		i.isBottom as i_isBottom,
+		i.sortNum as i_sortNum,
+		i.resource as i_resource,
+		i.parentid as i_parentID,
+		i.comments as i_comments ,
+		i.createBy as i_createBy,
+		i.updateBy as i_updateBy,
+		i.createDate as i_createDate,
+		i.updateDate as i_updateDate
+	</sql>
+	
+	<sql id="sysUserCol">
+		u.id as u_id,
+		u.username as u_userName,
+		u.password as
+		u_password,
+		u.realName as u_realName,
+		u.py as u_py,
+		u.wb as u_wb,
+		u.enable as u_enable,
+		u.type as u_type,
+		u.lastlogintime as
+		u_lastlogintime,
+		u.logincount as u_logincount,
+		u.comments as u_comments,
+		u.gender as u_gender,
+		u.deptcode as u_deptcode,
+		u.deptname as
+		u_deptname,
+		u.cellphone as u_cellphone,
+		u.telphone as u_telphone,
+		u.email as u_email,
+		u.superiors as u_superiors,
+		u.postname as
+		u_postname,
+		u.entrydate as u_entrydate,
+		u.canaudit as u_canaudit,
+		u.privilege as u_privilege
+	</sql>
+	
+	<!-- select -->
+	<select id="findItemByID" parameterType="int"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.id=#{id}
+	</select>
+	
+	<select id="getParentExeItem" parameterType="Long"
+		resultMap="exeItemBasicResultMap">
+		select
+		<include refid="exeItemCol" />
+		from exe_Item ei
+		where ei.enable=1 and ei.id=#{ei_parentID}
+	</select>
+	
+	<select id="findItemsByParentItem" parameterType="Item"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.parentID=#{id}
+	</select>
+	
+	<!-- <select id="getChildrenItems" parameterType="int"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.parentID=#{o_id}
+	</select>
+	 -->
+	
+	<select id="findItemByCondition" parameterType="map"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from Item i
+		where i.enable=#{enable}
+		<if test="name!=null"> and i.name like '%'||#{name}||'%' </if>
+		<if test="py!=null"> and i.py like '%'||#{py}||'%' </if>
+		<if test="isRoot!=null"> and i.isRoot=#{isRoot} </if>
+		<if test="isBottom!=null"> and i.isBottom=#{isBottom} </if>
+		<if test="ParentID!=null"> and i.ParentID=#{ParentID} </if>
+	</select>
+	
+	<select id="findExeItemByCondition" parameterType="map"
+		resultMap="exeItemBasicResultMap">
+		select
+		<include refid="exeItemCol" />
+		from Exe_Item ei
+		where 1=1
+		<if test="id!=null"> and ei.id=#{id} </if>
+		<if test="enable!=null"> and ei.enable=#{enable} </if>
+		<if test="isRootExeItem!=null"> and ei.isRoot=#{isRootExeItem} </if>
+		<if test="beAccessedUser"> and ei.BeAccessedUserID=#{beAccessedUser.id} </if>
+		<if test="item"> and ei.ItemID=#{item.id} </if>
+		<if test="type"> and ei.type=#{type} </if>
+		<if test="typeValue"> and ei.typeValue=#{typeValue} </if>
+		<if test="rootExeItem"> and ei.RootID=#{rootExeItem.id} </if>
+		<if test="parentExeItem!=null"> and ei.ParentID=#{parentExeItem.id} </if>
+	</select>
+
+	<select id="findUsersByCondition" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where 1=1
+		<if test="userName!=null"> and u.username=#{userName} </if>
+	</select>
+	<select id="findLastInsertExeItem" resultMap="sysUserBasicResultMap">
+		 select top 1 
+		 <include refid="exeItemCol"/>
+		  from [PERMISSION] order by id desc 
+	</select>
+   <!-- 				association				 -->
+	<select id="getCreateUser"  parameterType="int" resultMap="sysUserBasicResultMap">
+		select 
+		<include refid="sysUserCol" />
+		from SYSUSER u where u.id=#{ei_createBy} 
+	</select>
+	
+	<select id="getUpdateUser"  parameterType="int" resultMap="sysUserBasicResultMap">
+		select 
+		<include refid="sysUserCol" />
+		from SYSUSER u where u.id=#{ei_createBy} 
+	</select>
+	
+	<select id="getBeAccessedUser"  parameterType="int" resultMap="sysUserBasicResultMap">
+		select 
+		<include refid="sysUserCol" />
+		from SYSUSER u where u.id=#{ei_beAccessedUserID} 
+	</select>
+	
+	<select id="getItem"  parameterType="int" resultMap="itemBasicResultMap">
+		select 
+		<include refid="itemCol" />
+		from Item  i where i.id=#{ei_itemID} 
+	</select>
+	<select id="getRootExeItem"  parameterType="int" resultMap="exeItemBasicResultMap">
+		select 
+		<include refid="itemCol" />
+		from Exe_Item ei where ei.id=#{ei_RootID} 
+	</select>
+	
+	<select id="getMaxExeItemID"  resultType="Integer">
+		select max(id) from Exe_Item
+	</select>
+	
+	<!--				 update							 -->
+	<update id="updateExeItem" parameterType="ExeItem">
+		update Exe_Item set updatedate=getDate()
+		<if test="enable!=null">,enable=#{enable} </if>
+		<if test="scoreResult!=null">,point=#{scoreResult} </if>
+		<if test="item!=null">,itemID=#{item.id} </if>
+		<if test="beAccessedUser!=null">,beAccessedUserID=#{beAccessedUser.id} </if>
+		<if test="type!=null">,type=#{type} </if>
+		<if test="typeValue!=null">,typeValue=#{typeValue} </if>
+		<if test="isRootExeItem!=null">,isRoot=#{isRootExeItem} </if>
+		<if test="comments!=null">,comments=#{comments} </if>
+		<if test="updateBy!=null">,updateBy=#{updateBy.id} </if>
+		<if test="parentExeItem!=null">,parentID=#{parentExeItem.id} </if>
+		<where>id=#{id}</where>
+	</update>
+
+	<!--			 insert				 -->
+
+	<insert id="insertItem" parameterType="Item">
+		insert into item
+		(name,evaluationStandard,resource,py,score,percentage,enable,createdate,updateDate,isBottom,isroot,sortNum,comments,
+		createby,updateby,parentID
+		)
+		values
+		(#{name},#{evaluationStandard},#{resource},#{py},#{score},#{percentage},#{enable},getdate(),getdate(),#{isBottom},#{isRoot},#{sortNum},#{comments},#{createBy.id},#{updateBy.id},#{parentItem.id})
+	</insert>
+	
+	<insert id="insertExeItem" parameterType="ExeItem">
+		insert into Exe_item
+		(itemID,BeAccessedUserID,point,type,typeValue,isRoot,enable,createdate,updateDate,comments,
+		createby,updateby,parentID,RootID)
+		values
+		(#{item.id},#{beAccessedUser.id},#{scoreResult},#{type},#{typeValue},#{isRootExeItem},#{enable},getdate(),getdate(),#{comments},#{createBy.id},#{updateBy.id},#{parentExeItem.id},#{rootExeItem.id})
+	</insert>
+	
+
+	<!--					delete					 -->
+	<delete id="deleteExeItem" parameterType="ExeItem">
+		delete
+		from Exe_Item where id=#{exeItem.id}
+	</delete>
+</mapper>
+
+
+

@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:autoSuggest="org.just.xch.view.component.common.autoSuggest.*"
+		   horizontalScrollPolicy="off"
+		   verticalScrollPolicy="off"
+		   horizontalCenter="0"
+		   top="40"
+		   width="200">
+	<mx:Style source="org/just/xch/assets/styles/style.css" />
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.Constant;
+			
+			import flash.utils.setTimeout;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			private var dp:ArrayCollection;
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+			private var popUp:SearchList;
+			private var p:Point;
+			
+			public var selectItem:Object;
+			
+			private function resetLocal(x:int,y:int):void{
+				
+				var popUPWitdth:int = new SearchList().width;
+				var popUPHeight:int = new SearchList().height;
+				
+				p = new Point(x,y);
+				p=queryterm.parent.localToGlobal(p);
+				var newX:int=p.x;
+				var newY:int=p.y;
+				if(p.x+popUPWitdth>stage.stageWidth){
+					newX = stage.stageWidth-popUPWitdth;
+				}
+				
+				if(p.y+popUPHeight>stage.stageHeight){
+					newY =stage.stageHeight-popUPHeight;
+				}
+				
+				p = new Point(newX,newY);
+			}
+			
+			private function openComboBox():void
+			{
+				searchType.open();
+			}
+			
+			private function closeComboBox():void
+			{
+				searchType.close();
+			}
+			
+			public function findDiseaseFromSolrCallBack(event:ResultEvent):void
+			{
+				dp=event.result as ArrayCollection;
+				resetLocal(queryterm.x,queryterm.y);
+				PopUpManager.removePopUp(popUp);
+				popUp = SearchList.show(p.x,p.y+queryterm.height,dp,queryterm,this);
+			}
+	
+			public function typeTextChange():void
+			{
+				if(queryterm.text){
+					sComprehensiveSearchService.findDiseaseFromSolr(queryterm.text,searchType.selectedItem==null?null:searchType.selectedItem.dm);
+				}else{
+					selectItem = null;
+				}
+			}
+			/*
+			*回调函数
+			*/
+			public function fault(event:FaultEvent)
+			{
+				AlertUtil.remoteMsg(event);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:RemoteObject id="sComprehensiveSearchService"
+					 destination="comprehensiveSearchService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="findDiseaseFromSolr"
+				   result="findDiseaseFromSolrCallBack(event)" concurrency="last"
+				   fault="fault(event)"/>
+	
+	</mx:RemoteObject>
+	
+	<mx:HBox horizontalGap="0"
+			 verticalGap="0">
+<mx:ComboBox id="searchType" arrowButtonWidth="0"
+					 cornerRadius="0" mouseOver="openComboBox()" 
+					 skin="org.just.xch.view.component.common.skin.CustomComboBoxSkin"
+					 iconColor="#00f0f0" dataProvider="{Constant.SOLR_TYPE_AC}"
+					 borderThickness="0" labelField="mc"
+					 paddingRight="0"
+					 paddingLeft="0"
+					 width="50"
+					 height="22"/>
+		<!--<autoSuggest:AutoComplete id="queryterm" typedTextChange="typeTextChange()" labelField="name"  dataProvider="{dp}"
+								  styleName="searchInactive"/>-->
+	
+		
+		<mx:TextInput id="queryterm"  keyUp="typeTextChange();" width="100%"/>
+	</mx:HBox>
+</mx:Canvas>
+

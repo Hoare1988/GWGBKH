@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				close="eWindow_close()"
+				titleStyleName="twTitleStyle"
+				width="400"
+				height="180"
+				showCloseButton="true"
+				layout="vertical"
+				horizontalAlign="center"
+				paddingLeft="5"
+				paddingRight="5"
+				verticalAlign="middle"
+				creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.mlct.AppModelLocator;
+			
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+			public function init():void
+			{
+			}
+			
+			private function eSubmitClose_click():void
+			{
+				eSubmit_click();
+				eWindow_close();
+			}
+			
+			private function eSubmit_click():void
+			{
+				var obj:Object = new Object();
+				obj['code']=cTextInput.text;
+				obj['name']=cNameTextInput.text;
+				appModel.zhibiao2s.addItem(obj);
+			}
+			
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox width="100%">
+		<mx:Label text="医保代码:"/>
+		<mx:TextInput id="cTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Label text="项目名称:"/>
+		<mx:TextInput id="cNameTextInput"
+					  width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:Button label="确定"
+				   click="eSubmitClose_click()"/>
+		<mx:Button label="取消"
+				   click="eWindow_close()"/>
+	</mx:HBox>
+</mx:TitleWindow>
+

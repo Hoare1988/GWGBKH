@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   creationComplete="init()"
+		   width="100%"
+		   height="100%"
+		   remove="sysMgtModel.clearSysRoleMgt()"
+		   xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.domain.SysRole;
+			import org.just.xch.control.events.domain.SysRoleEvent;
+			import org.just.xch.utils.AlertUtil;
+			import mx.validators.Validator;
+			import mx.events.ListEvent;
+			import org.just.xch.model.mlct.SysMgtModelLocator;
+			import org.just.xch.utils.Constant;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import org.just.xch.assets.ImagesAssets;
+
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+
+			private var editingSysRole:SysRole;
+
+			[Bindable]
+			private var addValidatorArr:Array=[];
+			[Bindable]
+			private var editValidatorArr:Array=[];
+
+			private function init():void
+			{
+				this.currentState='';
+
+				addValidatorArr.push(addNameStringValidator);
+				editValidatorArr.push(editNameStringValidator);
+			}
+
+
+			private function onItemClick(role:SysRole):void
+			{
+				editingSysRole=role;
+				if (role != null)
+				{
+					editNameTxt.text=role.name;
+					editDescTxt.text=role.description;
+				}
+			}
+
+			private function onItemDoubleClick(role:SysRole):void
+			{
+				onItemClick(role);
+				editBtn.dispatchEvent(new MouseEvent(MouseEvent.CLICK));
+			}
+
+			private function addRoleClick():void
+			{
+				//验证
+				var validatorErrorArray:Array=Validator.validateAll(addValidatorArr);
+				if (validatorErrorArray.length == 0)
+				{
+					var newRole:SysRole=new SysRole();
+					newRole.name=addNameTxt.text;
+					newRole.description=addDescTxt.text;
+					new SysRoleEvent(SysRoleEvent.EVENT_INSERT_ROLE, newRole).dispatch();
+				}
+				else
+				{
+					AlertUtil.errorMessages(validatorErrorArray);
+				}
+
+			}
+
+			private function saveRoleClick():void
+			{
+				//验证
+				var validatorErrorArray:Array=Validator.validateAll(editValidatorArr);
+				if (validatorErrorArray.length == 0)
+				{
+					editingSysRole.name=editNameTxt.text;
+					editingSysRole.description=editDescTxt.text;
+					new SysRoleEvent(SysRoleEvent.EVENT_UPDATE_ROLE, editingSysRole).dispatch();
+				}
+				else
+				{
+					AlertUtil.errorMessages(validatorErrorArray);
+				}
+			}
+		]]>
+	</mx:Script>
+
+	<mx:states>
+		<mx:State name="addState">
+			<mx:SetProperty target="{addBox}"
+							name="visible"
+							value="true"/>
+			<mx:SetProperty target="{addBox}"
+							name="includeInLayout"
+							value="true"/>
+			<mx:SetProperty target="{addBtn}"
+							name="enabled"
+							value="false"/>
+			<mx:SetProperty target="{editBtn}"
+							name="enabled"
+							value="false"/>
+		</mx:State>
+		<mx:State name="editState">
+			<mx:SetProperty target="{editBox}"
+							name="visible"
+							value="true"/>
+			<mx:SetProperty target="{editBox}"
+							name="includeInLayout"
+							value="true"/>
+			<mx:SetProperty target="{addBtn}"
+							name="enabled"
+							value="false"/>
+			<mx:SetProperty target="{editBtn}"
+							name="enabled"
+							value="false"/>
+		</mx:State>
+	</mx:states>
+
+
+	<mx:DateFormatter id="dateFormatter"
+					  formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingTop="5"
+			 paddingBottom="5">
+		<mx:ApplicationControlBar width="100%"
+								  height="36"
+								  styleName="queryStyle">
+			<mx:Label text="角色名称:"/>
+			<mx:TextInput id="nameTxt"
+						  width="80"/>
+			<common:BtnQuery click="new SysRoleEvent(SysRoleEvent.EVENT_QUERY_ROLES,[nameTxt.text]).dispatch()"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%"
+				 height="100%"
+				 styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGrid"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="{(this.currentState=='addState'&amp;&amp;this.currentState=='editState')?false:true}"
+						 doubleClick="onItemDoubleClick(dataGrid.selectedItem as SysRole)"
+						 itemClick="onItemClick(dataGrid.selectedItem as SysRole)"
+						 dataProvider="{cPageBar.currentPageData}"
+						 headerRelease="cPageBar.Sort(event);">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name"
+									   headerText="角色名称" width=".3"/>
+					<mx:DataGridColumn dataField="description"
+									   headerText="角色描述" width=".7"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="28"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+
+				<common:BtnAdd id="addBtn"
+							   click="this.currentState='addState'"/>
+				<common:BtnEdit id="editBtn"
+								enabled="{(dataGrid.selectedItem!=null&amp;&amp;this.currentState!='addState'&amp;&amp;this.currentState!='editState')?true:false}"
+								click="this.currentState='editState'"/>
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_queryRolesAC}"
+								 expand="true"
+								 pageSize="{Constant.PAGESIZE}"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+
+		<!--新增-->
+		<mx:VBox id="addBox"
+				 width="100%"
+				 height="100"
+				 paddingLeft="10"
+				 paddingRight="10"
+				 verticalAlign="middle"
+				 backgroundColor="#FFFF66"
+				 visible="false"
+				 includeInLayout="false">
+
+			<mx:HBox width="100%"
+					 height="50%"
+					 verticalAlign="bottom"
+					 horizontalAlign="center">
+				<mx:Label text="角色名称:"/>
+				<mx:TextInput id="addNameTxt"
+							  width="120"/>
+				<mx:Label text="角色描述:"/>
+				<mx:TextInput id="addDescTxt"
+							  width="200"/>
+			</mx:HBox>
+			<mx:HBox width="100%"
+					 height="50%"
+					 verticalAlign="middle"
+					 horizontalAlign="center">
+				<common:BtnSave click="addRoleClick()"/>
+				<common:BtnClose click="this.currentState='';addNameTxt.text='';addDescTxt.text='';"/>
+			</mx:HBox>
+
+		</mx:VBox>
+
+		<!--修改-->
+		<mx:VBox id="editBox"
+				 width="100%"
+				 height="100"
+				 paddingLeft="10"
+				 paddingRight="10"
+				 verticalAlign="middle"
+				 backgroundColor="#FFFF66"
+				 visible="false"
+				 includeInLayout="false">
+			<mx:HBox width="100%"
+					 height="50%"
+					 verticalAlign="bottom"
+					 horizontalAlign="center">
+				<mx:Label text="角色名称:"/>
+				<mx:TextInput id="editNameTxt"
+							  width="120"
+							  editable="false"
+							  enabled="false"/>
+				<mx:Label text="角色描述:"/>
+				<mx:TextInput id="editDescTxt"
+							  width="200"/>
+			</mx:HBox>
+			<mx:HBox width="100%"
+					 height="50%"
+					 verticalAlign="middle"
+					 horizontalAlign="center">
+				<common:BtnSave click="saveRoleClick()"/>
+				<common:BtnCancel click="this.currentState='';editNameTxt.text='';editDescTxt.text='';"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+
+
+	<!--验证-->
+	<mx:StringValidator id="addNameStringValidator"
+						source="{addNameTxt}"
+						requiredFieldError="角色名称不能为空"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+	<mx:StringValidator id="editNameStringValidator"
+						source="{editNameTxt}"
+						requiredFieldError="角色名称不能为空"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+</mx:Module>
+

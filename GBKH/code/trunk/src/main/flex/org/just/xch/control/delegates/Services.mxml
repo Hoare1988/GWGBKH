@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mvc:ServiceLocator xmlns:mvc="com.adobe.cairngorm.business.*"
+					xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Script>
+		<![CDATA[
+			
+			public static const SYSUSER_SERVICE:String="sSysUserService";
+			public static const SYSMODULE_SERVICE:String="sSysModuleService";
+			public static const SYSROLE_SERVICE:String="sSysRoleService";
+			
+			public static const DBCONN_SERVICE:String="sDbConnService";
+			
+			public static const ITEM_SERVICE:String="sItemService";
+			public static const SYSORG_SERVICE:String="sSysOrgService";
+			public static const EXEITEM_SERVICE:String="sExeItemService";
+			public static const DATALOG_SERVICE:String="sDataLogService";
+		]]>
+	</mx:Script>
+    <!--sys-->
+	<mx:RemoteObject id="sSysUserService" destination="sysUserService" concurrency="single" showBusyCursor="true"/>
+	<mx:RemoteObject id="sSysModuleService" destination="sysModuleService" concurrency="single" showBusyCursor="true"/>
+	<mx:RemoteObject id="sSysRoleService" destination="sysRoleService" concurrency="single" showBusyCursor="true"/>
+	
+	<mx:RemoteObject id="sItemService" destination="itemService" concurrency="single" showBusyCursor="true"/>
+	<mx:RemoteObject id="sSysOrgService" destination="sysOrgService" concurrency="single" showBusyCursor="true"/>
+	<mx:RemoteObject id="sExeItemService" destination="exeItemService" concurrency="single" showBusyCursor="true"/>
+	<mx:RemoteObject id="sDataLogService" destination="dataLogService" concurrency="single" showBusyCursor="true"/>
+</mvc:ServiceLocator>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:LinkButton xmlns:mx="http://www.adobe.com/2006/mxml"
+			   styleName="sysLinkButtonStyle"
+			   color="#ffffff">
+	<mx:Script>
+		<![CDATA[
+			protected override function rollOverHandler(event:MouseEvent):void
+			{
+				this.setStyle('textDecoration', 'underline');
+				this.setStyle('color', '0xff0000');
+			}
+
+			protected override function rollOutHandler(event:MouseEvent):void
+			{
+				this.setStyle('textDecoration', 'none');
+				this.setStyle('color', '0xffffff');
+			}
+		]]>
+	</mx:Script>
+</mx:LinkButton>

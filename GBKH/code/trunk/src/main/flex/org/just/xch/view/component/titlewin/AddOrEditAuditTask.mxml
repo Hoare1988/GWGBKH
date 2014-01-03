@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" showCloseButton="true" close="close()"
+				xmlns:button="org.just.xch.view.component.common.*"
+				layout="absolute" width="400" height="400"
+				horizontalAlign="center" verticalAlign="middle"
+				paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.AuditEvent;
+			import org.just.xch.model.domain.AuditTask;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.utils.Constant;
+			
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.formatters.DateFormatter;
+			import mx.managers.PopUpManager;
+			private var appModel:AppModelLocator = AppModelLocator.getInstance();
+			[Bindable]
+			public var isEdit:Boolean;
+			[Bindable]
+			public var auditTask:AuditTask;
+			
+			[Bindable]
+			public var isRwzz:Boolean;
+			
+			private function close():void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function save():void{
+				if(!isEdit){
+					var auditTask1:AuditTask = new AuditTask();
+					auditTask1.tpc = tpc.text;
+					auditTask1.tmc = tmc.text;
+					auditTask1.cjr = Number(appModel.loginUser.id);
+					auditTask1.tms = tms.text;
+					auditTask1.cjrq = new Date();
+					new AuditEvent(AuditEvent.EVENT_ADD_TASK,auditTask1).dispatch();
+				}else{
+					auditTask.tpc = tpc.text;
+					auditTask.tmc = tmc.text;
+					auditTask.xgr =Number(appModel.loginUser.id);
+					auditTask.tms = tms.text;
+					auditTask.tzt = tzt.selectedItem.value;
+					auditTask.cjrq = new Date();
+					new AuditEvent(AuditEvent.EVENT_UPDATE_TASK,auditTask).dispatch();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:DateFormatter formatString="YYYY-MM-DD" id="df"/>
+	<mx:VBox width="100%" height="100%" horizontalAlign="center" verticalAlign="middle" paddingTop="20" paddingBottom="20" paddingLeft="20" paddingRight="20">
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="批次:" width="100"/>
+			<mx:TextInput id="tpc" text="{'P'+df.format(new Date())}" enabled="false" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="名称:" width="100"/>
+			<mx:TextInput id="tmc" text="{auditTask.tmc}" enabled="{!isRwzz}" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%"  visible="{isRwzz}" includeInLayout="{isRwzz}">
+			<mx:Label fontWeight="bold" text="状态:" width="100"/>
+			<mx:ComboBox id="tzt" dataProvider="{AuditTask.getATZTs()}" selectedIndex="{auditTask.tzt}" width="100%"/>
+		</mx:HBox>
+		
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="{!isEdit?'创建日期:':'更改日期:'}" width="100"/>
+			<mx:TextInput id="cjrq" text="{df.format(new Date())}" enabled="false" width="100%"/>
+		</mx:HBox>
+		
+	<!--	<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="开始日期" width="100"/>
+			<mx:TextInput id="cjrq" text="{df.format(new Date())}" enabled="false"/>
+		</mx:HBox>-->
+		
+		<mx:HBox width="100%" height="100%"  visible="{tzt.selectedItem.value==2}" includeInLayout="{tzt.selectedItem.value==2}">
+			<mx:Label fontWeight="bold" text="完成日期" width="100"/>
+			<mx:DateField id="jsrq"
+						  formatString="YYYY-MM-DD"
+						  yearNavigationEnabled="true" width="100%"
+						  selectedDate="{new Date(new Date().getFullYear(), new Date().month, new Date().date)}"
+						  dayNames="[日,一,二,三,四,五,六]"
+						  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="{isEdit?'更改人:':'创建人:'}" width="100"/>
+			<mx:TextInput id="cjr" text="{appModel.loginUser.userName}" enabled="false" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%">
+			<mx:Label fontWeight="bold" text="描述:" width="100"/>
+			<mx:TextInput id="tms" text="{auditTask.tms}" width="100%"/>
+		</mx:HBox>
+		
+		<mx:HBox width="100%" height="100%" horizontalAlign="center">
+			<button:BtnSave click="save();close();"/>
+			<button:BtnCancel click="close();"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

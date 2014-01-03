@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.just.xch.dao.sys.SysMemcacheDao">
+	
+	<resultMap id="sysMemcacheResultMap" type="SysMemcache">
+		<id property="id" column="ID" javaType="long" />
+		<result property="code" column="CODE" javaType="String" />
+		<result property="name" column="NAME" javaType="String" />
+		<result property="hasCache" column="HAS_CACHE" javaType="int" />
+		<result property="seconds" column="SECONDS" javaType="int" />
+		<result property="createDate" column="CREATE_DATE" javaType="date" />
+		<result property="creatorId" column="CREATOR_ID" javaType="int" />
+	</resultMap>
+	
+	<select id="findSysMemcacheByHasCache" parameterType="int"  resultMap="sysMemcacheResultMap">
+		SELECT M.ID,
+	       M.CODE,
+	       M.NAME,
+	       M.HAS_CACHE,
+	       M.SECONDS,
+	       M.CREATE_DATE,
+	       M.CREATOR_ID
+		  FROM SYS_MEMCACHE M
+		 WHERE 1 = 1
+		 <if test="hasCache!=-1">
+		   AND M.HAS_CACHE = #{hasCache}
+		 </if>
+		 ORDER BY M.CREATE_DATE DESC
+	</select>
+	
+	<insert id="insertSysMemcache" parameterType="SysMemcache">
+	<selectKey resultType="int" keyProperty="id" order="AFTER"> 
+		SELECT SEQ_SYS_MEMCACHE.CURRVAL FROM DUAL
+	</selectKey>
+		INSERT INTO SYS_MEMCACHE M
+		(CODE,NAME,HAS_CACHE,SECONDS,CREATE_DATE,CREATOR_ID)VALUES
+		(#{code,jdbcType=VARCHAR},#{name,jdbcType=VARCHAR},#{hasCache,jdbcType=NUMERIC},#{seconds,jdbcType=NUMERIC},#{createDate,jdbcType=DATE},#{creatorId,jdbcType=NUMERIC})
+	</insert>
+	
+	<update id="updateSysMemcache" parameterType="SysMemcache">
+	   UPDATE SYS_MEMCACHE SET 
+	       CODE=#{code,jdbcType=VARCHAR},
+	       NAME=#{name,jdbcType=VARCHAR},
+	       HAS_CACHE=#{hasCache,jdbcType=NUMERIC},
+	       SECONDS=#{seconds,jdbcType=NUMERIC},
+	       CREATE_DATE=#{createDate,jdbcType=DATE},
+	       CREATOR_ID=#{creatorId,jdbcType=NUMERIC}
+		WHERE ID=#{id}
+	</update>
+	
+	<delete id="deleteSysMemcacheById" parameterType="long">
+		DELETE SYS_MEMCACHE WHERE ID=#{id}
+	</delete>
+</mapper>
+

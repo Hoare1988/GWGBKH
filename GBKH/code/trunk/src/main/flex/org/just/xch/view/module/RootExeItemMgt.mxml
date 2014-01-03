@@ -1,0 +1,219 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:common="org.just.xch.view.component.common.*"
+		   width="100%" height="100%" creationComplete="init()" layout="vertical" xmlns:autoSuggest="org.just.xch.view.component.common.autoSuggest.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.domain.ExeItemEvent;
+			import org.just.xch.control.events.domain.SysRoleEvent;
+			import org.just.xch.model.domain.ExeItem;
+			import org.just.xch.model.domain.Item;
+			import org.just.xch.model.domain.SysRole;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.model.mlct.ItemMgtModelLocator;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.Constant;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.controls.dataGridClasses.DataGridColumn;
+			import mx.events.ListEvent;
+			import mx.validators.Validator;
+
+			private var itemMgtModel:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+
+			private var editingSysRole:SysRole;
+
+			[Bindable]
+			private var addValidatorArr:Array=[];
+			[Bindable]
+			private var editValidatorArr:Array=[];
+			
+
+			private function init():void
+			{
+				new ExeItemEvent(ExeItemEvent.EVENT_QUERY_ROOT_EXE_ITEM).dispatch();
+			}
+
+
+			private function onItemClick(role:SysRole):void
+			{
+			}
+
+			private function onItemDoubleClick(role:SysRole):void
+			{
+			}
+
+			private function addRoleClick():void
+			{
+
+			}
+
+			private function saveRoleClick():void
+			{
+			}
+			
+			protected function cLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var result:String="";
+				switch(column.dataField)
+				{
+					case "item":
+						result=item.item.name;
+						break;
+					case "createDate":
+						result=dateFormatter.format(item.createDate);
+						break;
+					case "beAccessedUser":
+						result=item.beAccessedUser.realName;
+						break;
+					case "scoreResult":
+						result= item.scoreResult.toFixed(2);
+						break;
+					case "type":
+						if(item.type==1)
+						{result="年度";
+						}
+						else
+						{result="季度";
+						}
+						break;
+					case "createBy":
+						result=item.createBy.realName;
+						break;
+					case "enable":
+						  if(item.enable==1)
+						  {
+							  result="考核中";
+						  }else if(item.enable==0)
+						  {
+							  result="已存档";
+						  }
+						break;
+				    default:
+						break;
+				}
+				return result;			
+			}
+			
+			private function calculateSumPoint():void
+			{
+				var exeitemAC:ArrayCollection=new ArrayCollection();
+				if(dataGridRootExeItems.selectedItems!=null&&dataGridRootExeItems.selectedItems.length>0)
+				{
+					for each(var exeItem:ExeItem in dataGridRootExeItems.selectedItems)
+					{
+						if(!exeItem.enable)
+						{
+							Alert.show("已存档的考核不能修改！","提示",Alert.YES);
+							return;
+						}
+						
+						exeitemAC.addItem(exeItem);
+					}
+					new ExeItemEvent(ExeItemEvent.EVENT_CALCULATE_EXAM_SUMPOINT,exeitemAC).dispatch();
+				}else
+				{
+				
+				  Alert.show("请选择考核!","提示",Alert.YES);
+				}
+			
+			}
+			
+			private function btn_SaveExamTODOC():void
+			{
+				var exeitemAC:ArrayCollection=new ArrayCollection();
+				if(dataGridRootExeItems.selectedItems!=null&&dataGridRootExeItems.selectedItems.length>0)
+				{
+					for each(var exeItem:ExeItem in dataGridRootExeItems.selectedItems)
+					{
+						if(!exeItem.enable)
+						{
+							Alert.show("已存档的考核不能修改！","提示",Alert.YES);
+							return;
+						}
+						exeItem.enable=0;
+						exeitemAC.addItem(exeItem);
+					}
+					new ExeItemEvent(ExeItemEvent.EVENT_UPDATE_EXEITEMS,exeitemAC).dispatch();
+				}else
+				{
+					
+					Alert.show("请选择考核!","提示",Alert.YES);
+				}
+			
+			}
+			
+			
+			private function cComboxLabelFunction(item:Object):String
+			{
+				var s:String="";
+				if (item.hasOwnProperty("name"))
+				{
+					s=item.name;
+				}
+				return s;
+			}
+			
+			
+			private function btnQueryRootExeItems(event:MouseEvent):void
+			{
+				var condition:ExeItem=new ExeItem();
+				condition.beAccessedUser=autsuggestUser.selectedItem as SysUser;
+				condition.item=cRootItemsCombox.selectedItem as Item;
+			    new ExeItemEvent(ExeItemEvent.EVENT_QUERY_ROOT_EXE_ITEM,condition).dispatch();
+			}
+			
+		]]>
+	</mx:Script>
+
+	<mx:DateFormatter id="dateFormatter" formatString="YYYY-MM-DD HH:NN:SS"/>
+	<mx:VBox width="100%" height="100%" horizontalAlign="center" paddingBottom="5" paddingTop="5"
+			 verticalAlign="middle">
+		<mx:ApplicationControlBar width="100%" height="36" styleName="queryStyle">
+			<mx:Spacer width="100%"/>
+			<mx:Label text="考核名称:"/>
+			 <mx:ComboBox id="cRootItemsCombox" width="140" dataProvider="{itemMgtModel.uMgt_queryRootItemAC}"
+						   labelFunction="cComboxLabelFunction"/>
+			<mx:Label text="被考核人:"/>
+			<autoSuggest:SysUserAutoSuggest id="autsuggestUser"/>
+			<common:BtnQuery click="btnQueryRootExeItems(event)"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%" height="100%" styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGridRootExeItems" width="100%" height="100%"
+						 dataProvider="{cPageBar.currentPageData}"
+						 headerRelease="cPageBar.Sort(event);"
+						 allowMultipleSelection="true">
+				<mx:columns>
+					<mx:DataGridColumn dataField="type" headerText="考核类型" width="65"
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="typeValue" headerText="类型值"/>
+
+					<mx:DataGridColumn dataField="item" headerText="考核名称"
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="beAccessedUser" headerText="被考核人"
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="scoreResult" headerText="得分" 
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="createDate" headerText="创建时间"
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="createBy" headerText="创建人"
+									   labelFunction="cLabelFunction"/>
+					<mx:DataGridColumn dataField="enable" headerText="状态"
+									   labelFunction="cLabelFunction"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" height="28" paddingLeft="10" paddingRight="10"
+					 verticalAlign="middle">
+				<mx:Button label="分数折算" click="calculateSumPoint()"/>
+				<mx:Button label="考核存档" click="btn_SaveExamTODOC()"/>
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar" right="0" height="100%" cornerRadius="3" expand="true"
+								 paddingTop="3" pageSize="{Constant.PAGESIZE}"
+								 SourceData="{itemMgtModel.exeMgt_queryRootExeItemAC}"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:VBox>
+</mx:Module>
+

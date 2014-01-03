@@ -1,0 +1,268 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:button="org.just.xch.view.component.common.*"
+				layout="absolute"
+				showCloseButton="true"
+				creationComplete="init()"
+				title="{titleName}"
+				close="close();"
+				width="600"
+				height="500">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.DiseaseEvent;
+			import org.just.xch.control.events.domain.OrganizationEvent;
+			import org.just.xch.control.events.domain.PageEvent;
+			import org.just.xch.model.domain.Disease;
+			import org.just.xch.model.domain.ItemDrug;
+			import org.just.xch.model.domain.Organization;
+			import org.just.xch.model.mlct.DiseaseModelLocator;
+			import org.just.xch.model.mlct.MaintainModelLocator;
+			import org.just.xch.model.mlct.MedConfigModelLocator;
+			import org.just.xch.model.mlct.OrganizationModelLocator;
+			import org.just.xch.model.vo.CodeName;
+			import org.just.xch.model.vo.condition.QueryArgVO;
+
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+
+			[Bindable]
+			public var selectInd:int;
+			[Bindable]
+			private var titleName:String='';
+
+			public var callback:Function; //定义回调函数  
+
+			private var configModel:MedConfigModelLocator=MedConfigModelLocator.getInstance();
+			private var diseaseModel:DiseaseModelLocator=DiseaseModelLocator.getInstance();
+			private var maintainModel:MaintainModelLocator=MaintainModelLocator.getInstance();
+
+			private function init():void
+			{
+				if (selectInd == 0)
+				{
+					titleName="选择机构";
+				}
+				else if (selectInd == 1)
+				{
+					titleName="选择疾病";
+				}
+				else if (selectInd == 2)
+				{
+					titleName="选择药品";
+				}
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function queryJg():void
+			{
+				var arr:Array=new Array();
+				arr.push(jgmc.text);
+				arr.push(jgmc.text);
+				arr.push(false);
+				arr.push(false);
+				new OrganizationEvent(OrganizationEvent.EVENT_QUERY_MRULECONFIG, arr).dispatch();
+
+			}
+
+			private function queryBz():void
+			{
+				var arr:Array=new Array();
+				arr.push(disease.text);
+				arr.push(disease.text);
+				new DiseaseEvent(DiseaseEvent.EVENT_FIND_ALL_DISEASE, arr).dispatch();
+			}
+
+
+			[Bindable]
+			private var argVO:QueryArgVO;
+
+
+			private function queryYp():void
+			{
+				argVO=new QueryArgVO('1');
+				argVO.drugCode=StringUtil.trim(drug.text).length > 0 ? StringUtil.trim(drug.text) : null;
+				argVO.drugName=StringUtil.trim(drug.text).length > 0 ? StringUtil.trim(drug.text) : null;
+				argVO.currentPage=1;
+				argVO.maxRows=50;
+				cPageBar.currentPageNo=1;
+				new PageEvent(PageEvent.INIT_YP_QUERY, [argVO]).dispatch();
+				initCurrentPageNo();
+			}
+
+			private function initCurrentPageNo():void
+			{
+				cPageBar.currentPageNo=1;
+			}
+
+			private function onClickJg():void
+			{
+				if (jgDataGrid.selectedItem)
+				{
+					var o:Organization=jgDataGrid.selectedItem as Organization;
+					if (o != null)
+					{
+						var cn:CodeName=new CodeName();
+						cn.code=o.jgdm;
+						cn.name=o.jgmc;
+						callback(selectInd, cn);
+					}
+				}
+				close();
+			}
+
+			private function onClickJb():void
+			{
+				if (jbDataGrid.selectedItem)
+				{
+					if (jbDataGrid.selectedItem != null)
+					{
+						var cn:CodeName=new CodeName();
+						cn.code=jbDataGrid.selectedItem.code;
+						cn.name=jbDataGrid.selectedItem.name;
+						callback(selectInd, cn);
+					}
+				}
+				close();
+			}
+
+			private function onClickYp():void
+			{
+				if (ypDataGrid.selectedItem)
+				{
+					var o:ItemDrug=ypDataGrid.selectedItem as ItemDrug;
+					if (o != null)
+					{
+						var cn:CodeName=new CodeName();
+						cn.code=o.dm;
+						cn.name=o.mc;
+						callback(selectInd, cn);
+					}
+				}
+				close();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:ViewStack width="100%"
+				  height="100%"
+				  selectedIndex="{selectInd}"
+				  creationPolicy="all"
+				  paddingLeft="5"
+				  paddingRight="5"
+				  paddingTop="5"
+				  paddingBottom="5">
+		<mx:VBox width="100%"
+				 height="100%">
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 horizontalAlign="right">
+				<mx:Label text="机构代码/名称："
+						  fontWeight="bold"/>
+				<mx:TextInput id="jgmc"
+							  width="200"/>
+				<button:BtnQuery click="queryJg();"/>
+			</mx:HBox>
+			<mx:DataGrid id="jgDataGrid"
+						 width="100%"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 doubleClick="onClickJg()"
+						 dataProvider="{configModel.mRuleOrgLw}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="jgdm"
+									   width=".4"
+									   headerText="机构代码"/>
+					<mx:DataGridColumn dataField="jgmc"
+									   width=".6"
+									   headerText="机构名称"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+
+
+		<mx:VBox width="100%"
+				 height="100%">
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 horizontalAlign="right">
+				<mx:Label text="病种代码/名称："
+						  fontWeight="bold"/>
+				<mx:TextInput id="disease"
+							  width="200"/>
+				<button:BtnQuery click="queryBz();"/>
+			</mx:HBox>
+			<mx:DataGrid width="100%"
+						 id="jbDataGrid"
+						 height="100%"
+						 doubleClickEnabled="true"
+						 doubleClick="onClickJb()"
+						 dataProvider="{diseaseModel.allDiseaseAC}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="code"
+									   width=".4"
+									   headerText="代码"/>
+					<mx:DataGridColumn dataField="name"
+									   width=".6"
+									   headerText="名称"/>
+				</mx:columns>
+			</mx:DataGrid>
+		</mx:VBox>
+
+
+
+		<mx:VBox width="100%"
+				 height="100%">
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 horizontalAlign="right">
+				<mx:Label text="药品代码/名称："
+						  fontWeight="bold"/>
+				<mx:TextInput id="drug"
+							  width="200"/>
+				<button:BtnQuery click="queryYp();"/>
+			</mx:HBox>
+			<mx:DataGrid id="ypDataGrid"
+						 width="100%"
+						 doubleClickEnabled="true"
+						 doubleClick="onClickYp()"
+						 dataProvider="{cPageBar.SourceData}"
+						 height="100%">
+				<mx:columns>
+					<mx:DataGridColumn headerText="药品编号"
+									   width=".3"
+									   dataField="dm"/>
+					<mx:DataGridColumn headerText="名称"
+									   width=".4"
+									   dataField="mc"/>
+					<mx:DataGridColumn headerText="剂型"
+									   width=".3"
+									   dataField="jx"/>
+				</mx:columns>
+			</mx:DataGrid>
+
+			<mx:HBox width="100%"
+					 height="25">
+				<mx:Spacer width="100%"/>
+				<button:Pager id="cPageBar"
+							  cornerRadius="3"
+							  right="0"
+							  paddingTop="3"
+							  pageSize="{50}"
+							  total="{maintainModel.countDrug}"
+							  values="{[argVO]}"
+							  SourceData="{maintainModel.itemDrug}"
+							  TotalPages="{maintainModel.countDrug}"
+							  eventType="{PageEvent.PAGE_ITEM_DRUG}"
+							  height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+	</mx:ViewStack>
+</mx:TitleWindow>

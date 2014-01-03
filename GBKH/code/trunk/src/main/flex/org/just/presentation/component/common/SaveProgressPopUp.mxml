@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="absolute"
+				width="316"
+				height="100"
+				titleStyleName="titleText">
+	<mx:Script>
+		<![CDATA[
+			[Bindable]
+			public var proGressBarLabel:String="保存中...";
+		]]>
+	</mx:Script>
+	<mx:ProgressBar x="19"
+					y="21"
+					labelPlacement="right"
+					label="{proGressBarLabel}"
+					fontWeight="bold"
+					fontSize="12"
+					indeterminate="true"
+					trackHeight="16"/>
+</mx:TitleWindow>

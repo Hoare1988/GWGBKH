@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="org.just.xch.view.component.common.*"
+				layout="absolute"
+				width="50%"
+				height="50%"
+				creationComplete="init()"
+				showCloseButton="true"
+				close="close()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.SysUserEvent;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.CodeHelper;
+			
+			import mx.controls.Alert;
+			import mx.controls.DateField;
+			import mx.managers.PopUpManager;
+			import mx.validators.Validator;
+			public var editingSysUser:SysUser;
+			[Bindable]
+			private var addValidatorArr:Array=[];
+
+			private function init():void
+			{
+				addValidatorArr.push(addNameStringValidator);
+				addValidatorArr.push(addPwdStringValidator);
+				addValidatorArr.push(addXmStringValidator);
+			}
+
+			private function saveUserClick():void
+			{
+				//验证
+				editingSysUser=new SysUser();
+				var validatorErrorArray:Array=Validator.validateAll(addValidatorArr);
+				if (validatorErrorArray.length == 0)
+				{
+					editingSysUser.py=editPyTxt.text;
+					editingSysUser.userName=editNameTxt.text;
+					editingSysUser.password=editPwdTxt.text;
+					editingSysUser.realName=editXmTxt.text;
+					editingSysUser.py=editPyTxt.text;
+					editingSysUser.gender=editXbTxt.selectedValue.toString();
+					editingSysUser.deptcode=editBmBm.text;
+					editingSysUser.deptname=editBmMc.text;
+					editingSysUser.cellphone=editCellP.text;
+					editingSysUser.telphone=editTelP.text;
+					editingSysUser.email=editEmail.text;
+					editingSysUser.postname=editZwMc.text;
+					editingSysUser.entrydate=DateField.stringToDate(editRzrq.text, "YYYY/MM/DD");
+					editingSysUser.canaudit=editQlTxt.selectedValue.toString();
+					new SysUserEvent(SysUserEvent.EVENT_INSERT_USER, editingSysUser).dispatch();
+					close();
+				}
+				else
+				{
+					AlertUtil.errorMessages(validatorErrorArray);
+				}
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+				
+			}
+		]]>
+	</mx:Script>
+
+
+
+
+
+	<mx:VBox id="editBox"
+			 width="100%"
+			 height="100%"
+			 horizontalAlign="center" paddingLeft="20" paddingRight="20" paddingTop="20" paddingBottom="20">
+		<mx:HBox width="100%"
+				 height="100%">
+
+
+			<mx:VBox width="100%"
+					 height="100%">
+				<mx:HBox>
+					<mx:Label text="用 户 名:"/>
+					<mx:TextInput id="editNameTxt"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="密     码:"/>
+					<mx:TextInput id="editPwdTxt" displayAsPassword="true"/>
+				</mx:HBox>
+				<mx:HBox>
+
+
+					<mx:Label text="姓     名:"/>
+					<mx:TextInput id="editXmTxt"
+								  text=""/>
+				</mx:HBox>
+				<mx:HBox>
+
+
+					<mx:Label text="拼     音:"/>
+					<mx:TextInput id="editPyTxt"
+								  text="{CodeHelper.toPinyinCode(editXmTxt.text)}"
+								  editable="false"
+								  enabled="false"/>
+
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="性    别:"/>
+					<mx:RadioButtonGroup id="editXbTxt"/>
+
+
+					<mx:RadioButton groupName="editXbTxt"
+									id="meil"
+									label="男"
+									value="男"
+									selected="true"/>
+					<mx:RadioButton groupName="editXbTxt"
+									id="femeil"
+									label="女"
+									value="女"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="部门编码:"/>
+					<mx:TextInput id="editBmBm"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="部门名称:"/>
+					<mx:TextInput id="editBmMc"/>
+				</mx:HBox>
+
+			</mx:VBox>
+
+
+
+			<mx:VBox width="100%"
+					 height="100%">
+
+
+
+
+				<mx:HBox>
+					<mx:Label text="移动电话:"/>
+					<mx:TextInput id="editCellP"/>
+				</mx:HBox>
+				
+				<mx:HBox>
+					<mx:Label text="固定电话:"/>
+					<mx:TextInput id="editTelP"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="邮件地址:"/>
+					<mx:TextInput id="editEmail"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="职位名称:"/>
+					<mx:TextInput id="editZwMc"/>
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="是否拥有审核权:"/>
+					<mx:RadioButtonGroup id="editQlTxt"/>
+					
+					
+					
+					<mx:RadioButton groupName="editQlTxt"
+									id="ql1"
+									label="有"
+									value="1"/>
+					<mx:RadioButton groupName="editQlTxt"
+									id="ql2"
+									label="否"
+									value="0"
+									selected="true"/>
+					
+				</mx:HBox>
+				<mx:HBox>
+					<mx:Label text="入职日期:"/>
+					<mx:DateField id="editRzrq" selectedDate="{new Date()}"
+								  formatString="YYYY/MM/DD" width="{editNameTxt.width}"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HBox>
+		<mx:HBox width="100%"
+				 height="50%"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave click="saveUserClick()"
+							enabled="{Validator.validateAll(addValidatorArr).length==0?true:false}"/>
+			<common:BtnCancel click="editNameTxt.text='';editPwdTxt.text='';editXmTxt.text='';editPyTxt.text='';close();"/>
+		</mx:HBox>
+	</mx:VBox>
+
+
+
+
+	<!--验证-->
+	<mx:StringValidator id="addNameStringValidator"
+						source="{editNameTxt}"
+						requiredFieldError="用户名不能为空"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+	<mx:StringValidator id="addPwdStringValidator"
+						source="{editPwdTxt}"
+						requiredFieldError="密码不能为空"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+	<mx:StringValidator id="addXmStringValidator"
+						source="{editXmTxt}"
+						requiredFieldError="姓名不能为空"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+</mx:TitleWindow>

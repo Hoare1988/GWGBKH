@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.just.xch.dao.sys.SysSearchRecordDao">
+
+	<insert id="insertSysSearchRecord" parameterType="SysSearchRecord">
+		<selectKey resultType="int" keyProperty="id" order="BEFORE"> 
+			SELECT SEQ_SYS_MEMCACHE.nextVAL FROM DUAL
+		</selectKey>
+		INSERT INTO SYS_SEARCH_RECORD(ID,USER_ID,JGID,BZID,HZID,YPID,BZ,CREATE_DATE)
+		VALUES(#{id},#{user_id},#{jgid},#{bzid},#{hzid},#{ypid},#{bz,jdbcType=VARCHAR},sysdate)
+	</insert>
+</mapper>
+

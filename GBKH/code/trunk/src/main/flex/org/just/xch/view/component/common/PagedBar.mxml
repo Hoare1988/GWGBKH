@@ -1,0 +1,481 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!--
+	 SourceData：源数据入口
+	 currentPageData：当前页的数据
+	 pageSize：每页的数据条数
+	 expand:是否使用扩展模式
+	 linkNum：扩展模式下显示的链接数
+	 对于Datagrid排序需指定相应的排序事件处理函数Sort(event) line:142
+	 对于AdvancedDatagrid排序需指定相应的排序事件处理函数SortADG(event) line:152
+	 对于HttpServices组件需制定属性resultFormat="e4x"
+-->
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml">
+	<mx:Metadata>
+	[Event(name="sourceDataChange",type="flash.events.Event")]
+    [Event(name="pageChange",type="flash.events.Event")]
+</mx:Metadata>
+	<mx:Script>
+		<![CDATA[
+			import com.winning.presentation.assets.ImagesAssets;
+
+			import mx.collections.ArrayCollection;
+			import mx.collections.Sort;
+			import mx.collections.XMLListCollection;
+			import mx.controls.Alert;
+			import mx.events.AdvancedDataGridEvent;
+			import mx.events.DataGridEvent;
+			import mx.events.ItemClickEvent;
+			import mx.formatters.SwitchSymbolFormatter;
+			import mx.utils.StringUtil;
+
+			[Bindable]
+			private var sourceData;
+			private var currentPageNum:int;
+			private var totalPage:int;
+			private var sortOption:Boolean=true;
+			[Bindable]
+			public var currentPageData;
+
+			public var pageSize:int=10;
+			public var expand:Boolean=false;
+			public var linkNum:int=5;
+
+			//当数据源发生改变时，获取数据并调用Reset（）来重置组件
+			[Bindable]
+			public function set SourceData(value:Object):void
+			{
+				this.dispatchEvent(new Event("sourceDataChange"));
+				cBox.enabled=false;
+				if (value == null)
+				{
+					currentPageData=null;
+					totalPage=1;
+					currentPageNum=1;
+//					cBox.enabled=false;
+					sourceData=null;
+					return;
+				}
+
+				if (value is ArrayCollection)
+				{
+					if (value.length != 0)
+					{
+						sourceData=value;
+						Reset();
+						cBox.enabled=true;
+					}
+					else
+					{
+						currentPageData=null;
+						totalPage=1;
+						currentPageNum=1;
+//						cBox.enabled=false;
+						sourceData=new ArrayCollection();
+					}
+				}
+				else
+				{
+					if (value.length() != 0)
+					{
+						sourceData=value;
+						Reset();
+						cBox.enabled=true;
+					}
+					else
+					{
+						currentPageData=null;
+						totalPage=1;
+						currentPageNum=1;
+//						cBox.enabled=false;
+						sourceData=new ArrayCollection();
+						;
+					}
+				}
+			}
+
+			public function get SourceData():Object
+			{
+				return sourceData;
+			}
+
+			public function get TotalPage():int
+			{
+				return totalPage;
+			}
+
+//			//当页改变时，更新当前页的数据
+//			public function set CurrentPageNum(num:int):void
+//			{
+//				currentPageNum=num;
+//				SetCurrentPage(num);
+//			}
+			public function get CurrentPageNum():int
+			{
+				return currentPageNum;
+			}
+
+
+			//重置控件参数
+			private function Reset():void
+			{
+				//if(sourceData
+				//Alert.show(sourceData.length());
+				if (sourceData is ArrayCollection)
+				{
+					totalPage=Math.ceil(sourceData.length / pageSize);
+				}
+				else
+				{
+					totalPage=Math.ceil(sourceData.length() / pageSize);
+				}
+
+				currentPageNum=1;
+
+				next_Btn.enabled=true;
+				last_Btn.enabled=true;
+				first_Btn.enabled=true;
+				pre_Btn.enabled=true;
+				if (currentPageNum >= totalPage)
+				{
+					next_Btn.enabled=false;
+					last_Btn.enabled=false;
+				}
+				if (currentPageNum == 1)
+				{
+					first_Btn.enabled=false;
+					pre_Btn.enabled=false;
+				}
+				first_Btn.label="1..";
+				last_Btn.label=".." + totalPage;
+				num_Txt.text=String(1);
+				if (expand == true)
+				{
+					page_LinkBar.includeInLayout=true;
+					page_LinkBar.visible=true;
+				}
+				SetCurrentPage(1);
+				ChangeLink();
+			}
+
+			//根据页的索引，来更新页的数据项
+			private function SetCurrentPage(num:int):void
+			{
+				if (sourceData == null)
+				{
+					return;
+				}
+				var tempXML=new ArrayCollection();
+				var len:int;
+				if (sourceData is ArrayCollection)
+				{
+					len=sourceData.length;
+				}
+				else
+				{
+					len=sourceData.length();
+				}
+				for (var i:int=(num - 1) * pageSize; i < num * pageSize; i++)
+				{
+					if (i >= len)
+					{
+						break;
+					}
+					else
+					{
+						tempXML.addItem(sourceData[i]);
+					}
+				}
+				if (sourceData is ArrayCollection)
+				{
+					currentPageData=tempXML;
+				}
+				else
+				{
+					currentPageData=tempXML.source;
+				}
+
+			}
+
+			public function ChangeLink():void
+			{
+				var linkArray:ArrayCollection=new ArrayCollection();
+				var linkpage:int=Math.floor((currentPageNum - 1) / linkNum);
+				for (var i:int=linkpage * linkNum + 1; i < (linkpage + 1) * linkNum + 1; i++)
+				{
+					if (i <= totalPage)
+					{
+						linkArray.addItem(i.toString());
+					}
+					else
+					{
+						break;
+					}
+				}
+				page_LinkBar.dataProvider=linkArray;
+				var idh:int=(currentPageNum - 1) % linkNum;
+				page_LinkBar.selectedIndex=idh;
+			}
+
+			//控件CLick Change等事件的处理函数
+			public function ChangeToPage(number:int):void
+			{
+				next_Btn.enabled=true;
+				last_Btn.enabled=true;
+				first_Btn.enabled=true;
+				pre_Btn.enabled=true;
+
+				if (number >= totalPage)
+				{
+					next_Btn.enabled=false;
+					last_Btn.enabled=false;
+				}
+				if (number <= 1)
+				{
+					first_Btn.enabled=false;
+					pre_Btn.enabled=false;
+				}
+
+				currentPageNum=number;
+				SetCurrentPage(number);
+				num_Txt.text=number.toString();
+				ChangeLink();
+				this.dispatchEvent(new Event("pageChange"));
+			}
+
+			//对输入框Enter事件的处理
+			private function numTxtEnter():void
+			{
+				var number:int=(int)(num_Txt.text);
+				if (number <= 0 || number > totalPage)
+				{
+					Alert.show(resourceManager.getString('localization', 'exceedPageRange') + '!');
+					num_Txt.text=currentPageNum.toString();
+				}
+				else
+				{
+					ChangeToPage(number);
+				}
+			}
+
+			public function TxtFocus(fouse:Boolean):void
+			{
+				if (fouse == true)
+				{
+					num_Txt.setSelection(0, 2);
+				}
+				else
+				{
+				}
+			}
+
+			private function linkBar_OnClick(e:ItemClickEvent):void
+			{
+				ChangeToPage((int)(e.label));
+			}
+
+			public function Sort(event:DataGridEvent):void
+			{
+				if (sourceData is XMLList)
+				{
+					var tempXML:XMLListCollection=new XMLListCollection(sourceData);
+					var sort:mx.collections.Sort=new mx.collections.Sort();
+					sort.fields=[new mx.collections.SortField(event.dataField, true, sortOption)];
+					sortOption=!sortOption;
+					tempXML.sort=sort;
+					tempXML.refresh();
+					event.preventDefault();
+					var dataxml:XMLListCollection=new XMLListCollection();
+					for (var i:int=0; i < tempXML.length; i++)
+					{
+						dataxml.addItem(tempXML[i]);
+					}
+					SourceData=dataxml.source;
+				}
+				else if (sourceData is ArrayCollection)
+				{
+					var tempArray=sourceData;
+					var sort:mx.collections.Sort=new mx.collections.Sort();
+					var isNumeric:Boolean=isnumeric(event.dataField);
+					sort.fields=[new mx.collections.SortField(event.dataField, true, sortOption, isNumeric)];
+					sortOption=!sortOption;
+					tempArray.sort=sort;
+					tempArray.refresh();
+					event.preventDefault();
+					var data:ArrayCollection=new ArrayCollection();
+					for (var i:int=0; i < tempArray.length; i++)
+					{
+						data.addItem(tempArray[i]);
+					}
+					SourceData=data;
+				}
+			}
+
+			private function isnumeric(df:String):Boolean
+			{
+				var flag:Boolean=false;
+				if (df != null && df.length > 0)
+				{
+					switch (df.toLowerCase())
+					{
+						case "cs":
+							flag=true;
+							break;
+						case "je":
+							flag=true;
+							break;
+						case "value":
+							flag=true;
+							break;
+						case "amount":
+							flag=true;
+							break;
+						case "count":
+							flag=true;
+							break;
+						case "logincount":
+							flag=true;
+							break;
+						default:
+							break;
+					}
+				}
+
+				return flag;
+			}
+
+			public function SortADG(event:AdvancedDataGridEvent):void
+			{
+				if (sourceData is XMLList)
+				{
+					var tempXML:XMLListCollection=new XMLListCollection(sourceData);
+					var sort:mx.collections.Sort=new mx.collections.Sort();
+					sort.fields=[new mx.collections.SortField(event.dataField, true, sortOption)];
+					sortOption=!sortOption;
+					tempXML.sort=sort;
+					tempXML.refresh();
+					event.preventDefault();
+					var dataxml:XMLListCollection=new XMLListCollection();
+					for (var i:int=0; i < tempXML.length; i++)
+					{
+						dataxml.addItem(tempXML[i]);
+					}
+					SourceData=dataxml.source;
+				}
+				else if (sourceData is ArrayCollection)
+				{
+					var tempArray=sourceData;
+					var sort:mx.collections.Sort=new mx.collections.Sort();
+					var isNumeric:Boolean=false;
+					if (event.dataField == "personCount" || event.dataField == "positiveValue" || event.dataField == "negativeValue")
+					{
+						isNumeric=true;
+					}
+					else if (event.dataField == "value")
+					{
+						isNumeric=true;
+					}
+					else if (event.dataField == "stdValue")
+					{
+						isNumeric=true;
+					}
+					else if (event.dataField == "ttlPersonCount")
+					{
+						isNumeric=true;
+					}
+					sort.fields=[new mx.collections.SortField(event.dataField, true, sortOption, isNumeric)];
+					sortOption=!sortOption;
+					tempArray.sort=sort;
+					tempArray.refresh();
+					event.preventDefault();
+					var data:ArrayCollection=new ArrayCollection();
+					for (var i:int=0; i < tempArray.length; i++)
+					{
+						data.addItem(tempArray[i]);
+					}
+					SourceData=data;
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:Style> 
+        .myCustomLinkButtonStyleName { 
+            fontWeight: normal; 
+        } 
+  
+        .myCustomButtonStyleName { 
+            fontWeight: normal; 
+        } 
+        .style1
+        {
+        	paddingLeft:0; 
+        	paddingRight:0; 
+        	fontSize:12; 
+        	fontWeight:normal;
+        }
+    </mx:Style>
+	<mx:Box id="cBox"
+			enabled="false"
+			horizontalGap="1"
+			direction="horizontal"
+			verticalAlign="middle">
+		<mx:LinkButton styleName="style1"
+					   click="ChangeToPage(1);"
+					   id="first_Btn"
+					   label="{resourceManager.getString('localization','firstPage')}"
+					   textAlign="right"
+					   focusAlpha="0"/>
+		<mx:LinkButton styleName="style1"
+					   labelPlacement="top"
+					   click="ChangeToPage(CurrentPageNum-1);"
+					   id="pre_Btn"
+					   label="◀"/>
+		<mx:LinkBar linkButtonStyleName="myCustomLinkButtonStyleName"
+					paddingLeft="0"
+					paddingRight="0"
+					fontSize="12"
+					fontWeight="normal"
+					paddingTop="0"
+					borderThickness="0"
+					horizontalGap="0"
+					borderStyle="none"
+					buttonMode="true"
+					separatorWidth="0"
+					itemClick="linkBar_OnClick(event);"
+					id="page_LinkBar"
+					includeInLayout="false"
+					visible="false"/>
+		<mx:LinkButton styleName="style1"
+					   click="ChangeToPage(CurrentPageNum+1);"
+					   id="next_Btn"
+					   label="▶"/>
+		<mx:LinkButton styleName="style1"
+					   click="ChangeToPage(totalPage);"
+					   id="last_Btn"
+					   label="{resourceManager.getString('localization','lastPage')}"/>
+		<mx:TextInput paddingTop="0"
+					  focusIn="TxtFocus(true);"
+					  restrict="0-9"
+					  paddingBottom="0"
+					  enter="numTxtEnter()"
+					  fontSize="12"
+					  id="num_Txt"
+					  width="28"
+					  height="22"/>
+		<!--<mx:Button styleName="style1"
+			 click="numTxtEnter()"
+			 id="goBtn"
+			 label="{resourceManager.getString('localization','goto')}"
+			 width="32"
+			 useHandCursor="true"
+			 buttonMode="true"
+			 mouseChildren="false"/>-->
+		<mx:Button styleName="style1"
+				   click="numTxtEnter()"
+				   id="goBtn"
+				   label="跳转"
+				   width="32"
+				   useHandCursor="true"
+				   buttonMode="true"
+				   mouseChildren="false"/>
+	</mx:Box>
+</mx:HBox>

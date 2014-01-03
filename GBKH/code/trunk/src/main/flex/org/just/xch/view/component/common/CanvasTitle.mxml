@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%" height="24" horizontalGap="0" verticalAlign="middle" 
+		 paddingLeft="0" paddingRight="0" xmlns:common1="org.just.xch.view.component.common.*">
+		<mx:Script>
+			<![CDATA[
+				import mx.collections.ArrayCollection;
+				
+				[Bindable]
+				public var pageName:String="";
+				[Bindable]
+				public var showComboBox:Boolean=false;
+				[Bindable]
+				public var showMoreIcon:Boolean=false;
+				[Bindable]
+				public var showZoomIcon:Boolean=false;
+				[Bindable]
+				public var isConsoleChart:Boolean=false;
+				[Bindable]
+				public var lcType:int=0;
+				[Bindable]
+				public var pageIndex:int=0;
+				[Bindable]
+				public var stateName:String="";				
+				[Bindable]
+				public var toolTipStr:String="";				
+				[Bindable]
+				public var chartIconType:int=0;
+			]]>
+		</mx:Script>
+		<mx:Label text="{pageName}" fontSize="12" fontWeight="bold"/>
+		<mx:Spacer width="100%"/>
+</mx:HBox>

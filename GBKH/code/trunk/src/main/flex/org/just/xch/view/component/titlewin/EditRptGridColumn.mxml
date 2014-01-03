@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="360"
+				height="300"
+				titleStyleName="twTitleStyle"
+				creationComplete="init()"
+				title="{title_str}"
+				icon="{ImagesAssets.ADD16}"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.domain.RptGridColumn;
+			import org.just.xch.control.events.domain.RptGridEvent;
+			import org.just.xch.model.domain.DbConn;
+			import org.just.xch.model.bean.LSBean;
+			import org.just.xch.utils.DpUtil;
+			import org.just.xch.model.mlct.RptMgtModelLocator;
+			import org.just.xch.model.domain.RptGrid;
+			import org.just.xch.utils.CodeHelper;
+			import org.just.xch.assets.ImagesAssets;
+			import mx.collections.ArrayCollection;
+			import org.just.xch.utils.Constant;
+			import mx.managers.PopUpManager;
+
+			private var rptMgtModel:RptMgtModelLocator=RptMgtModelLocator.getInstance();
+
+			[Bindable]
+			public var operType:int=0;
+			[Bindable]
+			public var rptGrid:RptGrid;
+			[Bindable]
+			public var rptGridColumn:RptGridColumn;
+			[Bindable]
+			public var title_str:String;
+
+			private function init():void
+			{
+				if (operType == Constant.TW_ADD)
+				{
+					title_str="添加报表列";
+					indexTxt.text="未分配";
+					if (rptGridColumn == null)
+					{
+						rptGridColumn=new RptGridColumn();
+					}
+				}
+				else if (operType == Constant.TW_EDIT)
+				{
+					title_str="修改报表列";
+					if (rptGridColumn != null)
+					{
+						indexTxt.text=rptGridColumn.colIndex + '';
+						nameTxt.text=rptGridColumn.colName;
+						propertyTxt.text=rptGridColumn.colProperty;
+						visibleCkb.selected=(rptGridColumn.colVisible == Constant.TRUE ? true : false);
+						exportCkb.selected=(rptGridColumn.colExport == Constant.TRUE ? true : false);
+						for each (var ls:LSBean in typeCmb.dataProvider as ArrayCollection)
+						{
+							if (ls.value == rptGridColumn.colType)
+							{
+								typeCmb.selectedItem=ls;
+								break;
+							}
+						}
+					}
+				}
+
+			}
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function save():void
+			{
+				rptGridColumn.rptGrid=rptGrid;
+				rptGridColumn.colName=nameTxt.text;
+				rptGridColumn.colProperty=propertyTxt.text;
+				rptGridColumn.colType=typeCmb.selectedItem.value;
+				rptGridColumn.colVisible=(visibleCkb.selected ? Constant.TRUE : Constant.FALSE);
+				rptGridColumn.colExport=(exportCkb.selected ? Constant.TRUE : Constant.FALSE);
+
+				if (operType == Constant.TW_ADD)
+				{
+					new RptGridEvent(RptGridEvent.EVENT_ADD_RPTGRIDCOLUMN, rptGridColumn).dispatch();
+				}
+				else if (operType == Constant.TW_EDIT)
+				{
+					new RptGridEvent(RptGridEvent.EVENT_UPDATE_RPTGRIDCOLUMN, rptGridColumn).dispatch();
+				}
+				close();
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingBottom="10"
+			 paddingTop="10"
+			 paddingLeft="10"
+			 paddingRight="10">
+		<mx:Form width="100%"
+				 height="100%">
+			<mx:FormItem label="列序号:"
+						 horizontalAlign="right">
+				<mx:TextInput id="indexTxt"
+							  width="200"
+							  enabled="false"/>
+			</mx:FormItem>
+			<mx:FormItem label="列名称*:"
+						 horizontalAlign="right">
+				<mx:TextInput id="nameTxt"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="列字段*:"
+						 horizontalAlign="right">
+				<mx:TextInput id="propertyTxt"
+							  width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="字段类型*:"
+						 horizontalAlign="right">
+				<mx:ComboBox id="typeCmb"
+							 dataProvider="{DpUtil.getColType()}"
+							 width="200"/>
+			</mx:FormItem>
+			<mx:FormItem label="是否显示*:"
+						 horizontalAlign="right">
+				<mx:CheckBox id="visibleCkb"/>
+			</mx:FormItem>
+			<mx:FormItem label="是否导出*:"
+						 horizontalAlign="right">
+				<mx:CheckBox id="exportCkb"/>
+			</mx:FormItem>
+		</mx:Form>
+		<mx:HBox width="100%"
+				 height="38"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<common:BtnSave click="save()"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

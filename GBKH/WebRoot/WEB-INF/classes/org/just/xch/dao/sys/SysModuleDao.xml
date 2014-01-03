@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.just.xch.dao.sys.SysModuleDao">
+	
+	<resultMap id="sysModuleResultMap" type="SysModule">
+		<id property="id" column="m_id" javaType="int" />
+		<result property="name" column="m_name" javaType="string" />
+		<result property="code" column="m_code" javaType="string" />
+		<result property="path" column="m_path" javaType="string" />
+		<result property="groupName" column="m_groupName" javaType="string" />
+		<result property="comments" column="m_comments" javaType="string" />
+		<result property="ordinal" column="m_ordinal" javaType="int" />
+		<result property="isMenu" column="m_isMenu" javaType="int" />
+		<result property="isNav" column="m_isNav" javaType="int" />
+		<result property="isLeaf" column="m_isLeaf" javaType="int" />
+		<result property="stage" column="m_stage" javaType="int" />
+		<result property="type" column="m_type" javaType="int" />
+		<result property="enable" column="m_enable" javaType="int"/>
+		<association property="parent" column="m_parentid" javaType="SysModule" select="getParentModule"/>
+		<collection property="children" column="m_id" ofType="SysModule" select="getChildrenModule"/>
+	</resultMap>
+	
+	<sql id="sysModuleCol">
+		m.id as m_id,
+		m.name as m_name,
+		m.code as m_code,
+		m.path as m_path,
+		m.groupName as m_groupName,
+		m.comments as m_comments,
+		m.ordinal as m_ordinal,
+		m.isMenu as m_isMenu,
+		m.isNav as m_isNav,
+		m.isLeaf as m_isLeaf,
+		m.type as m_type,
+		m.stage as m_stage,
+		m.enable as m_enable,
+		m.parentid as m_parentid
+	</sql>
+	
+	
+	<!-- select-->
+	<select id="findSysModuleById" parameterType="int" resultMap="sysModuleResultMap">
+		select 
+		<include refid="sysModuleCol"/> 
+		from SYSMODULE m 
+		where m.id=#{id}
+	</select>
+	
+	<select id="findModulesByCondition" parameterType="map" resultMap="sysModuleResultMap">
+		select
+		<include refid="sysModuleCol"/>
+		from SYSMODULE m  
+		where 1=1
+		<if test="name!=null"> and m.name=#{name} </if>
+		order by m.stage,m.ordinal
+	</select>
+	
+	<select id="findModulesByParentID" parameterType="int" resultMap="sysModuleResultMap">
+		select
+		<include refid="sysModuleCol"/>
+		from SYSMODULE m  
+		where 1=1
+		and m.parentid=#{pid}
+		order by m.stage,m.ordinal
+	</select>
+	
+	
+	<select id="queryModulesByCondition" parameterType="map" resultMap="sysModuleResultMap">
+		select
+		<include refid="sysModuleCol"/>
+		from SYSMODULE m  
+		where m.stage=1
+		order by m.stage,m.ordinal
+	</select>
+	
+	<select id="getParentModule" parameterType="int" resultMap="sysModuleResultMap">
+		select 
+		<include refid="sysModuleCol"/> 
+		from SYSMODULE m 
+		where m.id=#{m_parentid}
+		order by m.ordinal
+	</select>
+	
+	<select id="getChildrenModule" parameterType="int" resultMap="sysModuleResultMap">
+		select 
+		<include refid="sysModuleCol"/> 
+		from SYSMODULE m 
+		where m.parentid=#{m_id}
+		order by m.ordinal
+	</select>
+	
+	<!-- insert-->
+	<insert id="insertSysModule" parameterType="SysModule">
+		insert into SYSMODULE(name,path,ordinal,isleaf,stage,groupname,type,comments,parentid) 
+		values(#{name},#{path},#{ordinal},#{isLeaf},#{stage},#{groupName},#{type},#{comments},#{parent.id})
+	</insert>
+	
+	<!-- update-->
+	<update id="updateSysModule" parameterType="map">
+		update SYSMODULE set name=#{name}
+		<if test="path!=null">,path=#{path} </if>
+		<if test="ordinal!=null">,ordinal=#{ordinal} </if>
+		<if test="isLeaf!=null">,isLeaf=#{isLeaf} </if>
+		<if test="groupName!=null">,groupName=#{groupName} </if>
+		<where>id=#{id}</where>
+	</update>
+	
+	<!-- delete -->
+	<delete id="deleteSysModule" parameterType="int">
+		delete from SYSMODULE where id=#{id}
+	</delete>
+	
+	<delete id="deleteSysModuleByParentID" parameterType="int">
+		delete from SYSMODULE where parentid=#{pid}
+	</delete>
+</mapper>
+

@@ -1,0 +1,247 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 paddingLeft="0"
+		 paddingTop="0"
+		 paddingBottom="0"
+		 paddingRight="0"
+		 horizontalGap="0"
+		 width="100%"
+		 height="50"
+		 verticalAlign="middle"
+		 creationComplete="init()"
+		 xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.domain.SysEvent;
+			import org.just.xch.model.domain.ApplyRecord;
+			import org.just.xch.model.domain.SMS;
+			import org.just.xch.model.domain.SysModule;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.vo.SysUserVO;
+			import org.just.xch.utils.ClearMemory;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.view.component.titlewin.ChangePassword;
+			import org.just.xch.view.component.titlewin.SwitchSysRole;
+			import org.just.xch.view.component.titlewin.SystemTips;
+			
+			import flexlib.containers.SuperTabNavigator;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.messaging.events.MessageEvent;
+			import mx.messaging.events.MessageFaultEvent;
+			import mx.modules.ModuleLoader;
+			import mx.rpc.events.ResultEvent;
+
+			private var blinkTimer:Timer;
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			private function init():void
+			{
+				consumer.subscribe();
+				//BindingUtils.bindProperty(daLinkBtnFlicker, "ac_dg", AppModelLocator.getInstance(), "dp_dg_qy");
+
+				//blinkTimer=new Timer(1000, 0);
+				//blinkTimer.addEventListener("timer", toggleText);
+				//blinkTimer.start();
+			}
+
+			private function messageHandler(event:MessageEvent):void
+			{
+				var returnAC:ArrayCollection=event.message.body as ArrayCollection;
+				if (returnAC != null && returnAC.length > 0 && appModel.loginUser != null)
+				{
+					var ac:ArrayCollection=new ArrayCollection();
+					for each (var sms:SMS in returnAC)
+					{
+						if (sms.type == SMS.TYPE01)
+						{
+							if (Constant.TRUE == appModel.loginUser.canaudit)
+							{
+								ac.addItem(sms);
+							}
+						}
+						else if (sms.type == SMS.TYPE02)
+						{
+							if (sms.consumerid == appModel.loginUser.id)
+							{
+								ac.addItem(sms);
+							}
+						}
+						else if (sms.type == SMS.TYPE03)
+						{
+							if (sms.consumerid == appModel.loginUser.id)
+							{
+								ac.addItem(sms);
+							}
+						}
+					}
+					appModel.mySMS=ac;
+					appModel.unReadSMS=appModel.mySMS.length;
+				}
+			}
+
+			private function messageFault(event:MessageFaultEvent):void
+			{
+				//Alert.show("接收错误");    
+			}
+
+			private function closeAllTabs():void
+			{
+				var superTab:SuperTabNavigator=this.parentDocument.cMain.tabNav;
+				if (superTab.numChildren > 1)
+				{
+					var len:int=superTab.numChildren;
+					for (var i:int=len - 1; i > 0; i--)
+					{
+						/* var ml:ModuleLoader=superTab.getChildAt(i) as ModuleLoader;
+						   if (ml != null)
+						   {
+						   ml.unloadModule();
+						 } */
+
+						var ichild:*=superTab.getChildAt(i);
+						if (ichild is ModuleLoader)
+						{
+							ichild.unloadModule();
+						}
+						else
+						{
+							ichild.removeAllChildren();
+						}
+						superTab.removeChildAt(i);
+					}
+					ClearMemory.getInstance().runClear();
+
+				}
+			}
+
+			private function changePassword():void
+			{
+				var twin:ChangePassword=ChangePassword(PopUpManager.createPopUp(DisplayObject(this.parentApplication), ChangePassword, true));
+				twin.sysUser=appModel.loginUser;
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function switchSysRole():void
+			{
+				var twin:SwitchSysRole=SwitchSysRole(PopUpManager.createPopUp(DisplayObject(this.parentApplication), SwitchSysRole, true));
+				twin.callbackFunction=closeAllTabs;
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function todo():void
+			{
+//				var twin:SystemTips=SystemTips(PopUpManager.createPopUp(DisplayObject(this.parentApplication), SystemTips, true));
+//				PopUpManager.centerPopUp(twin);
+				var url:URLRequest = new URLRequest("help.html");
+				navigateToURL(url, "_blank");
+//				var sysModule:SysModule=new SysModule();
+//				sysModule.path="help.swf";
+//				sysModule.name="帮助文档";
+//				var superTab:SuperTabNavigator=this.parentDocument.cMain.tabNav;
+//				var flag:Boolean=false;
+//				if (sysModule != null)
+//				{
+//					for (var i:int=1; i < superTab.numChildren; i++)
+//					{
+//						var moduleLoader:ModuleLoader=superTab.getChildAt(i) as ModuleLoader;
+//						if (moduleLoader && sysModule.path == moduleLoader.url)
+//						{
+//							superTab.selectedIndex=i;
+//							flag=true;
+//							break;
+//						}
+//					}
+//				}
+//				if(!flag)
+//				{
+//					var moduleLoader:ModuleLoader=new ModuleLoader();
+//					moduleLoader.label=sysModule.name;
+//					moduleLoader.url=sysModule.path;
+//					moduleLoader.percentHeight=100;
+//					moduleLoader.percentWidth=100;
+//					moduleLoader.data=sysModule;
+//					moduleLoader.setStyle("backgroundImage", ImagesAssets.BACKGROUNDIMG02);
+//					moduleLoader.styleName='backGroundBorderSkinStyle';
+//					superTab.addChild(moduleLoader);
+//					superTab.selectedIndex=((superTab.numChildren - 1) < 0 ? 0 : (superTab.numChildren - 1));
+//				}
+			}
+
+			protected function message_clickHandler(event:MouseEvent):void
+			{
+				//打开对应moduleR
+			}
+
+			
+			//退出
+			private function logOut():void{
+				//this.parentDocument.cLoginView.cPasswordTxt.text='';
+				//this.parentDocument.cLoginView.cUsernameTxt.text='';
+				var sysUserVO:SysUserVO=SysUserVO.getInstance();
+				sysUserVO.userName="";
+				sysUserVO.password="";
+				closeAllTabs();
+				new SysEvent(SysEvent.EVENT_EXIT,null).dispatch();
+			}
+		]]>
+	</mx:Script>
+	<mx:DateFormatter id="df"
+					  formatString="YYYY-MM-DD"/>
+	<mx:Consumer id="consumer"
+				 destination="serverpush"
+				 message="messageHandler(event)"
+				 fault="messageFault(event)"/>
+	<!--<mx:Image source="{ImagesAssets.MESSAGE}" id="message" click="message_clickHandler(event)"/>-->
+	<mx:HBox width="360"
+			 height="100%"
+			 horizontalGap="0"
+			 backgroundImage="{ImagesAssets.TITLE31}"
+			 backgroundSize="100%"
+			 paddingLeft="100"
+			 paddingTop="3">
+		<mx:Label text="医保监控审核平台"
+				  fontWeight="bold"
+				  fontSize="20"
+				  color="#000080"/>
+	</mx:HBox>
+	<mx:HBox width="100%"
+			 height="100%"
+			 horizontalGap="0"
+			 backgroundImage="{ImagesAssets.TITLE22}"
+			 backgroundSize="100%"
+			 verticalAlign="middle"
+			 paddingRight="5">
+		<mx:Spacer width="100%"/>
+		<!--<common:daLinkBtnFlicker id="daLinkBtnFlicker"
+								 label="{'未读消息('+appModel.unReadSMS+'条)'}"
+								 click="onSMSClick()"
+								 unread="{appModel.unReadSMS}"/>-->
+		<!--<mx:VRule height="{cLabel.height*0.75}"/>-->
+		<mx:Image source="{ImagesAssets.ONLINE16}"/>
+		<mx:Label id="cLabel"
+				  color="#ffffff"
+				  text="{appModel.loginUser.userName+'【'+appModel.loginUser.realName+'】'}"/>
+		<!--<mx:VRule height="{cLabel.height*0.75}"/>-->
+		<common:whiteLinkButton label="{resourceManager.getString('localization','label_switchrole')}"
+								click="switchSysRole()"
+								icon="{ImagesAssets.USER16}"/>
+		<!--<mx:VRule height="{cLabel.height*0.75}"/>-->
+		<common:whiteLinkButton label="{resourceManager.getString('localization','label_changepassword')}"
+								icon="{ImagesAssets.CONFIG}"
+								click="changePassword()"/>
+		<!--<mx:VRule height="{cLabel.height*0.75}"/>-->
+		<common:whiteLinkButton label="{resourceManager.getString('localization','label_help')}"
+								icon="{ImagesAssets.LIGHTBULB16}"
+								click="todo()"/>
+		<!--<mx:VRule height="{cLabel.height*0.75}"/>-->
+		<common:whiteLinkButton label="{resourceManager.getString('localization','label_exit')}"
+								icon="{ImagesAssets.EXITSYSTEM}"
+								click="logOut()"/>
+	</mx:HBox>
+</mx:HBox>

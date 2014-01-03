@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="400"
+				height="345"
+				titleStyleName="twTitleStyle"
+				title="邮件通知"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true"
+				xmlns:common="org.just.xch.view.component.common.*" xmlns:mail="org.just.xch.view.component.mail.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.vo.mail.MailArgVO;
+			
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var mailVo:MailArgVO=new MailArgVO();
+			
+			private function close():void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function save():void{
+				if(Validator.validateAll(validataArray).length==0){
+					sendMail.sendMail(subject.text,content.text,toAddress.text,csAddress.text);
+					close();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mail:SendMail id="sendMail"/>
+	<mx:Array id="validataArray">
+		<mx:Validator id="toAddressV" source="{toAddress}" property="text" requiredFieldError="请输入收件人地址！"/>
+		<mx:Validator id="subjectV" source="{subject}" property="text" requiredFieldError="请输入邮件主题！"/>
+		<mx:Validator id="contentV" source="{content}" property="text" requiredFieldError="请输入邮件内容！"/>
+	</mx:Array>
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+			<mx:Form width="100%"
+				height="100%">
+				<mx:FormItem label="收件人：">
+					<mx:TextInput id="toAddress" width="280" text="{mailVo.toAddress}"/>
+				</mx:FormItem>
+				<mx:FormItem label="抄   送：">
+					<mx:TextInput id="csAddress" width="280" text="{mailVo.csAddress}"/>
+				</mx:FormItem>
+				<mx:FormItem label="主   题：">
+					<mx:TextInput id="subject"  width="280" text="{mailVo.subject}"/>
+				</mx:FormItem>
+				<mx:FormItem label="内   容：">
+					<mx:TextArea id="content" width="280" height="135" text="{mailVo.content}"/>
+				</mx:FormItem>
+			</mx:Form>
+		<mx:HBox width="100%" verticalAlign="middle" horizontalAlign="center">
+			<common:BtnSave click="save()" label="发送"/>
+			<common:BtnCancel click="close()"/>
+		</mx:HBox>
+		<mx:Spacer width="100%" height="5"/>
+	</mx:VBox>
+</mx:TitleWindow>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Canvas xmlns:mx="http://www.adobe.com/2006/mxml"
+		   width="100%"
+		   height="100%"
+		   backgroundImage="{ImagesAssets.BACKGROUNDIMG04}"
+		   borderSkin="org.just.xch.view.component.common.skin.RepeatBackground"
+		   creationComplete="init()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.domain.SysEvent;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.vo.SysUserVO;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.utils.DpUtil;
+			
+			import mx.controls.Alert;
+			import mx.events.ValidationResultEvent;
+			import mx.validators.Validator;
+
+			[Bindable]
+			private var validatorArr:Array;
+			[Bindable]
+			private var sysUserVO:SysUserVO=SysUserVO.getInstance();
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			private function init():void
+			{
+				this.parentApplication.focusManager.setFocus(cUsernameTxt); 
+				initValidator();
+			}
+
+			private function initValidator():void
+			{
+				validatorArr=new Array();
+				validatorArr.push(usernameStringValidator);
+				validatorArr.push(passwordStringValidator);
+			}
+
+			public function eLoginBtnClick():void
+			{
+				var validatorErrorArray:Array=Validator.validateAll(validatorArr);
+				var isValidForm:Boolean=(validatorErrorArray.length == 0);
+				if (isValidForm)
+				{
+					sysUserVO.userName=cUsernameTxt.text;
+					sysUserVO.password=cPasswordTxt.text;
+					new SysEvent(SysEvent.EVENT_LOGIN, [cUsernameTxt.text, cPasswordTxt.text]).dispatch();
+				}
+				else
+				{
+					/* var err:ValidationResultEvent;
+					   var errorMessageArray:Array=[];
+					   for each (err in validatorErrorArray)
+					   {
+					   var errField:String=FormItem(err.currentTarget.source.parent).label
+					   errorMessageArray.push(err.message);
+					   }
+					 AlertUtil.errorMessages(errorMessageArray); */
+
+				}
+			}
+
+			private function keyHandlerForPassword(evt:KeyboardEvent):void
+			{
+				switch (evt.charCode)
+				{
+					case 13:
+						focusManager.setFocus(cPasswordTxt);
+						break;
+					default:
+						break;
+				}
+			}
+
+			private function keyHandler(evt:KeyboardEvent):void
+			{
+				switch (evt.charCode)
+				{
+					case 13:
+						eLoginBtnClick();
+						break;
+					default:
+						break;
+				}
+			}
+
+			private function languageChanged():void
+			{
+				//appModel.language=cLanguageTxt.selectedItem.value;
+				//this.parentDocument.toggleLocalization(appModel.language);
+			}
+		]]>
+	</mx:Script>
+	<mx:GlowFilter id="glow"
+				   blurX="12"
+				   blurY="12"
+				   color="#88AEF7"
+				   quality="2"
+				   strength="1"/>
+	<mx:BlurFilter id="blur"
+				   blurX="4"
+				   blurY="4"
+				   quality="2"/>
+	<mx:DropShadowFilter id="dropShadow"
+						 alpha="0.35"
+						 blurX="6"
+						 blurY="6"
+						 distance="6"
+						 color="#ffffff"
+						 angle="90"/>
+	<mx:BevelFilter id="bevel"
+					angle="45"
+					blurX="0.5"
+					blurY="0.5"
+					distance="4"
+					strength="0.7"
+					highlightAlpha="0.7"
+					shadowAlpha="0.7"/>
+	<mx:VBox width="100%"
+			 height="100%"
+			 horizontalAlign="center">
+		<mx:Spacer height="30%"/>
+		<mx:Image source="{ImagesAssets.GBKH}"
+				  width="128"
+				  height="128"
+				  verticalAlign="middle"
+				  horizontalAlign="center"/>
+		<mx:Label text="{Constant.SYS_NAME}"
+				  fontWeight="bold"
+				  fontSize="36"
+				  filters="{[glow,dropShadow,bevel]}"/>
+		<mx:Spacer height="10"/>
+		<mx:ApplicationControlBar width="330"
+								  height="180"
+								  horizontalAlign="center"
+								  verticalAlign="middle">
+
+			<mx:VBox width="100%"
+					 height="100%"
+					 horizontalGap="0"
+					 horizontalAlign="center"
+					 verticalAlign="middle">
+				<!--<mx:VBox width="200"
+					 height="100%">
+					 <mx:Image source="{ImagesAssets.SY}"
+					 width="100%"
+					 height="100%"/>
+					 </mx:VBox>-->
+				<mx:HBox width="100%" paddingTop="20">
+					<mx:Label text="用户名:"
+							  width="80"
+							  fontWeight="bold"
+							  fontSize="16"
+							  textAlign="right"/>
+					<mx:TextInput id="cUsernameTxt"
+								  maxChars="20"
+								  text="{sysUserVO.userName}"
+								  width="200"
+								  focusIn="{this.addEventListener(KeyboardEvent.KEY_DOWN, keyHandlerForPassword)}"
+								  focusOut="{this.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandlerForPassword)}"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="密   码:"
+							  width="80"
+							  fontWeight="bold"
+							  fontSize="16"
+							  textAlign="right"/>
+					<mx:TextInput id="cPasswordTxt"
+								  displayAsPassword="true"
+								  maxChars="20"
+								  text="{sysUserVO.password}"
+								  width="200"
+								  focusIn="{this.addEventListener(KeyboardEvent.KEY_DOWN, keyHandler)}"
+								  focusOut="{this.removeEventListener(KeyboardEvent.KEY_DOWN, keyHandler)}"/>
+				</mx:HBox>
+				<mx:Spacer height="10"/>
+				<mx:HBox width="100%"
+						 horizontalAlign="right"
+						 paddingRight="25">
+					<mx:Button id="cLoginButton"
+							   label="登录"
+							   height="30"
+							   width="80"
+							   fontWeight="bold"
+							   fontSize="16"
+							   icon="{ImagesAssets.ONLINE16}"
+							   buttonMode="true"
+							   useHandCursor="true"
+							   mouseChildren="false"
+							   click="eLoginBtnClick()"/>
+					<mx:Button label="重填"
+							   height="30"
+							   width="80"
+							   fontWeight="bold"
+							   fontSize="16"
+							   buttonMode="true"
+							   icon="{ImagesAssets.TAG_BLUE16}"
+							   useHandCursor="true"
+							   mouseChildren="false"
+							   click="cUsernameTxt.text='';cPasswordTxt.text=''"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:ApplicationControlBar>
+		<mx:Spacer height="70%"/>
+	</mx:VBox>
+	<!--验证-->
+	<mx:StringValidator id="usernameStringValidator"
+						source="{cUsernameTxt}"
+						requiredFieldError="{resourceManager.getString('localization','msg_username1')}"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+
+	<mx:StringValidator id="passwordStringValidator"
+						source="{cPasswordTxt}"
+						requiredFieldError="{resourceManager.getString('localization','msg_password1')}"
+						property="text"
+						minLength="1"
+						maxLength="20"/>
+</mx:Canvas>
+
+

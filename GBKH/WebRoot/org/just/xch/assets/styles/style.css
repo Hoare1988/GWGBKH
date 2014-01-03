@@ -1,0 +1,659 @@
+/* CSS file */
+/*Global*/
+Application
+{
+	backgroundAlpha:1.0;
+    backgroundGradientColors:#dfeefc,#90BAE4; 
+}
+
+
+Label,Button,RadioButton,CheckBox,ComboBox,TextInput,TextArea,DataGridColumn,ToolTip
+{
+	fontSize:12;
+	fontWeight:normal;
+	fontStyle:normal;
+	
+}
+
+
+List{
+	fontSize:12;
+	fontWeight:normal;
+	fontStyle:normal;
+	alternatingItemColors: 		#ffffff, #f9fafc;
+	horizontalGridLines: 		true;
+	horizontalGridLineColor: 	#cdd1d4;
+	verticalGridLineColor: 		#cdd1d4;
+	rollOverColor: 				#aadeff;
+	selectionColor: 			#7fcdfe;
+	headerColors:				#f8f9fb, #ebeff0;
+}
+
+Tree{
+	fontSize:12;
+	fontWeight:normal;
+	fontStyle:normal;
+	depthColors:#FFFFFF,#EEEEEE,#FFFFFF,#EEEEEE,#FFFFFF,#EEEEEE; 
+}
+
+
+
+
+/*MenuBar
+{
+	fontSize:					14;
+	fontWeight:					bold;
+	horizontalAlign:			left;
+	verticalAlign:				middle;
+	horizontalGap:          	5;
+	cornerRadius:0;
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#CCFFFF,#CCFFFF;
+	highlightAlphas:		1.0, 1.0;
+	color:#000000;
+}*/
+
+
+MenuBar
+{
+	fontSize:					14;
+	fontWeight:					bold;
+	horizontalAlign:			left;
+	verticalAlign:				middle;
+	horizontalGap:          	5;
+	cornerRadius:0;
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#67CBCD,#67CBCD;
+	highlightAlphas:		1.0, 1.0;
+	color:#000000;
+}
+
+
+
+
+
+
+.subMenuStyle
+{
+	backgroundAlpha: 0.1;
+	rollOverColor: #ffffff;
+	selectionColor: #ffffff;
+	color: white;
+	fontSize:					14;
+	fontWeight:					bold;
+	borderSkin:ClassReference("org.just.xch.assets.skins.MenuSkin");
+	
+}
+
+
+
+.menuBackgroundColor{  
+	backgroundColor:#000000;  
+	cornerRadius: 8;  
+}  
+
+Alert
+{
+	headerColors: 				#B6E0FB, #90BAE4;
+	backgroundColor:			#ffffff;
+	backgroundAlpha: 			0.9;
+	titleStyleName:				alertTitleStyleName;
+	messageStyleName:			alertMessageStyleName;
+	buttonStyleName:			alertButtonStyleName;
+}
+
+
+
+TitleWindow{
+  borderColor:#0066FF;
+  borderAlpha:1.0;
+  cornerRadius: 0;
+}          
+TitleWindow.titleText
+{
+	fontFamily:	Verdana;
+	fontSize:12;
+	fontWeight:bold;
+}
+
+Panel { 
+   cornerRadius:0;
+   text-align: left;
+   titleStyleName: "panelStyle";
+   headerHeight:30;
+   borderColor: #333333;
+   borderThicknessLeft: 0;
+   borderThicknessTop: 0;
+   borderThicknessBottom: 0;
+   borderThicknessRight: 0;
+}
+
+
+VRule{
+	themeColor:#333333;
+	alpha:0.75;
+}
+
+HRule {
+   strokeColor: #808080;
+   shadowColor: #808080;
+   strokeWidth: 2;
+   alpha:0.75;
+}
+
+
+
+
+Accordion
+{
+	headerHeight:40;
+	headerStyleName:"leftAccordionHeaderStyle";
+	headerTextAlign:"center";
+}
+
+AdvancedDataGrid,DataGrid
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	alternatingItemColors: 		#ffffff, #f9fafc;
+	horizontalGridLines: 		true;
+   	horizontalGridLineColor: 	#cdd1d4;
+   	verticalGridLineColor: 		#cdd1d4;
+   	rollOverColor: 				#aadeff;
+   	selectionColor: 			#7fcdfe;
+   	headerColors:				#f8f9fb, #ebeff0;
+}
+
+Legend{
+	markerHeight:10;
+	markerWidth:10;
+	fontSize:12;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.alertMessageStyleName
+{
+	color:						#000000;
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;
+}
+
+.alertTitleStyleName
+{
+	color:						#000000;
+	fontFamily:					Verdana;
+	fontSize:					12;
+	fontWeight:					bold;	
+}
+
+.alertButtonStyleName
+{
+	fontSize:					12;
+	fontWeight:					normal;
+	fontStyle:					normal;	
+}
+
+.label18{
+	fontSize:18;
+	fontWeight:normal;
+	fontStyle:normal;
+}
+
+.panelStyle {
+	font-size: 12;
+	font-weight:bold;
+}
+
+
+.footerStyle
+{
+    fillAlphas: 			0.40, 1.00;
+    fillColors: 			#EAF7FD, #C6E8FA;
+    highlightAlphas:		.05, .25;
+    cornerRadius: 			3;
+	shadowDistance:         1;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+}
+
+.queryStyle{
+	fillAlphas: 			0.40, 1.00;
+    fillColors: 			#6eaae5, #b8eefb;
+    highlightAlphas:		0.0, 0.0;
+    cornerRadius: 			3;
+	shadowDistance:         3;
+	paddingLeft:            10;
+	paddingRight:           10;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          5;
+	verticalAlign:middle;
+	horizontalAlign:right;
+	shadowDirection:right;
+}
+
+
+.infoBoxStyle{
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#6eaae5, #b8eefb;
+	highlightAlphas:		0.0, 0.0;
+	cornerRadius: 			3;
+	shadowDistance:         3;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          5;
+	shadowDirection:right;
+}
+
+.sysLinkButtonStyle {
+   cornerRadius: 0;
+   paddingLeft: 0;
+   paddingRight: 0;
+   paddingTop:0;
+   paddingBottom:0;
+   rollOverColor: #dfeefc;
+   selectionColor: #dfeefc;
+   color: #0000ff;
+   textRollOverColor: #ff0000;
+   textSelectedColor: #ff0000;
+   fontFamily: Verdana,����;
+   fontSize: 12;
+   fontWeight: normal;
+   textDecoration: none;
+}
+
+.leftAccordionHeaderStyle{
+	fontSize:12;
+	fontWeight:bold;
+	fontFamily:Verdana,����;
+	textAlign:center;
+	fillColors: #c0c0c0, #c0c0c0;
+    fillAlphas: 0.5, 0.2;
+    selectedFillColors: #800000, #800000;
+}
+
+.hmdAccordionHeaderStyle{
+	fontSize:12;
+	fontWeight:bold;
+	fontFamily:Verdana;
+	textAlign:center;
+	color:#000000;
+	fillColors: #6eaae5, #b8eefb;
+	fillAlphas: 0.4, 1.0;
+	selectedFillColors: #c0c0c0, #c0c0c0;
+	textRollOverColor: #000000;
+	textSelectedColor: #000000;
+}
+
+.twTitleStyle {
+	fontFamily:	Verdana;
+	fontSize:12;
+	color:#ffffff;
+	fontWeight:bold;
+   	cornerRadius: 0;
+}
+
+.borderSkinStyle{
+	verticalGap:0;
+	paddingLeft:3;
+	paddingRight:3;
+	paddingBottom:3;
+	paddingTop:3;
+	borderSkin:ClassReference("org.just.xch.assets.skins.CanvasSkin");
+}
+
+
+.indStepHighlight {
+	fontSize:16;
+	color:#008000;
+	fontWeight:bold;
+}
+.indStepLowlight {
+	fontSize:16;
+	color:#c0c0c0;
+}
+
+.rAccordion
+{
+	headerHeight:30;
+	headerStyleName:"leftAccordionHeaderStyle";
+	headerTextAlign:"center";
+}
+.hmdAccordion
+{
+	headerHeight:26;
+	headerStyleName:"hmdAccordionHeaderStyle";
+	headerTextAlign:"center";
+}
+
+.legendItemStyle
+{
+	fontSize:12;
+	fontWeight:normal;
+	fontFamily:Verdana,����;
+}
+
+
+.superTabStyle
+{
+	fontSize:12;
+	fontWeight:normal;
+	backgroundColor: #dfeefc;
+}
+
+
+.legendLabelStyle{
+	fontSize:12; 
+}
+
+.titleStyle {
+	font-size: 12;
+	font-weight:bold;
+	color:#0000ff;
+}
+
+.titleStyleBlack {
+	font-size: 12;
+	font-weight:bold;
+}
+
+.hRule1{
+	strokeColor: #c4cccc;
+	shadowColor: #eeeeee;
+	strokeWidth: 2;
+	alpha:0.75;
+}
+
+.mytoggleButtonBarButtonStyle {
+	fontWeight: bold;
+}
+
+.grid
+{
+	border-style:solid;
+	border-color:black;
+	horizontal-gap:0;
+	vertical-gap:0;
+}
+.gridRow
+{
+	border-sides:bottom;
+	border-style:solid;
+	border-color:black;
+}
+.gridItem
+{
+	border-sides:right;
+	border-style:solid;
+	border-color:black;
+	horizontal-align:center;		
+	vertical-align:middle;	
+	horizontal-gap:0;
+	vertical-gap:0;
+}
+
+.boxBordTop
+{
+	border-sides:top;
+	border-style:solid;
+	border-color:black;
+	horizontal-gap:0;
+	vertical-gap:0;
+	verticalAlign:middle;
+}
+
+.boxBordLeft
+{
+	border-sides:left;
+	border-style:solid;
+	border-color:black;
+	horizontal-gap:0;
+	vertical-gap:0;
+	verticalAlign:middle;
+}
+
+.boxBordNull
+{
+	border-style:none;
+	horizontal-gap:0;
+	vertical-gap:0;
+	verticalAlign:middle;
+}
+
+
+/*header*/
+.topApplicationControlBar
+{
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#0065FE,#0066FF;
+	highlightAlphas:		.05, .25;
+	cornerRadius: 			3;
+	shadowDistance:         3;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+	shadowDirection: 		center;
+}
+
+/*menu*/
+.menuApplicationControlBar
+{
+	fillAlphas: 			0.40, 1.00;
+	fillColors: 			#B7DEED, #26B6E2;
+	highlightAlphas:		.05, .25;
+	cornerRadius: 			3;
+	shadowDistance:         1;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+}
+
+
+
+
+.myPop {
+	backgroundAlpha: 0.7;
+	backgroundColor: black;
+	borderStyle: none;
+	color: white;
+}
+
+.backGroundBorderSkinStyle
+{
+	borderSkin:ClassReference("org.just.xch.view.component.common.skin.RepeatBackground");
+	
+}
+
+
+.colorWhiteStyle {
+	iconColor: #ffffff;
+	color:#ffffff;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+}
+.ckbRWhiteStyle {
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #ffffff, #ffffff, #ffffff, #ffffff;
+	iconColor: #000000;
+	color:#ffffff;
+	textRollOverColor: #ffffff;
+	textSelectedColor: #ffffff;
+}
+
+.whiteLabelStyle {
+	fontSize:14;
+	color:#ffffff;
+}
+
+.whiteLabelStyle12 {
+	fontSize:12;
+	color:#ffffff;
+}
+
+.redLabelStyle {
+	fontFamily:Arial;
+	fontSize:14;
+	textAlign:right;
+	color:#FFCC00;
+}
+
+.greenLabelStyle {
+	fontFamily:Arial;
+	fontSize:14;
+	color:#00ff00;
+	textAlign:right;
+}
+
+.pinkLabelStyle {
+	fontFamily:Arial;
+	fontSize:12;
+	color:#ff00ff;
+}
+
+.blueLabelStyle {
+	fontFamily:Arial;
+	fontSize:14;
+	color:#00ffff;
+}
+.blueLabelStyle12 {
+	fontFamily:Arial;
+	fontSize:12;
+	color:#00ffff;
+}
+.yellowLabelStyle {
+	fontFamily:Arial;
+	fontSize:14;
+	textAlign:left;
+	color:#FFCC00;
+}
+
+.yellowLabelStyleRight {
+	fontFamily:Arial;
+	fontSize:14;
+	textAlign:right;
+	color:#FFCC00;
+}
+
+
+.lkbToggleStyle {
+	paddingLeft:0;
+	paddingRight:0;
+	rollOverColor:#000000;
+	selectionColor:#000000;
+	buttonMode:true;
+}
+.lkbDiwJiaStyle {
+	paddingLeft:0;
+	paddingRight:0;
+	rollOverColor:#000000;
+	selectionColor:#000000;
+	buttonMode:true;
+	textRollOverColor:#00ffff;
+	textSelectedColor:#00ffff;
+	color:#00ffff;
+	
+}
+
+.comboBoxSkin01
+{
+	fontSize:11;
+	borderColor: #808080;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #c0c0c0, #c0c0c0, #c0c0c0, #808080;
+	cornerRadius: 0;
+	useRollOver:false;
+	borderStyle:none;
+}
+.lkbGrayStyle
+{
+	paddingLeft:0;
+	paddingRight:0;
+	rollOverColor:#000000;
+	selectionColor:#000000;
+	textRollOverColor:#c0c0c0;
+	textSelectedColor:#c0c0c0;
+	color:#c0c0c0;
+	buttonMode:true;
+}
+
+.lkbPinkStyle
+{
+	paddingLeft:0;
+	paddingRight:0;
+	rollOverColor:#000000;
+	selectionColor:#000000;
+	textRollOverColor:#ff00ff;
+	textSelectedColor:#ff00ff;
+	color:#ff00ff;
+	buttonMode:true;
+}
+
+
+.foundTitleBarStyle
+{
+	fillAlphas: 			1.00, 1.00;
+	fillColors: 			#ffffff,#c0c0c0;
+	highlightAlphas:		.05, .25;
+	cornerRadius: 			0;
+	paddingLeft:            0;
+	paddingRight:           0;
+	paddingTop:             0;
+	paddingBottom:          0;
+	horizontalGap:          0;
+}
+
+.fundvscrollBar {
+	thumbOffset: 1;
+	cornerRadius: 0;
+	fillAlphas: 1, 1, 1, 1;
+	fillColors: #666666, #666666, #666666, #666666;
+	trackColors: #ffffff, #e7e7e7;
+	borderColor: #666666;
+	iconColor: #ffffff;
+}
+
+.mydataGridHeaderStyle {
+	color: #808080;
+	fontWeight:bold;
+	textAlign: center;
+	backgroundColor:#808080;
+	
+}
+
+.searchInactive
+{
+	color						:	#CCCCCC;
+}
+
+.searchActive
+{
+	color						:	#333333;
+}

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			import com.winning.persistence.domain.Item;
+			import com.winning.persistence.domain.Order;
+			import com.winning.util.CodeHelper;
+			import com.winning.util.Constant;
+			
+			/* private function init():void
+			{
+				var str:String="";
+				if(data.addFlag==true)
+				{
+					str='*'+data._type;
+				}
+				else 
+				{
+					str=data._type;
+				}
+				this.lbl.text=str;	
+			} */
+		]]>
+	</mx:Script>
+	
+	<!--<mx:Label id="lbl" />-->
+	<mx:Image id="albumImage" toolTip="{CodeHelper.lookUpValue(Order.ORDER_STATUS_NAME, data.addFlag)}" source="{CodeHelper.lookUpValue(Constant.STATUS_SRC,data.addFlag)}" width="18" height="18"/>
+</mx:HBox>

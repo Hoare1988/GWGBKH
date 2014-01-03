@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:HBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 height="100%">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.model.mlct.AppModelLocator;
+			
+			import mx.controls.Alert;
+			import mx.events.CloseEvent;
+			import mx.managers.PopUpManager;
+			
+			
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+			public function eOperateExeOrder_Click(event:MouseEvent):void
+			{
+				var str:String=this.data.name+this.data.relation+this.data.value+this.data.unit;
+				appModel.exp=appModel.exp+str;
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox id="cHBox"
+			 width="100%"
+			 height="100%"
+			 horizontalAlign="center">
+		<mx:LinkButton icon="{ImagesAssets.STARDISABLEIN16}"
+					   click="eOperateExeOrder_Click(event)"/>
+	</mx:HBox>
+
+</mx:HBox>

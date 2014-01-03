@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="absolute"
+		   width="100%"
+		   creationComplete="init()"
+		   height="100%"
+		   remove="{appModel.clearApplyPermissionMgt()}"
+		   xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.SysEvent;
+			import org.just.xch.model.domain.ApplyRecord;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.control.events.domain.PageEvent;
+			
+			import mx.collections.ArrayCollection;
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+            private var currentDate:Date=new Date();
+			[Bindable]
+			private var statuses:ArrayCollection=new ArrayCollection();
+			[Bindable]
+			private var jobNames:ArrayCollection=new ArrayCollection();
+			private function init():void
+			{
+				statuses.removeAll();
+				jobNames.removeAll();
+				statuses=new ArrayCollection( [{label:"全部", data:null},					
+					{label:"结束", data:'end'},
+					{label:"开始", data:'start'},
+					{label:"暂停", data:'stop'}]);
+			}
+			
+			private function query():void
+			{
+				initCurrentPageNo();
+				var params:Array=new Array();
+				params.push(null);
+				params.push(status.selectedItem.data);
+				params.push(beginDate.text);
+				params.push(endDate.text);
+				params.push(cPageBar.currentPageNo);
+				params.push(50);
+				new SysEvent(SysEvent.EVENT_QUERY_LOGS,params).dispatch();
+				new SysEvent(SysEvent.EVENT_SYS_LOG_COUNT,params).dispatch();
+			}
+			
+			private function initCurrentPageNo():void{
+				cPageBar.currentPageNo=1;
+			}
+
+			private function colLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var s:String;
+				switch (column.dataField)
+				{
+					case "aruntime":
+						s=ApplyRecord.getRuntimeLabel(item[column.dataField]);
+						break;
+					case "status":
+						s=ApplyRecord.getStatusLabel(item[column.dataField]);
+						break;
+					case "auser":
+						if (item[column.dataField] != null)
+						{
+							s=item[column.dataField]['realName'];
+						}
+						break;
+					default:
+						break;
+				}
+				return s;
+			}
+
+			private function dateLabelFunction(item:Object, column:DataGridColumn):String
+			{
+				var s:String='';
+				var date:Date=item[column.dataField] as Date;
+				if (date != null)
+				{
+					s=df.format(date);
+				}
+				return s;
+			}
+
+			private function lfRowNum(item:Object, column:int):String
+			{
+				var index:int=this.dataGrid.dataProvider.getItemIndex(item) + 1;
+				return String(index);
+			}
+		]]>
+	</mx:Script>
+	<mx:DateFormatter formatString="YYYY-MM-DD JJ:NN:SS" id="df"/>
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:ApplicationControlBar width="100%"
+								  height="36"
+								  styleName="queryStyle">
+			<mx:Label text="任务状态"/>
+			<mx:ComboBox id="status"
+						 dataProvider="{statuses}"
+						 labelField="label"/>
+			<mx:Label text="日期:"
+					  width="40"/>
+			<mx:DateField id="beginDate"
+						  width="100"
+						  formatString="YYYY-MM-DD"
+						  yearNavigationEnabled="true"
+						  selectedDate="{currentDate}"
+						  dayNames="[日,一,二,三,四,五,六]"
+						  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>	
+			<mx:Label text="至" width="20"/>
+			<mx:DateField id="endDate"
+						  width="100"
+						  formatString="YYYY-MM-DD"
+						  yearNavigationEnabled="true"
+						  selectedDate="{currentDate}"
+						  dayNames="[日,一,二,三,四,五,六]"
+						  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>	
+			<common:BtnQuery click="query()"/>
+		</mx:ApplicationControlBar>
+		<mx:VBox width="100%"
+				 height="100%"
+				 styleName="borderSkinStyle">
+			<mx:DataGrid id="dataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{cPageBar.SourceData}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="行号"
+									   width=".05"
+									   labelFunction="lfRowNum"/>
+					<mx:DataGridColumn dataField="ID_JOB"
+									   headerText="任务ID"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="CHANNEL_ID"
+									   headerText="申请用户"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="JOBNAME"
+									   headerText="任务名称"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="STATUS"
+									   headerText="状态"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="LINES_READ"
+									   headerText="读取数量"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="LINES_WRITTEN"
+									   headerText="写入数量"
+									   width=".1"/>
+					<mx:DataGridColumn dataField="LINES_UPDATED"
+									   headerText="更新数量"
+									   width=".05"/>
+					<mx:DataGridColumn dataField="LINES_INPUT"
+									   headerText="输入数量"
+									   width=".05"/>
+					<mx:DataGridColumn dataField="LINES_OUTPUT"
+									   headerText="输出数量"
+									   width=".05"/>
+					<mx:DataGridColumn dataField="LINES_REJECTED"
+									   headerText="违规数量"
+									   width=".05"/>
+					<mx:DataGridColumn dataField="ERRORS"
+									   headerText="错误数"
+									   width=".05"/>
+					<mx:DataGridColumn dataField="STARTDATE"
+									   headerText="开始时间"
+									   width=".1"
+									   labelFunction="dateLabelFunction"/>
+					<mx:DataGridColumn dataField="ENDDATE"
+									   headerText="结束时间"
+									   width=".1"
+									   labelFunction="dateLabelFunction"/>
+					<mx:DataGridColumn dataField="LOGDATE"
+									   headerText="日志时间"
+									   width=".1"
+									   labelFunction="dateLabelFunction"/>
+					<mx:DataGridColumn dataField="DEPDATE"
+									   headerText="时间"
+									   width=".1"
+									   labelFunction="dateLabelFunction"/>
+					<mx:DataGridColumn dataField="REPLAYDATE"
+									   headerText="延时时间"
+									   width=".1"
+									   labelFunction="dateLabelFunction"/>
+					<mx:DataGridColumn headerText="内容"
+									   width=".05">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:HBox horizontalAlign="center"
+										 verticalAlign="middle">
+									<mx:Script>
+										<![CDATA[
+											import org.just.xch.view.component.titlewin.LogBox;
+											
+											import mx.managers.PopUpManager;
+											private function onClick():void
+											{
+												var twin:LogBox=LogBox(PopUpManager.createPopUp(DisplayObject(this.parentApplication), LogBox, true));
+												twin.logContent=data.LOG_FIELD;
+												PopUpManager.centerPopUp(twin);
+											}
+										]]>
+									</mx:Script>
+									<common:daLinkBtn label="明细" click="onClick()"/>
+								</mx:HBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="28"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				
+				
+				<common:Pager id="cPageBar"
+							  cornerRadius="3"
+							  right="0"
+							  paddingTop="3"
+							  pageSize="{50}"
+							  total="{appModel.sysLogsCount}"
+							  values="{[null,status.selectedItem.data,beginDate.text,endDate.text]}"
+							  SourceData="{appModel.logRecords}"
+							  TotalPages="{appModel.sysLogsCount}"
+							  eventType="{PageEvent.SYS_LOG}"
+							  height="100%"/>
+				
+			</mx:HBox>
+		</mx:VBox>
+
+	</mx:VBox>
+</mx:Module>

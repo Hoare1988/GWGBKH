@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="org.just.xch.view.component.common.*"
+				width="300" height="500" close="PopUpManager.removePopUp(this)"
+				creationComplete="init()" 
+				layout="absolute" showCloseButton="true">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.ExeItemEvent;
+			import org.just.xch.model.domain.ExeItem;
+			import org.just.xch.model.domain.Item;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.utils.Constant;
+			
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			
+			public var selectItem:Item=null;
+			[Bindable]
+			public var selectUsers:ArrayCollection=null;
+			public var cAccessYear:String="";
+			
+			private function init():void
+			{
+				
+			}
+			
+			
+			public function btnSaveClick():void
+			{
+				for each(var sysUser:SysUser in selectUsers)
+				{
+					var rootExeItem:ExeItem=new ExeItem();
+					rootExeItem.item=selectItem;
+					rootExeItem.createBy=AppModelLocator.getInstance().loginUser;
+					rootExeItem.updateBy=rootExeItem.createBy;
+					rootExeItem.beAccessedUser=sysUser;
+					rootExeItem.enable=1;
+					rootExeItem.scoreResult=0.0;
+					rootExeItem.isRootExeItem=1;
+					rootExeItem.type=ExeItem.EXEITEM_TYPE_YEAR;
+					rootExeItem.typeValue=cAccessYear;
+					new ExeItemEvent(ExeItemEvent.EVENT_CREATE_EXEITEM_TREE,rootExeItem).dispatch();
+				}
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox id="editBox" width="100%" height="100%">
+		<mx:DataGrid id="cSysUserDG" dataProvider="{selectUsers}" width="100%" height="100%">
+			<mx:columns>
+				<mx:DataGridColumn id="cIsSlectedUserDGC" width="50" dataField="isSelected"
+								   headerText="选择" textAlign="center">
+					<mx:itemRenderer>
+						<mx:Component>
+							<mx:CheckBox change="onChange()" selected="{data.isSelected}">
+								<mx:Script>
+									<![CDATA[
+										import org.just.xch.utils.Constant;
+										
+										private function onChange()
+										{
+											if (this.selected)
+											{
+												data.isSelected=Constant.TRUE;
+											}
+											else
+											{
+												data.isSelected=Constant.FALSE;
+											}
+										}
+									]]>
+								</mx:Script>
+							</mx:CheckBox>
+						</mx:Component>
+					</mx:itemRenderer>
+				</mx:DataGridColumn>	
+				<mx:DataGridColumn dataField="userName">
+				</mx:DataGridColumn>	
+				<mx:DataGridColumn dataField="realName">
+				</mx:DataGridColumn>	
+			</mx:columns>
+		</mx:DataGrid>
+		<mx:HBox width="100%" height="40" horizontalAlign="center" verticalAlign="middle">
+			<common:BtnSave click="btnSaveClick()"/>
+			<common:BtnCancel click="PopUpManager.removePopUp(this)"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

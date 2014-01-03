@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   xmlns:common="org.just.xch.view.component.common.*"
+		   width="100%" height="100%" creationComplete="init()" layout="vertical" paddingTop="10">
+
+	<mx:RemoteObject id="sItemService" destination="itemService">
+		<mx:method name="findItemPermissionsByItem" result="findItemPermissionsByItemResult(event)"/>
+	</mx:RemoteObject>
+	
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.delegates.Services;
+			import org.just.xch.control.events.domain.ItemEvent;
+			import org.just.xch.control.events.domain.SysOrgEvent;
+			import org.just.xch.model.domain.Item;
+			import org.just.xch.model.domain.ItemPermission;
+			import org.just.xch.model.domain.SysOrg;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.mlct.ItemMgtModelLocator;
+			import org.just.xch.model.mlct.SysMgtModelLocator;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.utils.TimeFormatter;
+			import org.just.xch.view.component.titlewin.AddItem;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.ResultEvent;
+			
+		
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+			[Bindable]
+			private var _itemModelLocator:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+			
+			public var _appModelLocator:AppModelLocator=AppModelLocator.getInstance();
+			
+			public var itemPermissionAC:ArrayCollection=new ArrayCollection();
+			public var selectedItem:Item=null;
+			
+			private function init():void
+			{   
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+				new SysOrgEvent(SysOrgEvent.EVENT_QUERY_ORGS,["",""]).dispatch();
+			}
+			
+			private function eItem_click():void
+			{
+				for each(var sorg:SysOrg in sysMgtModel.uMgt_QueryOrgsAC)
+				{
+					sorg.isSelected=false;
+					
+				}
+				selectedItem=cItemTree.selectedItem as Item
+				cItemTree.expandChildrenOf(selectedItem,true);
+				sItemService.findItemPermissionsByItem(selectedItem);
+			}
+			
+			
+			private function findItemPermissionsByItemResult(event:ResultEvent):void
+			{
+				var itemPermits:ArrayCollection=event.result as ArrayCollection;
+				if(itemPermits!=null&&itemPermits.length>0)
+				{
+					for each(var ip:ItemPermission in itemPermits)
+					{
+						for each(var sorg:SysOrg in sysMgtModel.uMgt_QueryOrgsAC)
+						{
+							if(ip.sysOrg.id==sorg.id)
+							{
+								sorg.isSelected=true;
+							}
+						}
+						itemPermissionAC.addItem(ip);
+					}
+				}
+			}
+			
+			/*保存项目权限*/
+			private function saveUserItemPermissionClick():void
+			{
+			
+				if(selectedItem==null)
+				{
+					Alert.show("请选择项目","提示");
+				}
+				else
+				{
+					var addPermits:ArrayCollection=new ArrayCollection();
+					var deletePermits:ArrayCollection=new ArrayCollection();
+					var itemPer:ItemPermission=new ItemPermission();
+		
+					for each(var itemPermit:ItemPermission in itemPermissionAC)
+					{
+						if(itemPermit.editType==ItemPermission.EDIT_TYPE_ADD&&itemPermit.id==0)
+						{
+							addPermits.addItem(itemPermit);
+						}
+						if(itemPermit.editType==ItemPermission.EDIT_TYPE_DELETE&&itemPermit.id!=0)
+						{
+							deletePermits.addItem(itemPermit);
+						}
+					}
+					
+					if(addPermits.length>0)
+					{
+						new ItemEvent(ItemEvent.EVENT_ADD_PERMISSION,addPermits).dispatch();
+					}
+					if(deletePermits.length>0)
+					{
+						new ItemEvent(ItemEvent.EVENT_DELETE_ITEMPERMISSIONS,deletePermits).dispatch();
+					}
+					/**清空所有缓存权限
+					 */
+					itemPermissionAC.removeAll();
+				}
+			}
+			
+			private function treeLabelFunction(item:Object):String
+			{
+				return item.name+"("+item.score +"分)";
+			}
+			
+			private function eFlushTree_click():void
+			{
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+			}
+			
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%">
+		
+	<mx:VBox width="50%" height="100%">
+			<mx:Tree id="cItemTree" width="100%" height="100%"
+					 dataProvider="{_itemModelLocator.itemTreeAC}"
+					 folderClosedIcon="{ImagesAssets.TREE_CLOSE}"
+					 folderOpenIcon="{ImagesAssets.TREE_OPEN}" itemClick="eItem_click()"
+					 labelFunction="treeLabelFunction"/>
+		</mx:VBox>
+		<mx:VBox width="50%" height="100%">
+			<mx:ApplicationControlBar width="100%" height="30" styleName="queryStyle">
+				<common:BtnSave click="saveUserItemPermissionClick()"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid id="userDataGrid" width="100%" height="100%"
+						 dataProvider="{sysMgtModel.uMgt_QueryOrgsAC}" itemClick="">
+				<mx:columns>
+					<mx:DataGridColumn id="cIsSlectedRoleDGC" width="50" dataField="isSelected"
+									   headerText="选择" textAlign="center">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:CheckBox change="onChange()" selected="{data.isSelected}">
+									<mx:Script>
+										<![CDATA[
+											import org.just.xch.utils.Constant;
+											import org.just.xch.model.domain.ItemPermission;
+											import org.just.xch.model.domain.SysOrg;
+											import mx.controls.Alert;
+											
+											private function onChange()
+											{
+												if(outerDocument.selectedItem)
+												{
+												var itempermission:ItemPermission=null;
+												for each(var itPermit:ItemPermission in outerDocument.itemPermissionAC)
+												{
+													if(outerDocument.selectedItem!=null&&outerDocument.selectedItem.id==itPermit.item.id&&itPermit.sysOrg.id==data.id)
+													{
+														itempermission=itPermit;
+														break;
+													}
+												}
+												
+												if (this.selected)
+												{
+													if(itempermission!=null)
+													{
+														if(itempermission.id<1)
+														{
+															itempermission.editType=ItemPermission.EDIT_TYPE_ADD;
+														}
+														
+													}
+													else
+													{
+														var itemPermit:ItemPermission =new ItemPermission();
+														itemPermit.createBy=outerDocument._appModelLocator.loginUser;	
+														itemPermit.updateBy=outerDocument._appModelLocator.loginUser;	
+														itemPermit.sysOrg=data as SysOrg;
+														itemPermit.item=outerDocument.selectedItem;
+														itemPermit.editType=ItemPermission.EDIT_TYPE_ADD;
+														outerDocument.itemPermissionAC.addItem(itemPermit);
+													}
+													
+													data.isSelected=Constant.TRUE;
+												}
+												else
+												{	
+													if(itempermission!=null)
+													{
+														itempermission.editType=ItemPermission.EDIT_TYPE_DELETE;
+													}
+													
+													data.isSelected=Constant.FALSE;
+												}
+												}else
+												{
+													Alert.show("请选择项目","提示");
+												}
+												
+											}
+										]]>
+									</mx:Script>
+								</mx:CheckBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+					<mx:DataGridColumn dataField="name" headerText="科室名称"/>
+					<mx:DataGridColumn dataField="py" headerText="拼音码"/>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%" height="30" paddingLeft="10" paddingRight="10"
+					 verticalAlign="middle">
+				<mx:Spacer width="100%"/>
+				
+			</mx:HBox>
+		</mx:VBox>
+	</mx:HBox>
+</mx:Module>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				title="更新分数" label="更新分数" showCloseButton="true" close="close();"
+				xmlns:common="org.just.xch.view.component.common.*"
+				width="200" height="150">
+	<mx:RemoteObject id="aIntegrityService"
+					 destination="integrityService"
+					 concurrency="single"
+					 showBusyCursor="true">
+		<mx:method name="updateLevelById"
+				   result="updateLevelByIdCallBack(event)"
+				   fault="fault(event)"/>
+	</mx:RemoteObject>
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.domain.MiLevel;
+			
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			import mx.rpc.events.FaultEvent;
+			import mx.rpc.events.ResultEvent;
+			[Bindable]
+			public var miLevel:MiLevel;
+			
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}	
+			
+			private function save():void
+			{
+				miLevel.value = Number(fs.text);
+				aIntegrityService.updateLevelById(miLevel);
+				close();
+			}	
+			
+			public function fault(event:FaultEvent):void
+			{
+				this.parentApplication.fault(event);
+			}
+			
+			public function updateLevelByIdCallBack(event:ResultEvent):void
+			{
+				Alert.show('更新成功!!');
+			}	
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" 
+			 paddingBottom="10" paddingTop="10" paddingLeft="10" paddingRight="10">
+		<mx:HBox width="100%" height="100%">
+			<mx:Label text="新分数:" width="50"/>
+			<mx:TextInput width="100%" id="fs"/>
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<common:BtnSubmit label="更新" click="save();"/>
+			<common:BtnCancel click="close();"/>
+		</mx:HBox>
+	</mx:VBox>
+</mx:TitleWindow>

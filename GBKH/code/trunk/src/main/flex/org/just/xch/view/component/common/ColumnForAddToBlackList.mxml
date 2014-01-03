@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:DataGridColumn xmlns:mx="http://www.adobe.com/2006/mxml"
+				   width="50">
+	<mx:itemRenderer>
+		<mx:Component>
+			<mx:HBox width="100%"
+					 height="100%"
+					 horizontalAlign="center"
+					 horizontalGap="5">
+
+				<mx:Script>
+					<![CDATA[
+						import org.just.xch.assets.ImagesAssets;
+						import org.just.xch.control.events.custom.CustomEvent;
+						import org.just.xch.control.events.domain.BlacklistEvent;
+						import org.just.xch.control.events.domain.IntegrityEvent;
+						import org.just.xch.model.domain.MiHeader;
+						import org.just.xch.model.domain.Organization;
+						import org.just.xch.model.domain.Patient;
+						import org.just.xch.model.domain.Provider;
+						import org.just.xch.model.vo.BlacklistVO;
+						import org.just.xch.utils.Constant;
+						
+						import mx.controls.Alert;
+						import mx.events.CloseEvent;
+						
+
+						[Bindable]
+
+						private function addToBlackList(item:MiHeader):void
+						{
+							
+							if (item)
+							{
+								Alert.show("您确定要把" + item.name + "加入黑名单?", "添加黑名单", 3, Sprite(this.parentApplication), function(event:CloseEvent)
+									{
+										if (event.detail == Alert.YES)
+										{
+											switch (item.type)
+											{
+												case Constant.DX_1:
+													var patient:Patient=new Patient();
+													patient.xm=item.name;
+													patient.id=item.oid;
+													new BlacklistEvent(BlacklistEvent.ADD_BLACK_LIST, BlacklistVO.getVOBypatient(patient)).dispatch();
+													break;
+												case Constant.DX_3:
+												case Constant.DX_2:
+													var organization:Organization=new Organization();
+													organization.jgmc=item.name;
+													organization.id=item.oid;
+													new BlacklistEvent(BlacklistEvent.ADD_BLACK_LIST, BlacklistVO.getVOByOrganization(organization)).dispatch();
+													break;
+												case Constant.DX_4:
+													var provider:Provider=new Provider();
+													provider.xm=item.name;
+													provider.id=item.oid;
+													new BlacklistEvent(BlacklistEvent.ADD_BLACK_LIST, BlacklistVO.getVOByProvider(provider)).dispatch();
+													break;
+												default:
+													break;
+											}
+											img.enabled=false;
+											
+											item.zt = 1;
+											data.zt =1;
+											new IntegrityEvent(IntegrityEvent.EVENT_UPDATE_MIHEADER,item).dispatch();
+										}
+									});
+							}
+						}
+					]]>
+				</mx:Script>
+				<mx:VBox width="100%" height="100%" id="img" enabled="{data.zt==MiHeader.ZT_0}" horizontalAlign="center" verticalAlign="middle">
+				<mx:Image source="{ImagesAssets.FLAGRED16}"
+						  toolTip="添加到黑名单"
+						  buttonMode="true" 
+						  click="addToBlackList(data as MiHeader);"/>
+				</mx:VBox>
+			</mx:HBox>
+		</mx:Component>
+	</mx:itemRenderer>
+</mx:DataGridColumn>

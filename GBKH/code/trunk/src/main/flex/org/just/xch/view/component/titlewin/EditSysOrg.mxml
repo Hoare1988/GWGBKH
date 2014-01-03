@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				xmlns:common="org.just.xch.view.component.common.*"
+				width="300" height="50%" close="PopUpManager.removePopUp(this);"
+				creationComplete="init()" layout="absolute" showCloseButton="true">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.SysEvent;
+			import org.just.xch.control.events.domain.SysOrgEvent;
+			import org.just.xch.model.domain.SysOrg;
+			
+			import mx.managers.PopUpManager;
+			import mx.utils.StringUtil;
+			
+			[Bindable]
+			public var editSysOrg:SysOrg=null;
+			
+			private function init():void
+			{
+				if(editSysOrg!=null)
+				{
+					editNameTxt.text=StringUtil.trim(editSysOrg.name);
+					editPYTxt.text=StringUtil.trim(editSysOrg.py);
+					editRemarkTxt.text=StringUtil.trim(editSysOrg.comments)
+				}
+				
+			}
+			
+			public function saveOrUpdateOrg():void
+			{
+				if(editSysOrg==null){
+					editSysOrg=new SysOrg();
+				}
+					editSysOrg.name=editNameTxt.text;
+					editSysOrg.comments=editRemarkTxt.text;
+				new SysOrgEvent(SysOrgEvent.EVENT_ADD_OR_UPDATE_ORG,editSysOrg).dispatch();	
+				PopUpManager.removePopUp(this);
+			}
+			
+		]]>
+	</mx:Script>
+	
+	
+	<mx:VBox id="editBox" width="100%" height="100%" horizontalAlign="center" paddingBottom="20"
+			 paddingLeft="20" paddingRight="20" paddingTop="20">
+		<mx:HBox>
+			<mx:Label text="科室名称:"/>
+			<mx:TextInput id="editNameTxt"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="拼 音 码:"/>
+			<mx:TextInput id="editPYTxt" editable="false"/>
+		</mx:HBox>
+		<mx:HBox>
+			<mx:Label text="备      注:"/>
+			<mx:TextInput id="editRemarkTxt"/>
+		</mx:HBox>
+		<mx:HBox>
+			<common:BtnSave id="btnSaveOrg" click="saveOrUpdateOrg()"/>
+			<common:BtnCancel id="btnCancel" click="{PopUpManager.removePopUp(this)}"/>
+		</mx:HBox>
+		</mx:VBox>
+</mx:TitleWindow>

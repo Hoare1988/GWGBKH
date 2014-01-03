@@ -32,22 +32,7 @@
   <applications>
     <application path="index.mxml"/>
   </applications>
-  <modules>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/RootExeItemMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/RootExeItemMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysPermissionMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysPermissionMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemPermissionMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemPermissionMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/base/LogView.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/base/LogView.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysModuleMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysModuleMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysOrgMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysOrgMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysUserMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysUserMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/AccessPublish.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/AccessPublish.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ExamMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ExamMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/SysRoleMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/SysRoleMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ItemMgtWithPermision.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ItemMgtWithPermision.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/AccessResultMgt.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/AccessResultMgt.mxml"/>
-    <module application="code/trunk/src/main/flex/index.mxml" destPath="com/winning/bi/view/module/ExamMgtNoPermission.swf" optimize="true" sourcePath="code/trunk/src/main/flex/com/winning/bi/view/module/ExamMgtNoPermission.mxml"/>
-  </modules>
+  <modules/>
   <buildCSSFiles/>
   <flashCatalyst validateFlashCatalystCompatibility="false"/>
 </actionScriptProperties>

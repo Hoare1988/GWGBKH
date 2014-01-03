@@ -6,24 +6,28 @@ import java.util.List;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.ClassPathXmlApplicationContext;
 
-import com.winning.bi.dao.sys.ExeItemDao;
-import com.winning.bi.dao.sys.ItemDao;
-import com.winning.bi.domain.sys.DataLog;
-import com.winning.bi.domain.sys.ExeItem;
-import com.winning.bi.domain.sys.ExeItemVO;
-import com.winning.bi.domain.sys.Item;
-import com.winning.bi.domain.sys.ItemPermission;
-import com.winning.bi.domain.sys.SysOrg;
-import com.winning.bi.domain.sys.SysRole;
-import com.winning.bi.domain.sys.SysUser;
-import com.winning.bi.service.impl.ExeItemServiceImpl;
-import com.winning.bi.service.impl.ItemServiceImpl;
-import com.winning.bi.service.intf.DataLogService;
-import com.winning.bi.service.intf.ExeItemService;
-import com.winning.bi.service.intf.ItemService;
-import com.winning.bi.service.intf.SysOrgService;
-import com.winning.bi.service.intf.SysRoleService;
-import com.winning.bi.service.intf.SysUserService;
+import org.just.utils.ExcelUtil;
+import org.just.utils.NewwinningUtil;
+import org.just.utils.POIUtil;
+import org.just.utils.SpreadsheetBean;
+import org.just.xch.dao.sys.ExeItemDao;
+import org.just.xch.dao.sys.ItemDao;
+import org.just.xch.domain.sys.DataLog;
+import org.just.xch.domain.sys.ExeItem;
+import org.just.xch.domain.sys.ExeItemVO;
+import org.just.xch.domain.sys.Item;
+import org.just.xch.domain.sys.ItemPermission;
+import org.just.xch.domain.sys.SysOrg;
+import org.just.xch.domain.sys.SysRole;
+import org.just.xch.domain.sys.SysUser;
+import org.just.xch.service.impl.ExeItemServiceImpl;
+import org.just.xch.service.impl.ItemServiceImpl;
+import org.just.xch.service.intf.DataLogService;
+import org.just.xch.service.intf.ExeItemService;
+import org.just.xch.service.intf.ItemService;
+import org.just.xch.service.intf.SysOrgService;
+import org.just.xch.service.intf.SysRoleService;
+import org.just.xch.service.intf.SysUserService;
 
 public class SysTest {
 
@@ -37,7 +41,7 @@ public class SysTest {
 	private static DataLogService dataLogService;
 
 	public static void setUpBeforeClass() throws Exception {
-		String APPLICATION_CONTEXT_PATH = "/com/winning/property/*Context.xml";
+		String APPLICATION_CONTEXT_PATH = "/org/just/property/*Context.xml";
 		ApplicationContext applicationContext = new ClassPathXmlApplicationContext(
 				APPLICATION_CONTEXT_PATH);
 		itemService = (ItemServiceImpl) applicationContext
@@ -63,12 +67,52 @@ public class SysTest {
 		try {
 			setUpBeforeClass();
 //			testFindExeItemss();
-			testUpdateExeItem();
+			testSaveToExcel();
+//			String str="科室各岗位职责明确得5分；员工明确自己的岗位与职责得5分；科室员工个人专业发展方向明确得5分";
+//			System.out.println(lineFeed(str,10));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
 	}
+	
+	
+	public static void testSaveToExcel()
+	{
+		if(exeItemService!=null)
+		{
+			ExeItem exeItem=new ExeItem();
+			exeItem.setId(203L);
+			List<ExeItem>roots= exeItemService.findExeItemsByCondition(null, null, null, null, 1);
+			if(roots!=null&&roots.size()>0){
+				exeItem=roots.get(0);
+				
+				List<ExeItemVO> exeItemVOList= exeItemService.getExamExcelItems(exeItem);
+				List<Object[]> objectsList=new ArrayList<Object[]>();
+				for(ExeItemVO exeItemVO:exeItemVOList)
+				{
+					Object[] objTemp=new Object[7];
+				   objTemp[0]=exeItemVO.getItemAndWeight();
+				   objTemp[1]=exeItemVO.getFirstIndex();
+				   objTemp[2]=exeItemVO.getSecondIndex();
+				   //添加换行
+				   objTemp[3]=NewwinningUtil.lineFeed(exeItemVO.getEvaluationStandard(),15);
+				   
+				   objTemp[4]=exeItemVO.getSocre();
+				   objTemp[5]=exeItemVO.getPoint();
+				   objTemp[6]=exeItemVO.getResource();
+				   objectsList.add(objTemp);
+				}
+
+				ExcelUtil excelUtil=new ExcelUtil();
+				excelUtil.createExcelFile("C:\\xuchuanhou\\testExportExcel.xls", exeItem, objectsList);
+			}
+			
+			
+//			excelUtil.createExcelFile("C:\\xuchuanhou\\testExportExcel.xls", spreadsheetBeanList);
+		}
+	}
+	
 	
 	public static void testSaveDataLog()
 	{
@@ -90,6 +134,9 @@ public class SysTest {
 		
 		
 	}
+	
+	
+	
 	
 	
 	public static void testgetExamSumScor()

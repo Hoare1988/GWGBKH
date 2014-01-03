@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="absolute" showCloseButton="true"
+				width="316" title="请稍后O(∩_∩)O~"
+				close="eWindow_close()"
+				height="100" 
+				titleStyleName="titleText">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+			
+			[Bindable]
+			public var proGressBarLabel:String="数据加载中...";
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:ProgressBar x="19"
+					y="21"
+					labelPlacement="right"
+					label="{proGressBarLabel}"
+					fontWeight="bold"
+					fontSize="12"
+					indeterminate="true"
+					trackHeight="16"/>
+</mx:TitleWindow>

@@ -1,0 +1,225 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml"
+		   layout="vertical"
+		   paddingTop="10"
+		   width="100%"
+		   creationComplete="init()"
+		   height="100%">
+
+	<mx:Script>
+		<![CDATA[
+			
+	/*						管理员项目管理页面									*/		
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.domain.ItemEvent;
+			import org.just.xch.model.domain.Item;
+			import org.just.xch.model.mlct.ItemMgtModelLocator;
+			import org.just.xch.view.component.titlewin.AddItem;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.utils.TimeFormatter;
+
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			import org.hamcrest.object.nullValue;
+			[Bindable]
+			private var _itemModelLocator:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+			
+			private function init():void
+			{   
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+//				cItemTree.expandChildrenOf(item1,true);
+			}
+			
+			private function eItem_click():void
+			{
+				var selectItem:Item=cItemTree.selectedItem as Item
+				cItemTree.expandChildrenOf(selectItem,true);
+				if(selectItem!=null)
+				{
+					_score.text=selectItem.score.toString()+"(分)";
+					_percentage.text=selectItem.percentage+"(%)"
+					_py.text=selectItem.py;
+					_evaluationStandard.text=selectItem.evaluationStandard;
+					_resource.text=selectItem.resource;
+					_comments.text=selectItem.comments;
+					_createDate.text=TimeFormatter.parse(selectItem.createDate,Constant.TIME_PARTTEN_THREE);
+					_updateDate.text=TimeFormatter.parse(selectItem.updateDate,Constant.TIME_PARTTEN_THREE);
+				}
+			}
+			
+			private function eAdd_click(item:Item):void
+			{
+					var addItem:AddItem=AddItem(PopUpManager.createPopUp(this, AddItem, true));
+					addItem.title="项目添加";
+					addItem.editType=1;
+					addItem.parentItem=item;
+					PopUpManager.centerPopUp(addItem);
+				
+			}
+			
+			private function eEdit_click(item:Item):void
+			{
+				if(item!=null)
+				{
+					var addItem:AddItem=AddItem(PopUpManager.createPopUp(this, AddItem, true));
+					addItem.title="项目更新";
+					addItem.editType=2;
+					addItem.parentItem=item;
+					PopUpManager.centerPopUp(addItem);
+				}
+				else
+				{
+					Alert.show("选择项目！");
+				}
+			}
+			
+			private function eDelete_click():void
+			{
+			}
+			
+			private function eSave_click():void
+			{
+			
+			}
+			
+			private function eCancel_click():void
+			{
+			
+			}
+			
+			private function treeLabelFunction(item:Object):String
+			{
+				return item.name+"("+item.score +"分)";
+			}
+			
+			private function eFlushTree_click():void
+			{
+				new ItemEvent(ItemEvent.EVENT_LOAD_ALL_ITEM).dispatch();
+			}
+			
+		]]>
+	</mx:Script>
+	
+	<mx:VBox width="100%"
+			 height="100%">
+		<mx:HDividedBox width="100%"
+						height="100%">
+			<mx:HBox height="100%"
+					 width="300"
+					 styleName="borderSkinStyle">
+				<mx:Tree id="cItemTree"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{_itemModelLocator.itemTreeAC}"
+						 labelFunction="treeLabelFunction"
+						 folderClosedIcon="{ImagesAssets.TREE_CLOSE}"
+						 folderOpenIcon="{ImagesAssets.TREE_OPEN}"
+						 itemClick="eItem_click()"/>
+			</mx:HBox>
+			<mx:VBox width="100%"
+					 height="100%"
+					 styleName="borderSkinStyle">
+				
+				<mx:HBox width="100%">
+						<mx:Label text="分      值:" width="100"/>
+						<mx:Label text=""
+								  id="_score"
+								  fontSize="13"
+								  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="比      例:" width="100"/>
+					<mx:Label text=""
+							  id="_percentage"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+						<mx:Label text="拼 音 码:"  width="100"/>
+						<mx:Label text=""
+								  id="_py"
+								  fontSize="13"
+								  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+					<mx:Label text="创建时间:"  width="100"/>
+					<mx:Label  text=""
+							  id="_createDate"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox  width="100%">
+					<mx:Label text="更新时间:"  width="100"/>
+					<mx:Label  text=""
+							  id="_updateDate"
+							  fontSize="13"
+							  color="#1E23E1"/>
+				</mx:HBox>
+					<mx:HBox width="100%">
+					<mx:Label text="评分标准:" width="100"/>
+					<mx:TextInput  text=""
+								  id="_evaluationStandard"
+								  fontSize="13"
+								  width="100%"
+								  height="100"
+								  color="#1E23E1"/>
+				</mx:HBox>
+				
+				<mx:HBox width="100%">
+						<mx:Label text="数据来源:"  width="100"/>
+					<mx:TextInput  text=""
+								  id="_resource"
+								  fontSize="13"
+								  height="100"
+								  width="100%"
+								  color="#1E23E1"/>
+				</mx:HBox>
+				<mx:HBox width="100%">
+						<mx:Label text="备      注:" width="100"/>
+					<mx:TextInput  text=""
+								  id="_comments"
+								  fontSize="13"
+								  height="100"
+								  width="100%"
+								  color="#1E23E1"/>
+				</mx:HBox>
+			</mx:VBox>
+		</mx:HDividedBox>
+	</mx:VBox>
+	<mx:HBox width="100%"
+			 verticalAlign="middle"
+			 styleName="borderBoxSkinStyle">
+		
+		<mx:Spacer width="100%"/>
+	</mx:HBox>
+	<mx:HBox width="100%">
+		<mx:ToolBar width="100%">
+			<mx:Button id="cFlushTreeButton"
+					   label="刷新"
+					   click="eFlushTree_click()"
+					   icon="{ImagesAssets.UPDATE01}"/>
+			<mx:Button id="cAddButton"
+					   label="添加"
+					   click="eAdd_click(cItemTree.selectedItem as Item)"
+					   icon="{ImagesAssets.ADD}"/>
+			<mx:Button id="cEditButton"
+					   label="修改"
+					   click="eEdit_click(cItemTree.selectedItem as Item)"
+					   icon="{ImagesAssets.MODIFY16}"/>
+			<mx:Button id="cDeleteButton"
+					   label="删除"
+					   click="eDelete_click()"
+					   icon="{ImagesAssets.DELETE}"/>
+			<mx:Button id="cSaveButton"
+					   label="保存"
+					   click="eSave_click()"
+					   icon="{ImagesAssets.SAVE16}"/>
+			<mx:Button id="cCancelButton"
+					   label="取消"
+					   click="eCancel_click()"
+					   icon="{ImagesAssets.CANCEL}"/>
+		</mx:ToolBar>
+	</mx:HBox>
+</mx:Module>

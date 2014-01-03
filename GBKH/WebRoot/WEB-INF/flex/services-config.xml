@@ -97,7 +97,7 @@
     </system>
     
      <factories>
-		<factory id="springFactory" class="com.winning.utils.spring.SpringFactory" />
+		<factory id="springFactory" class="org.just.utils.spring.SpringFactory" />
 	</factories>
     
 

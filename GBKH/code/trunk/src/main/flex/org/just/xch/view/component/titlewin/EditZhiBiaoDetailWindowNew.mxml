@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				close="eWindow_close()"
+				titleStyleName="twTitleStyle"
+				width="750"
+				height="380"
+				title="知识库规则配置明细"
+				showCloseButton="true"
+				layout="vertical"
+				horizontalAlign="center"
+				paddingLeft="3"
+				paddingRight="3"
+				verticalAlign="middle"
+				creationComplete="init()"
+				xmlns:common="org.just.xch.view.component.common.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.view.component.renderer.ExeOrderOperateRenderer;
+
+			import mx.collections.ArrayCollection;
+			import mx.controls.LinkButton;
+			import mx.core.IUIComponent;
+			import mx.events.ListEvent;
+			import mx.managers.DragManager;
+			import mx.managers.PopUpManager;
+			import mx.utils.ObjectUtil;
+
+
+			private var appModel:AppModelLocator=AppModelLocator.getInstance();
+
+
+			private function init():void
+			{
+				appModel.exp="";
+				appModel.zhibiaos=new ArrayCollection([{name: 'Src', relation: '>', value: '445', unit: 'umol/L'},{name: 'BuN', relation: '>', value: '20', unit: 'umol/L'},{name: '医嘱', relation: '=', value: '二甲双胍格列本脲胶囊', unit: ''}]);
+				appModel.zhibiao2s=new ArrayCollection([{name: '刮宫术', code: '31120150'}]);
+			}
+
+			private function eAdd_click():void
+			{
+				var twin:EditZhiBiaoWindow=EditZhiBiaoWindow(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditZhiBiaoWindow, true));
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function eAdd2_click():void
+			{
+				var twin:EditTextWindow=EditTextWindow(PopUpManager.createPopUp(DisplayObject(this.parentApplication), EditTextWindow, true));
+				PopUpManager.centerPopUp(twin);
+			}
+
+			private function eDel_click():void
+			{
+				if (mmDataGrid.selectedItem)
+				{
+					appModel.zhibiaos.removeItemAt(appModel.zhibiaos.getItemIndex(mmDataGrid.selectedItem));
+				}
+			}
+
+			private function eDel2_click():void
+			{
+			}
+
+			private function eDel3_click(event:MouseEvent):void
+			{
+				appModel.exp=appModel.exp.substring(0, appModel.exp.length - 1);
+			}
+
+			private function eClick(event:MouseEvent):void
+			{
+				var dd:Button=event.currentTarget as Button;
+				appModel.exp+=dd.label;
+			}
+
+			private function eWindow_close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+
+			private function eSubmitClose_click():void
+			{
+				eSubmit_click();
+				eWindow_close();
+			}
+
+			private function eSubmit_click():void
+			{
+				var obj:Object=new Object();
+				obj['name']=nameTextInput.text;
+				obj['code']=codeTextInput.text;
+				obj['status']='已发布';
+				obj['version']="v1.0";
+				obj['updateDate']="2012-06-18";
+				appModel.zhibiaoguizhe.addItem(obj);
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox>
+		<mx:VBox>
+			<mx:HBox>
+				<mx:Label text="规则代码"/>
+				<mx:TextInput id="codeTextInput" text="A3424"/>
+				<mx:Label text="规则名称"/>
+				<mx:TextInput id="nameTextInput" text="肾功能不全用药规则"/>
+			</mx:HBox>
+			<mx:HBox>
+				<mx:VBox>
+					<mx:DataGrid id="mmDataGrid"
+								 width="100%"
+								 height="100%"
+								 doubleClickEnabled="true"
+								 dataProvider="{appModel.zhibiaos}">
+						<mx:columns>
+							<mx:DataGridColumn dataField="name"
+											   headerText="项目"/>
+							<mx:DataGridColumn dataField="relation"
+											   headerText="关系"/>
+							<mx:DataGridColumn dataField="value"
+											   headerText="数值"/>
+							<mx:DataGridColumn dataField="unit"
+											   headerText="单位"/>
+							<mx:DataGridColumn itemRenderer="{new ClassFactory(ExeOrderOperateRenderer)}"/>
+						</mx:columns>
+					</mx:DataGrid>
+					<mx:HBox>
+						<mx:Label text="表达式"/>
+						<mx:TextInput width="400"
+									  id="expTextInput"
+									  text="{appModel.exp}"/>
+						<mx:LinkButton icon="{ImagesAssets.DEL16}"
+									   click="eDel3_click(event)"/>
+					</mx:HBox>
+					<mx:HBox>
+						<common:BtnAdd label="添加"
+									   click="eAdd_click()"/>
+						<common:BtnDel label="删除"
+									   click="eDel_click()"/>
+						<mx:Button label="&amp;"
+								   click="eClick(event)"/>
+						<mx:Button label="|"
+								   click="eClick(event)"/>
+						<mx:Button label="("
+								   click="eClick(event)"/>
+						<mx:Button label=")"
+								   click="eClick(event)"/>
+					</mx:HBox>
+		        </mx:VBox>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:VBox>
+			<mx:Label text="提示信息:"/>
+			<mx:TextArea width="140" editable="false" text="肾衰竭患者禁止使用二甲双胍格列本脲胶囊" height="40"/>
+			<mx:Label text="规则描述:"/>
+			<mx:TextArea width="140" height="120" editable="false" text="肾或肝功能不全可升高格列本脲和盐酸二甲双胍的血药浓度，而肝肾功能不全可能减弱糖异生作用。所有这些都增加低血糖的危险性。"/>
+			<mx:Label text="文献来源:"/>
+			<mx:TextArea width="140"  editable="false" text="《临床诊疗指南-肾脏病学分册》"/>
+		</mx:VBox>
+	</mx:HBox>
+	<mx:HBox>
+		<common:BtnSubmit label="完成"
+						  click="eSubmitClose_click()"/>
+		</mx:HBox>
+</mx:TitleWindow>
+

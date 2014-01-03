@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml"
+				layout="vertical"
+				width="300"
+				height="100"
+				titleStyleName="twTitleStyle"
+				title="系统提示"
+				close="close()"
+				paddingLeft="0"
+				paddingRight="0"
+				paddingBottom="0"
+				paddingTop="0"
+				showCloseButton="true" xmlns:flexpaper="com.devaldi.controls.flexpaper.*">
+	<mx:Script>
+		<![CDATA[
+			import mx.managers.PopUpManager;
+
+
+			private function close():void
+			{
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+
+	<mx:VBox width="100%"
+			 height="100%"
+			 verticalAlign="middle"
+			 horizontalAlign="center"
+			 paddingLeft="5"
+			 paddingRight="5">
+		<mx:Label text="该功能正在建设中..."
+				  color="red"
+				  fontWeight="bold"
+				  fontSize="20"/>
+		<!--<flexpaper:FlexPaperViewer height="500" width="800" SwfFile="help.swf" Scale="1"/>-->
+	</mx:VBox>
+</mx:TitleWindow>

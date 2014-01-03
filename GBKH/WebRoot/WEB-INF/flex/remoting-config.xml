@@ -10,7 +10,7 @@
 			<properties>
 				<persistence-factory>
 					<class>
-						com.winning.utils.spring.SpringApplicationContext
+						org.just.utils.spring.SpringApplicationContext
 					</class>
 					<singleton>true</singleton>
 					<method>getSessionFactory</method>

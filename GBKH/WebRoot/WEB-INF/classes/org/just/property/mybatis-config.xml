@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE configuration PUBLIC "-//mybatis.org//DTD Config 3.0//EN" "http://mybatis.org/dtd/mybatis-3-config.dtd"> 
+<configuration>
+	<!--创建别名-->
+	<typeAliases>
+		<!-- domain -->
+		<typeAlias type="org.just.xch.domain.sys.SysUser" alias="SysUser" />
+		<typeAlias type="org.just.xch.domain.sys.SysRole" alias="SysRole" />
+		<typeAlias type="org.just.xch.domain.sys.SysOrg" alias="SysOrg" />
+		<typeAlias type="org.just.xch.domain.sys.SysModule" alias="SysModule" />
+		<typeAlias type="org.just.xch.domain.sys.Item" alias="Item" />
+		<typeAlias type="org.just.xch.domain.sys.ItemPermission" alias="ItemPermission" />
+		<typeAlias type="org.just.xch.domain.sys.ExeItem" alias="ExeItem" />
+		<typeAlias type="org.just.xch.domain.sys.SysUserOrgMapping" alias="SysUserOrgMapping" />
+		<typeAlias type="org.just.xch.domain.sys.DataLog" alias="DataLog" />
+		
+	</typeAliases>
+	
+	<mappers>
+		<mapper resource="org/just/xch/dao/sys/SysUserDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/SysRoleDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/SysModuleDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/SysOrgDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/ItemDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/ExeItemDao.xml"/>
+		<mapper resource="org/just/xch/dao/sys/DataLogDao.xml"/>
+	</mappers>
+</configuration>

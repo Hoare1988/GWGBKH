@@ -9,11 +9,11 @@
   </listener>
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>/WEB-INF/classes/com/winning/property/applicationContext.xml</param-value>
+    <param-value>/WEB-INF/classes/org/just/property/applicationContext.xml</param-value>
   </context-param>
   <servlet>
     <servlet-name>InitServlet</servlet-name>
-    <servlet-class>com.winning.utils.InitServlet</servlet-class>
+    <servlet-class>org.just.utils.InitServlet</servlet-class>
     <load-on-startup>1</load-on-startup>
   </servlet>
   <servlet-mapping>
@@ -22,7 +22,7 @@
   </servlet-mapping>
   <servlet>
     <servlet-name>DiseaseSymptomsImportServlet</servlet-name>
-    <servlet-class>com.winning.servlet.DiseaseSymptomsImportServlet</servlet-class>
+    <servlet-class>org.just.servlet.DiseaseSymptomsImportServlet</servlet-class>
   </servlet>
   <servlet-mapping>
     <servlet-name>DiseaseSymptomsImportServlet</servlet-name>
@@ -48,9 +48,18 @@
     </init-param>
     <load-on-startup>1</load-on-startup>
   </servlet>
+  <servlet>
+    <servlet-name>DownloadExcel</servlet-name>
+    <servlet-class>org.just.xch.servlet.DownloadExcel</servlet-class>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>MessageBrokerServlet</servlet-name>
     <url-pattern>/messagebroker/*</url-pattern>
+  </servlet-mapping>
+  <servlet-mapping>
+    <servlet-name>DownloadExcel</servlet-name>
+    <url-pattern>/servlet/DownloadExcel</url-pattern>
   </servlet-mapping>
   <welcome-file-list>
     <welcome-file>index.html</welcome-file>

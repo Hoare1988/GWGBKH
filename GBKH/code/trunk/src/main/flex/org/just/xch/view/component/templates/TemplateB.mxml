@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 label="模版一"
+		 width="100%"
+		 height="100%"
+		 xmlns:common="org.just.xch.view.component.common.*"
+		 xmlns:viewStackEffects="org.efflex.mx.viewStackEffects.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+		]]>
+	</mx:Script>
+
+	<viewStackEffects:Squash id="squashEffect"/>
+
+
+	<mx:TabNavigator paddingTop="0"
+					 paddingBottom="0"
+					 paddingLeft="0"
+					 paddingRight="0"
+					 width="100%"
+					 height="100%">
+
+		<mx:HBox label="模版说明"
+				 width="100%"
+				 height="100%"
+				 horizontalGap="3"
+				 paddingTop="3">
+			<mx:Canvas width="40%"
+					   height="100%"
+					   horizontalScrollPolicy="off">
+				<mx:VBox width="100%"
+						 height="100%"
+						 paddingRight="20">
+					<mx:VBox width="100%"
+							 height="200"
+							 styleName="borderSkinStyle">
+						<mx:VBox width="100%"
+								 height="100%"
+								 backgroundColor="#ffffff"
+								 verticalAlign="middle"
+								 horizontalAlign="center">
+							<mx:Label text="指标在全院趋势图"/>
+							<mx:Label text="柱状图+曲线图"/>
+						</mx:VBox>
+					</mx:VBox>
+					<mx:VBox width="100%"
+							 height="200"
+							 styleName="borderSkinStyle">
+						<mx:VBox width="100%"
+								 height="100%"
+								 backgroundColor="#ffffff"
+								 verticalAlign="middle"
+								 horizontalAlign="center">
+							<mx:Label text="指标在维度A排名情况"/>
+							<mx:Label text="柱状图"/>
+						</mx:VBox>
+					</mx:VBox>
+					<mx:VBox width="100%"
+							 height="200"
+							 styleName="borderSkinStyle">
+						<mx:VBox width="100%"
+								 height="100%"
+								 backgroundColor="#ffffff"
+								 verticalAlign="middle"
+								 horizontalAlign="center">
+							<mx:Label text="指标在维度B排名情况"/>
+							<mx:Label text="柱状图"/>
+						</mx:VBox>
+					</mx:VBox>
+				</mx:VBox>
+			</mx:Canvas>
+
+			<mx:VBox width="60%"
+					 height="100%">
+				<mx:ApplicationControlBar width="100%"
+										  height="35"
+										  styleName="queryStyle">
+					<mx:Label text="起始日期:"
+							  fontWeight="bold"/>
+					<mx:DateField id="monthBeginDateField"
+								  width="80"
+								  formatString="YYYY-MM"
+								  yearNavigationEnabled="true"
+								  selectedDate="{new Date()}"
+								  dayNames="[日,一,二,三,四,五,六]"
+								  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>
+					<mx:Label text="截止日期:"
+							  fontWeight="bold"/>
+					<mx:DateField id="monthEndDateField"
+								  width="80"
+								  formatString="YYYY-MM"
+								  yearNavigationEnabled="true"
+								  selectedDate="{new Date()}"
+								  dayNames="[日,一,二,三,四,五,六]"
+								  monthNames="[一月,二月,三月,四月,五月,六月,七月,八月,九月,十月,十一月,十二月]"/>
+					<common:BtnQuery/>
+				</mx:ApplicationControlBar>
+
+				<mx:VBox width="100%"
+						 height="100%"
+						 styleName="borderSkinStyle">
+					<mx:TabNavigator width="100%"
+									 height="100%"
+									 creationPolicy="all"
+									 paddingTop="3">
+						<mx:VBox label="维度A"
+								 width="100%"
+								 height="100%">
+							<mx:VBox width="100%"
+									 height="65%"
+									 backgroundColor="#ffffff"
+									 verticalAlign="middle"
+									 horizontalAlign="center">
+								<mx:Label text="指标在维度A各个分类的数据内容"/>
+								<mx:Label text="数据表格"/>
+							</mx:VBox>
+							<mx:HBox width="100%"
+									 height="26"
+									 verticalAlign="middle"
+									 backgroundColor="0x90BAE4"
+									 horizontalGap="0">
+								<mx:ToggleButtonBar dataProvider="{viewStackA}"
+													height="100%"/>
+								<mx:Spacer width="100%"/>
+							</mx:HBox>
+							<mx:ViewStack id="viewStackA"
+										  width="100%"
+										  height="35%"
+										  creationPolicy="all">
+								<mx:VBox label="图表"
+										 verticalGap="0"
+										 width="100%"
+										 height="100%"
+										 showEffect="{squashEffect}"
+										 hideEffect="{squashEffect}"
+										 verticalAlign="middle"
+										 horizontalAlign="center"
+										 backgroundColor="#ffffff">
+									<mx:Label text="选择指标在维度A每月趋势图"/>
+									<mx:Label text="曲线图"/>
+								</mx:VBox>
+								<mx:VBox label="数据"
+										 verticalGap="0"
+										 width="100%"
+										 height="100%"
+										 verticalAlign="middle"
+										 horizontalAlign="center"
+										 showEffect="{squashEffect}"
+										 hideEffect="{squashEffect}"
+										 backgroundColor="#ffffff">
+									<mx:Label text="选择指标在维度A每月数据表格"/>
+									<mx:Label text="动态表格"/>
+								</mx:VBox>
+							</mx:ViewStack>
+						</mx:VBox>
+						<mx:VBox label="维度B"
+								 width="100%"
+								 height="100%"
+								 verticalAlign="middle"
+								 horizontalAlign="center">
+							<mx:Label text="参考维度A显示方式"/>
+						</mx:VBox>
+
+					</mx:TabNavigator>
+
+				</mx:VBox>
+
+
+			</mx:VBox>
+		</mx:HBox>
+		<mx:VBox label="图片示例"
+				 width="100%"
+				 height="100%"
+				 verticalAlign="middle"
+				 horizontalAlign="center">
+			<mx:Image source="{ImagesAssets.TEMPLATE_B}"
+					  verticalAlign="middle"
+					  horizontalAlign="center"
+					  width="100%"
+					  height="100%"/>
+		</mx:VBox>
+
+	</mx:TabNavigator>
+
+</mx:VBox>

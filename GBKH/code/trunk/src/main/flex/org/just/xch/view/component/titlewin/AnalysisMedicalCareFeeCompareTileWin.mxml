@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:TitleWindow xmlns:mx="http://www.adobe.com/2006/mxml" width="1000" height="500" showCloseButton="true" close="close()">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.model.mlct.AnalysisModelLocator;
+			
+			import mx.managers.PopUpManager;
+			private var modelLocator:AnalysisModelLocator=AnalysisModelLocator.getInstance();
+			
+			private function close(){
+				PopUpManager.removePopUp(this);
+			}
+		]]>
+	</mx:Script>
+	<mx:VBox width="100%" height="100%" styleName="borderSkinStyle">
+		<mx:HBox width="100%" height="100%" backgroundColor="white">
+
+			<mx:VBox width="35%" height="100%">
+				<mx:HBox>
+					<mx:RadioButtonGroup id="myG"/>
+					<mx:RadioButton id="zfy" label="总费用" groupName="myG" selected="true" value="zfy"/>
+					<mx:RadioButton id="xjzf" label="现金支付" groupName="myG" value="xjzf"/>
+					<mx:RadioButton id="zhzc" label="账户支出" groupName="myG" value="zhzc"/>
+					<mx:RadioButton id="tczfh" label="统筹支付" groupName="myG" value="tczfh"/>
+				</mx:HBox>
+				
+				<mx:Legend id="myPieChartLegend"
+						   dataProvider="{myPieChart}"
+						   legendItemClass="org.just.xch.utils.BigFontLegendItem"
+						   direction="horizontal" width="100%"/>
+				
+				<mx:PieChart id="myPieChart" width="100%" height="100%" showDataTips="true" dataProvider="{modelLocator.medicalCareFeeCompareVODetailsByTjrqAC}">
+					<mx:series>
+						<mx:PieSeries displayName="rymc" labelPosition="inside" nameField="rymc" field="{myG.selectedValue}"/>
+					</mx:series>
+				</mx:PieChart>
+			</mx:VBox>
+			<mx:DataGrid width="65%" height="100%" dataProvider="{modelLocator.medicalCareFeeCompareVODetailsByTjrqAC}">
+				<mx:columns>
+					<mx:DataGridColumn headerText="人员类别" dataField="rymc"/>
+					<mx:DataGridColumn headerText="总费用" dataField="zfy"/>
+					<mx:DataGridColumn headerText="现金支付" dataField="xjzf"/>
+					<mx:DataGridColumn headerText="账户支出" dataField="zhzc"/>
+					<mx:DataGridColumn headerText="统筹支付" dataField="tczfh"/>
+				</mx:columns>
+			</mx:DataGrid> 
+		</mx:HBox>	
+	</mx:VBox>
+</mx:TitleWindow>

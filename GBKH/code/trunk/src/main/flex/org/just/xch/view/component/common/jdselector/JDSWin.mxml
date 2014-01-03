@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" width="140" height="100" cornerRadius="2" 
+		 shadowDistance="2" shadowDirection="center" dropShadowEnabled="true" backgroundAlpha="1" backgroundColor="white"
+		 creationComplete="init()" xmlns:components="org.just.xch.view.component.common.ymselector.*">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			
+			import mx.controls.Alert;
+			import mx.controls.Text;
+			import mx.controls.TextInput;
+			import mx.core.Application;
+			import mx.events.FlexMouseEvent;
+			import mx.managers.PopUpManager;
+			public static const WIN_WIDTH:Number = 280;
+			public static const WIN_HEIGHT:Number = 200;
+			
+			public var _owner:DisplayObjectContainer;
+			
+			private function init():void{
+				this.addEventListener(FlexMouseEvent.MOUSE_DOWN_OUTSIDE,hideHandler);
+			}
+			
+			private function hideHandler(event):void{
+				PopUpManager.removePopUp(this);
+			}
+			
+			private function selectHandler(event:MouseEvent,jd:int):void{
+				(owner as TextInput).text = year.text+'年'+event.target.label;
+				(owner as JdInput).textValue = year.text+''+jd;
+				
+				hideHandler(null);
+			}
+			
+			public static function show(x:Number,y:Number,app):JDSWin{
+				var apl=Application.application;
+				var selector:JDSWin = PopUpManager.createPopUp(apl,JDSWin) as JDSWin;
+				selector.owner = app;
+				selector.x = x;
+				selector.y = y;
+				var jd:String=(app.text as String).substr((app.text as String).length-3,3);
+				switch(jd)
+				{
+					case '一季度':
+						selector.btn1.link.enabled=false;
+						break;
+					case '二季度':
+						selector.btn2.link.enabled=false;
+						break;
+					case '三季度':
+						selector.btn3.link.enabled=false;
+						break;
+					case '四季度':
+						selector.btn4.link.enabled=false;
+						break;
+					default:
+						break;
+				}
+				selector.invalidateDisplayList();
+				return selector;
+			}
+			
+			private function addYear():void{
+				var y:int = int(year.text);
+				y++;
+				year.text = y.toString();
+			}
+			
+			private function minusYear():void{
+				var y:int = int(year.text);
+				y--;
+				year.text = y.toString();
+			}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="20" 
+			 horizontalAlign="center" verticalAlign="middle" borderColor="#cccccc" 
+			 backgroundColor="#E6E8FA" dropShadowEnabled="true" shadowDirection="center" shadowDistance="1">
+		<mx:Button icon="{ImagesAssets.BTN_L}" click="minusYear();" width="18" height="18"/>
+		<mx:Spacer width="100%"/>
+		<mx:Text fontWeight="bold" id="year" text="{new Date().getFullYear().toString()}" width="50"/>
+		<mx:Spacer width="100%"/>
+		<mx:Button id="ssx"  icon="{ImagesAssets.BTN_R}" click="addYear();" width="18" height="18"/>
+	</mx:HBox>
+	<mx:VBox width="100%" height="100%">
+		
+		
+		<mx:HBox width="100%" height="100%">
+			<components:TeleButton id="btn1" label="一季度" click="selectHandler(event,1)" />
+			<components:TeleButton id="btn2" label="二季度" click="selectHandler(event,2)" />
+		</mx:HBox>
+		<mx:HBox width="100%" height="100%">
+			<components:TeleButton id="btn3" label="三季度" click="selectHandler(event,3)" />
+			<components:TeleButton id="btn4" label="四季度" click="selectHandler(event,4)" />
+		</mx:HBox>
+		
+	</mx:VBox>
+	<mx:Spacer/>
+</mx:VBox>

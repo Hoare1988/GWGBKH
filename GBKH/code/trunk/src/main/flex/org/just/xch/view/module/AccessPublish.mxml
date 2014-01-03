@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Module xmlns:mx="http://www.adobe.com/2006/mxml" 
+		   layout="absolute"
+		   width="100%"
+		   height="100%"
+		   creationComplete="init()"
+		   xmlns:common="org.just.xch.view.component.common.*">
+	
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.control.events.domain.ExeItemEvent;
+			import org.just.xch.control.events.domain.ItemEvent;
+			import org.just.xch.control.events.domain.SysOrgEvent;
+			import org.just.xch.model.domain.ExeItem;
+			import org.just.xch.model.domain.Item;
+			import org.just.xch.model.domain.SysUser;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.mlct.ItemMgtModelLocator;
+			import org.just.xch.model.mlct.SysMgtModelLocator;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.view.component.titlewin.PublishExamTitle;
+			
+			import mx.collections.ArrayCollection;
+			import mx.controls.Alert;
+			import mx.managers.PopUpManager;
+			
+			
+			private var sysMgtModel:SysMgtModelLocator=SysMgtModelLocator.getInstance();
+			public var itemMgtModel:ItemMgtModelLocator=ItemMgtModelLocator.getInstance();
+
+			public function init():void
+			{
+				new ItemEvent(ItemEvent.EVENT_FIND_ROOT_ITEM).dispatch();
+			}
+			
+			
+			public function publishAccessItem():void
+			{
+				var selectedItem:Item=null;
+				var items:ArrayCollection=new ArrayCollection();
+				for each(var item:Item in itemMgtModel.uMgt_queryRootItemAC)
+				{
+					if(item.isSelected)
+					{
+						items.addItem(item);
+						if(items.length>1)
+						{
+							Alert.show("不能选择多个考核项目","提示");
+							return ;
+						}
+						selectedItem=item;
+					}
+				}
+				
+				var selectBeUsers:ArrayCollection=new ArrayCollection();
+				for each(var user:SysUser in sysMgtModel.uMgt_queryUserByStationAC)
+				{
+					if(user.isSelected)
+					{
+						selectBeUsers.addItem(user);
+					}
+				}
+				
+				var editUser:PublishExamTitle=PublishExamTitle(PopUpManager.createPopUp(this, PublishExamTitle, true));
+				editUser.cAccessYear=cAccessYear.selectedItem as String;
+				editUser.selectItem=selectedItem;
+				editUser.title="发布考核："+selectedItem.name+"-"+editUser.cAccessYear;
+				editUser.selectUsers=selectBeUsers;
+				PopUpManager.centerPopUp(editUser);
+			}
+		]]>
+	</mx:Script>
+	
+	<mx:HBox label="用户角色分配"
+			 width="100%"
+			 height="100%">
+		<mx:VBox width="40%"
+				 height="100%">
+			<mx:ApplicationControlBar width="100%"
+									  height="30"
+									  styleName="queryStyle">
+				<mx:Label text="项目名称:"/>
+				<mx:TextInput id="itemnameTxt"
+							  width="80"/>
+				<common:BtnQuery id="cRootItemQueryBtn"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid id="itemDataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{cRootItemsPageBar.currentPageData}"
+						 itemClick="">
+				<mx:columns>
+					<mx:DataGridColumn dataField="name"
+									   headerText="考核名称"/>
+					<mx:DataGridColumn id="cIsSlectedItemDGC"
+									   dataField="isSelected"
+									   headerText="选择"
+									   textAlign="center"
+									   width="50">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:CheckBox selected="{data.isSelected}"
+											 change="onChange()">
+									<mx:Script>
+										<![CDATA[
+											import org.just.xch.model.domain.Item;
+											import org.just.xch.utils.Constant;
+											
+											
+											private function onChange()
+											{
+												if (this.selected)
+												{
+													data.isSelected=Constant.TRUE;
+												}
+												else
+												{
+													data.isSelected=Constant.FALSE;
+												}
+											}
+										]]>
+									</mx:Script>
+								</mx:CheckBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cRootItemsPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{itemMgtModel.uMgt_queryRootItemAC}"
+								 expand="true"
+								 pageSize="30"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+		
+		<mx:VBox width="30%"
+				 height="100%">
+			<mx:ApplicationControlBar width="100%"
+									  height="30"
+									  styleName="queryStyle">
+				<mx:Label text="科室名称:"/>
+				<mx:TextInput id="orgNameTxt"
+							  width="80"/>
+				<mx:ComboBox id="cComboxStation" dataProvider="{Constant.Stations}" labelField="text">
+				</mx:ComboBox>
+				<common:BtnQuery id="cPmUserQueryBtn"
+								 click="new SysOrgEvent(SysOrgEvent.EVENT_Query_USER_BY_ORG_STATION,[orgNameTxt.text ,cComboxStation.selectedItem.value]).dispatch()"/>
+			</mx:ApplicationControlBar>
+			<mx:DataGrid id="userDataGrid"
+						 width="100%"
+						 height="100%"
+						 dataProvider="{cPageBar.currentPageData}">
+				<mx:columns>
+					<mx:DataGridColumn dataField="userName"
+									   headerText="用户名"/>
+					<mx:DataGridColumn dataField="realName"
+									   headerText="真实姓名"/>
+					<mx:DataGridColumn id="cIsSlectedUserDGC"
+									   dataField="isSelected"
+									   headerText="选择"
+									   textAlign="center"
+									   width="50">
+						<mx:itemRenderer>
+							<mx:Component>
+								<mx:CheckBox selected="{data.isSelected}"
+											 change="onChange()">
+									<mx:Script>
+										<![CDATA[
+											import org.just.xch.utils.Constant;
+											
+											private function onChange()
+											{
+												if (this.selected)
+												{
+													data.isSelected=Constant.TRUE;
+												}
+												else
+												{
+													data.isSelected=Constant.FALSE;
+												}
+											}
+										]]>
+									</mx:Script>
+								</mx:CheckBox>
+							</mx:Component>
+						</mx:itemRenderer>
+					</mx:DataGridColumn>
+				</mx:columns>
+			</mx:DataGrid>
+			<mx:HBox width="100%"
+					 height="30"
+					 verticalAlign="middle"
+					 paddingLeft="10"
+					 paddingRight="10">
+				<mx:Spacer width="100%"/>
+				<common:PagedBar id="cPageBar"
+								 cornerRadius="3"
+								 right="0"
+								 paddingTop="3"
+								 SourceData="{sysMgtModel.uMgt_queryUserByStationAC}"
+								 expand="true"
+								 pageSize="20"
+								 height="100%"/>
+			</mx:HBox>
+		</mx:VBox>
+		<mx:HBox width="30%"
+				 height="100%">
+			<mx:Label text="考核年份"/>
+			<mx:ComboBox id="cAccessYear" dataProvider="{Constant.AccessYears}"/>
+			<mx:Button label="发布" click="publishAccessItem()"/>
+		
+		</mx:HBox>
+	</mx:HBox>
+</mx:Module>

@@ -1,0 +1,290 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml"
+		 width="100%"
+		 height="100%"
+		 horizontalGap="0"
+		 verticalGap="0"
+		 creationComplete="init()"
+		 verticalAlign="middle"
+		 horizontalAlign="center"
+		 xmlns:code="http://code.google.com/p/flexlib/">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.view.CommonViewEvent;
+			import org.just.xch.model.domain.ApplyRecord;
+			import org.just.xch.model.domain.Indicator;
+			import org.just.xch.model.domain.RptGrid;
+			import org.just.xch.model.domain.SysModule;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.model.vo.condition.QueryArgVO;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.ClearMemory;
+			import org.just.xch.utils.Constant;
+			import org.just.xch.utils.DpUtil;
+			import org.just.xch.view.component.common.dialog.PopFrame;
+			import org.just.xch.view.component.common.skin.RepeatBackground;
+			
+			import flash.utils.getDefinitionByName;
+			
+			import flexlib.controls.tabBarClasses.SuperTab;
+			import flexlib.events.SuperTabEvent;
+			import flexlib.mdi.containers.MDICanvas;
+			
+			import mx.binding.utils.BindingUtils;
+			import mx.collections.ArrayCollection;
+			import mx.containers.Canvas;
+			import mx.controls.Alert;
+			import mx.core.Application;
+			import mx.events.ListEvent;
+			import mx.events.MenuEvent;
+			import mx.events.ModuleEvent;
+			import mx.managers.CursorManager;
+			import mx.managers.PopUpManager;
+			import mx.messaging.SubscriptionInfo;
+			import mx.messaging.events.ChannelEvent;
+			import mx.modules.ModuleLoader;
+			
+			public var appModel:AppModelLocator=AppModelLocator.getInstance();
+			
+
+
+			private function init():void
+			{
+				
+		
+				tabNav.setClosePolicyForTab(0, SuperTab.CLOSE_NEVER);
+			
+				appModel.mainPage=this;
+			
+		
+				CursorManager.removeCursor(CursorManager.currentCursorID);
+				
+			}
+
+		
+
+
+
+
+		
+
+		
+			
+			
+
+			private function loadModule(sysModule:SysModule):void
+			{
+				var moduleLoader:ModuleLoader=new ModuleLoader();
+				moduleLoader.label=sysModule.name;
+				moduleLoader.percentHeight=100;
+				moduleLoader.percentWidth=100;
+				moduleLoader.data=sysModule;
+				moduleLoader.applicationDomain = ApplicationDomain.currentDomain;
+				moduleLoader.setStyle("backgroundImage", ImagesAssets.BACKGROUNDIMG02);
+				moduleLoader.styleName='backGroundBorderSkinStyle';
+				if(sysModule.id==303)
+				{
+					var popFrame:PopFrame=new PopFrame();
+					popFrame.clipContent=false;
+					popFrame.isPopUp=false;
+					popFrame.maximize();
+					popFrame.draggable=false;
+					popFrame.source=sysModule.path;
+					moduleLoader.addChild(popFrame);
+				}
+				else
+				{
+					moduleLoader.url=sysModule.path;
+				}
+				tabNav.addChild(moduleLoader);
+				tabNav.selectedIndex=((tabNav.numChildren - 1) < 0 ? 0 : (tabNav.numChildren - 1));
+			}
+
+			private function existModule(sysModule:SysModule):Boolean
+			{
+				var flag:Boolean=false;
+				if (sysModule != null)
+				{
+					for (var i:int=0; i < tabNav.numChildren; i++)
+					{
+						var moduleLoader:ModuleLoader=tabNav.getChildAt(i) as ModuleLoader;
+						if (moduleLoader && sysModule.path == moduleLoader.url)
+						{
+							tabNav.selectedIndex=i;
+							flag=true;
+							break;
+						}
+					}
+				}
+				return flag;
+			}
+
+//			private function existMRuleModule(mrule:MRule):Boolean
+//			{
+//				var flag:Boolean=false;
+//				if (mrule)
+//				{
+//					for (var i:int=1; i < tabNav.numChildren; i++)
+//					{
+//						var page:Canvas=tabNav.getChildAt(i) as Canvas;
+//						if (page && page['mrule'] && (page['mrule'].id == mrule.id))
+//						{
+//							tabNav.selectedIndex=i;
+//							flag=true;
+//							break;
+//						}
+//					}
+//				}
+//				return flag;
+//			}
+
+
+			private function exsitFhljTempModule(pageFlag:String):Boolean
+			{
+				var flag:Boolean=false;
+				if (pageFlag)
+				{
+					for (var i:int=1; i < tabNav.numChildren; i++)
+					{
+						var page:Canvas=tabNav.getChildAt(i) as Canvas;
+						if (page && page['pageFlag'] && (page['pageFlag'] == pageFlag))
+						{
+							tabNav.selectedIndex=i;
+							flag=true;
+							break;
+						}
+					}
+				}
+				return flag;
+			}
+
+		
+
+	
+			private function onTabClose(event:SuperTabEvent):void
+			{
+				closeTabByTabIndex(event.tabIndex);
+			}
+
+			private function closeTabByTabIndex(tabIndex:int):void
+			{
+				var ichild:*=tabNav.getChildAt(tabIndex);
+				if (ichild is ModuleLoader)
+				{
+					ichild.unloadModule();
+				}
+				else
+				{
+					ichild.removeAllChildren();
+				}
+				ClearMemory.getInstance().runClear();
+			}
+
+
+			private function onItemClick(event:MenuEvent):void
+			{
+				if (!existModule(event.item as SysModule))
+				{
+					loadModule(event.item as SysModule);
+				}
+			}
+
+			
+			public function fault(event:Object):void
+			{
+				AlertUtil.remoteMsg(event);
+			}
+			
+			
+			
+			private function menuClick(event:MouseEvent):void
+			{
+				if (cMenuBar.selectedIndex < 0)
+				{
+					return;
+				}
+				var module:SysModule=(cMenuBar.dataProvider as ArrayCollection).getItemAt(cMenuBar.selectedIndex) as SysModule;
+				
+			}
+
+
+			[Embed(source="/./org/just/xch/assets/images/add.png")]
+			public static const plus16:Class;
+		]]>
+	</mx:Script>
+
+	<mx:GlowFilter id="glow"
+				   blurX="12"
+				   blurY="12"
+				   color="#88AEF7"
+				   quality="2"
+				   strength="1"/>
+	<mx:BlurFilter id="blur"
+				   blurX="4"
+				   blurY="4"
+				   quality="2"/>
+	<mx:DropShadowFilter id="dropShadow"
+						 alpha="0.35"
+						 blurX="6"
+						 blurY="6"
+						 distance="6"
+						 color="#000000"
+						 angle="90"/>
+	<mx:BevelFilter id="bevel"
+					angle="45"
+					blurX="0.5"
+					blurY="0.5"
+					distance="4"
+					strength="0.7"
+					highlightAlpha="0.7"
+					shadowAlpha="0.7"/>
+	<!--<mx:Canvas width="100%"
+		 height="30"
+		 backgroundImage="{ImagesAssets.BACKGROUNDIMG04}"
+		 borderSkin="org.just.xch.view.component.common.skin.RepeatBackground">-->
+	<mx:MenuBar id="cMenuBar"
+				labelField="name"
+				height="30"
+				width="100%"
+				dataProvider="{appModel.loginUser.roles.getItemAt(0)!=null?appModel.loginUser.roles.getItemAt(0).modules:null}"
+				click="menuClick(event)"
+				itemClick="onItemClick(event)"/>
+	<!--</mx:Canvas>-->
+	<code:SuperTabNavigator id="tabNav"
+							width="100%"
+							height="100%"
+							tabHeight="26"
+							paddingTop="0"
+							tabClose="onTabClose(event)">
+		<mx:VBox width="100%"
+				 height="100%"
+				 verticalGap="0"
+				 label="欢迎"
+				 backgroundImage="{ImagesAssets.BACKGROUNDIMG02}"
+				 borderSkin="org.just.xch.view.component.common.skin.RepeatBackground"
+				 horizontalAlign="center"
+				 verticalAlign="middle">
+			<mx:VBox width="100%"
+					 height="60%"
+					 paddingTop="20">
+				<mx:Image source="{ImagesAssets.GBKH}"
+						  width="100%"
+						  height="100%"
+						  verticalAlign="middle"
+						  horizontalAlign="center"/>
+			</mx:VBox>
+			<mx:Spacer height="20"/>
+			<mx:Label text=" 欢迎使用"
+					  fontWeight="bold"
+					  fontSize="40"
+					  filters="{[glow,dropShadow,bevel]}"/>
+			<mx:Label text="{Constant.SYS_NAME}"
+					  fontWeight="bold"
+					  fontSize="40"
+					  filters="{[glow,dropShadow,bevel]}"/>
+		</mx:VBox>
+	</code:SuperTabNavigator>
+</mx:VBox>
+
+

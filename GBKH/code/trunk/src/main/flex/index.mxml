@@ -4,25 +4,25 @@
 				width="100%"
 				height="100%"
 				creationComplete="init()"
-				xmlns:control="com.winning.bi.control.*"
-				xmlns:mttj="com.winning.bi.demo.mttj.*"
-				xmlns:delegates="com.winning.bi.control.delegates.*"
+				xmlns:control="org.just.xch.control.*"
+				xmlns:mttj="org.just.xch.demo.mttj.*"
+				xmlns:delegates="org.just.xch.control.delegates.*"
 				xmlns:flexlib="http://code.google.com/p/flexlib/"
-				xmlns:common="com.winning.bi.view.component.common.*" xmlns:control1="com.winning.hra.control.*">
+				xmlns:common="org.just.xch.view.component.common.*" xmlns:control1="com.winning.hra.control.*">
 	<mx:Metadata>
 		[ResourceBundle("localization")]
 		[Event(name="langChange", type="flash.events.Event")]
 	</mx:Metadata>
 	<mx:Script>
 		<![CDATA[
-			import com.winning.bi.assets.ImagesAssets;
-			import com.winning.bi.control.events.domain.SysEvent;
-			import com.winning.bi.control.events.domain.ItemEvent;
-			import com.winning.bi.control.events.view.LanguageEvent;
-			import com.winning.bi.model.mlct.AppModelLocator;
-			import com.winning.bi.utils.AlertUtil;
-			import com.winning.bi.utils.ChartsLicenseHandler;
-			import com.winning.bi.utils.Constant;
+			import org.just.xch.assets.ImagesAssets;
+			import org.just.xch.control.events.domain.SysEvent;
+			import org.just.xch.control.events.domain.ItemEvent;
+			import org.just.xch.control.events.view.LanguageEvent;
+			import org.just.xch.model.mlct.AppModelLocator;
+			import org.just.xch.utils.AlertUtil;
+			import org.just.xch.utils.ChartsLicenseHandler;
+			import org.just.xch.utils.Constant;
 			
 			import mx.controls.Alert;
 			import mx.formatters.Formatter;
@@ -88,7 +88,7 @@
 
 	<control:DAController/>
 	<delegates:Services/>
-	<mx:Style source="com/winning/bi/assets/styles/style.css"/>
+	<mx:Style source="org/just/xch/assets/styles/style.css"/>
 
 	<mx:Style>
 	   .errorTip

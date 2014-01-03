@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:Button xmlns:mx="http://www.adobe.com/2006/mxml"
+		   icon="{ImagesAssets.PLAY16}"
+		   height="26"
+		   label="运行">
+	<mx:Script>
+		<![CDATA[
+			import org.just.xch.assets.ImagesAssets;
+		]]>
+	</mx:Script>
+</mx:Button>

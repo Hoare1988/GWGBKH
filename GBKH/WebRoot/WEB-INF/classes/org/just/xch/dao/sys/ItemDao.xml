@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="UTF-8" ?>  
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://www.mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="org.just.xch.dao.sys.ItemDao">
+
+	<resultMap id="itemBasicResultMap" type="Item">
+		<id property="id" column="i_id" javaType="int" />
+		<result property="name" column="i_name" javaType="string" />
+		<result property="py" column="i_py" javaType="string" />
+		<result property="enable" column="i_enable" javaType="int" />
+		<result property="score" column="i_score" javaType="float" />
+		<result property="percentage" column="i_percentage" javaType="float" />
+		<result property="evaluationStandard" column="i_evaluationStandard"
+			javaType="string" />
+		<result property="createDate" column="i_createDate" javaType="date" />
+		<result property="updateDate" column="i_updateDate" javaType="date" />
+		<result property="isRoot" column="i_isRoot" javaType="int" />
+		<result property="isBottom" column="i_isBottom" javaType="int" />
+		<result property="sortNum" column="i_sortNum" javaType="int" />
+		<result property="resource" column="i_resource" javaType="string" />
+		<result property="comments" column="i_comments" javaType="string" />
+		<association property="createBy" column="i_createBy"
+			javaType="SysUser" select="getCreateUser" />
+		<association property="updateBy" column="i_updateBy"
+			javaType="SysUser" select="getUpdateUser" />
+		<association property="parentItem" column="i_parentID"
+			javaType="Item" select="getParentItem" />
+	</resultMap>
+
+	<resultMap id="sysUserBasicResultMap" type="SysUser">
+		<id property="id" column="u_id" javaType="long" />
+		<result property="userName" column="u_userName" javaType="string" />
+		<result property="password" column="u_password" javaType="string" />
+		<result property="realName" column="u_realName" javaType="string" />
+		<result property="py" column="u_py" javaType="string" />
+		<result property="wb" column="u_wb" javaType="string" />
+		<result property="comments" column="u_comments" javaType="string" />
+		<result property="enable" column="u_enable" javaType="int" />
+		<result property="type" column="u_type" javaType="int" />
+		<result property="lastLoginTime" column="u_lastlogintime"
+			javaType="date" />
+		<result property="loginCount" column="u_logincount" javaType="int" />
+
+		<result property="gender" column="u_gender" javaType="string" />
+		<result property="deptcode" column="u_deptcode" javaType="string" />
+		<result property="deptname" column="u_deptname" javaType="string" />
+		<result property="cellphone" column="u_cellphone" javaType="string" />
+		<result property="telphone" column="u_telphone" javaType="string" />
+		<result property="email" column="u_email" javaType="string" />
+		<result property="superiors" column="u_superiors" javaType="long" />
+		<result property="postname" column="u_postname" javaType="string" />
+		<result property="entrydate" column="u_entrydate" javaType="date" />
+		<result property="canaudit" column="u_canaudit" javaType="int" />
+		<result property="privilege" column="u_privilege" javaType="int" />
+	</resultMap>
+
+	<resultMap id="itemPermissionBasicResultMap" type="ItemPermission">
+		<id property="id" column="ip_id" javaType="int" />
+		<result property="createBy" column="ip_createBy" javaType="SysUser" />
+		<result property="updateBy" column="ip_updateBy" javaType="SysUser" />
+		<result property="updateDate" column="ip_updateDate" javaType="date" />
+		<result property="createDate" column="ip_createDate" javaType="date" />
+		<association property="sysOrg" column="ip_sysOrgID"
+			javaType="SysOrg" select="getSysOrg" />
+		<association property="item" column="ip_itemID"
+		javaType="Item" select="getItemPermissionItem" />
+	</resultMap>
+	
+	<resultMap id="sysOrgBasicResultMap" type="SysOrg">
+		<id property="id" column="o_id" javaType="int" />
+		<result property="name" column="o_name" javaType="string" />
+		<result property="py" column="o_py" javaType="string" />
+		<result property="code" column="o_code" javaType="string" />
+		<result property="comments" column="o_comments" javaType="string" />
+		<result property="createDate" column="o_createDate" javaType="date" />
+		<result property="updateDate" column="o_updateDate" javaType="date" />
+	</resultMap>
+
+	<sql id="itemCol">
+		i.id as i_id,
+		i.name as i_name,
+		i.py as i_py,
+		i.enable as
+		i_enable,
+		i.score as i_score,
+		i.percentage as i_percentage,
+		i.evaluationStandard as i_evaluationStandard,
+		i.isRoot as i_isRoot,
+		i.isBottom as i_isBottom,
+		i.sortNum as i_sortNum,
+		i.resource as
+		i_resource,
+		i.parentid as i_parentID,
+		i.comments as i_comments ,
+		i.createBy as i_createBy,
+		i.updateBy as i_updateBy,
+		i.createDate as
+		i_createDate,
+		i.updateDate as i_updateDate
+	</sql>
+
+	<sql id="sysUserCol">
+		u.id as u_id,
+		u.username as u_userName,
+		u.password as
+		u_password,
+		u.realName as u_realName,
+		u.py as u_py,
+		u.wb as u_wb,
+		u.enable as u_enable,
+		u.type as u_type,
+		u.lastlogintime as
+		u_lastlogintime,
+		u.logincount as u_logincount,
+		u.comments as u_comments,
+		u.gender as u_gender,
+		u.deptcode as u_deptcode,
+		u.deptname as
+		u_deptname,
+		u.cellphone as u_cellphone,
+		u.telphone as u_telphone,
+		u.email as u_email,
+		u.superiors as u_superiors,
+		u.postname as
+		u_postname,
+		u.entrydate as u_entrydate,
+		u.canaudit as u_canaudit,
+		u.privilege as u_privilege
+	</sql>
+
+	<sql id="itemPermissionCol">
+		ip.id as ip_id,
+		ip.itemID as ip_itemID,
+		ip.sysOrgID as
+		ip_sysOrgID,
+		ip.createDate as ip_createDae,
+		ip.updateDate as
+		ip_updateDate,
+		ip.createBy as ip_createBy,
+		ip.updateBy as ip_updateBy
+	</sql>
+
+   <sql id="sysOrgCol">
+		o.id as o_id,
+		o.name as o_name,
+		o.py as o_py,
+		o.code as o_code,
+		o.comments as o_comments ,
+		o.createDate as o_createDate,
+		o.updateDate as o_updateDate
+	</sql>
+	<!-- select -->
+	<select id="findItemByID" parameterType="int" resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.id=#{id}
+	</select>
+
+	<select id="getParentItem" parameterType="int" resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.id=#{i_parentID}
+	</select>
+
+	<select id="findItemsByParentItem" parameterType="Item"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i
+		where i.enable=1 and i.parentID=#{id}
+	</select>
+
+	<!-- <select id="getChildrenItems" parameterType="int" resultMap="itemBasicResultMap"> 
+		select <include refid="itemCol" /> from item i where i.enable=1 and i.parentID=#{o_id} 
+		</select> -->
+
+	<select id="findItemByCondition" parameterType="map"
+		resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from Item i
+		where i.enable=#{enable}
+		<if test="name!=null"> and i.name like '%'||#{name}||'%' </if>
+		<if test="py!=null"> and i.py like '%'||#{py}||'%' </if>
+		<if test="isRoot!=null"> and i.isRoot=#{isRoot} </if>
+		<if test="isBottom!=null"> and i.isBottom=#{isBottom} </if>
+		<if test="ParentID!=null"> and i.ParentID=#{ParentID} </if>
+	</select>
+
+	<select id="findUsersByCondition" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where 1=1
+		<if test="userName!=null"> and u.username=#{userName} </if>
+	</select>
+
+     <select id="findItemFromPermitByOrg" parameterType="SysOrg" resultMap="itemBasicResultMap">
+     	select
+     	 <include refid="itemCol" />
+     	 FROM PERMISSION p,Item i
+     	  where p.itemID=i.ID and p.SysOrgID=#{id}
+     </select>
+	
+
+
+	<select id="getCreateUser" parameterType="int" resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u where u.id=#{i_createBy.id}
+	</select>
+
+	<select id="getUpdateUser" parameterType="int" resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u where u.id=#{i_updateBy.id}
+	</select>
+	
+	<select id="getSysOrg" parameterType="int" resultMap="sysOrgBasicResultMap">
+		select
+		<include refid="sysOrgCol" />
+		from dept o where o.id=#{ip_sysOrgID}
+	</select>
+	
+	<select id="getItemPermissionItem" parameterType="int" resultMap="itemBasicResultMap">
+		select
+		<include refid="itemCol" />
+		from item i  where i.id=#{ip_itemID}
+	</select>
+	
+	
+	<select id="findItemPermissionsByCondition" parameterType="map" resultMap="itemPermissionBasicResultMap">
+		select
+		<include refid="itemPermissionCol" />
+		from permission ip where 1=1
+		<if test="id!=null"> and ip.id=#{id}</if>
+		<if test="sysOrg!=null"> and ip.sysorgID=#{sysOrg.id} </if>
+		<if test="item!=null"> and ip.itemID=#{item.id}</if>
+	</select>
+
+	<!-- update -->
+
+	<update id="updateItem" parameterType="Item">
+		update item set updatedate=getDate()
+		<if test="name!=null">,name=#{name} </if>
+		<if test="enable!=null">,enable=#{enable} </if>
+		<if test="py!=null">,py=#{py} </if>
+		<if test="score!=null">,score=#{score} </if>
+		<if test="percentage!=null">,percentage=#{percentage} </if>
+		<if test="evaluationStandard!=null">,evaluationStandard=#{evaluationStandard} </if>
+		<if test="isRoot!=null">,isRoot=#{isRoot} </if>
+		<if test="isBottom!=null">,isBottom=#{isBottom} </if>
+		<if test="resource!=null">,resource=#{resource} </if>
+		<if test="sortNum!=null">,sortNum=#{sortNum} </if>
+		<if test="comments!=null">,comments=#{comments} </if>
+		<if test="updateBy!=null">,updateBy=#{updateBy.id} </if>
+		<where>id=#{id}</where>
+	</update>
+
+	<!-- insert -->
+
+	<insert id="insertItem" parameterType="Item">
+		insert into item
+		(name,evaluationStandard,resource,py,score,percentage,enable,createdate,updateDate,isBottom,isroot,sortNum,comments,
+		createby,updateby,parentID
+		)
+		values
+		(#{name},#{evaluationStandard},#{resource},#{py},#{score},#{percentage},#{enable},getdate(),getdate(),#{isBottom},#{isRoot},#{sortNum},#{comments},#{createBy.id},#{updateBy.id},#{parentItem.id})
+	</insert>
+
+	<insert id="insertRootItem" parameterType="Item">
+		insert into item
+		(name,evaluationStandard,resource,py,score,percentage,enable,createdate,updateDate,isBottom,isroot,sortNum,comments,
+		createby,updateby
+		)
+		values
+		(#{name},#{evaluationStandard},#{resource},#{py},#{score},#{percentage},#{enable},getdate(),getdate(),0,1,#{sortNum},#{comments},#{createBy.id},#{updateBy.id})
+	</insert>
+
+	<insert id="insertItemPermission" parameterType="ItemPermission">
+		insert into permission
+		(itemID,sysOrgID,createBy,updateBy,createDate,updateDate)
+		values
+		(#{item.id},#{sysOrg.id},#{createBy.id},#{updateBy.id},getDate(),getDate())
+	</insert>
+	
+	<!-- delete -->
+	<delete id="deleteItem" parameterType="Item">
+		delete
+		from item where
+		id=#{id}
+	</delete>
+	
+	<delete id="deleteItemPermit" parameterType="ItemPermission">
+		delete
+		from permission where
+		id=#{id}
+	</delete>
+	
+	
+	
+</mapper>
+
+
+

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<mx:VBox xmlns:mx="http://www.adobe.com/2006/mxml" 
+		 xmlns:flex="org.just.xch.view.component.common.jdselector.*"
+		 width="125" height="24" verticalAlign="middle" horizontalAlign="center">
+	<mx:Script>
+		<![CDATA[
+			
+				import org.just.xch.assets.ImagesAssets;
+				
+				import mx.controls.Alert;
+				import mx.controls.DateField;
+				import mx.core.Application;
+				var p:Point;
+				[Bindable]
+				public var jd:Date= new Date();
+				
+				public function get text():String
+				{
+				return ss.textValue;
+				}	
+				
+				private function resetLocal(x:int,y:int):void{
+				
+				var popUPWitdth:int = new JDSWin().width;
+				var popUPHeight:int = new JDSWin().height;
+				
+				p = new Point(x,y);
+				p=ss.parent.localToGlobal(p);
+				var newX:int=p.x;
+				var newY:int=p.y;
+				if(p.x+popUPWitdth>stage.stageWidth){
+				newX = stage.stageWidth-popUPWitdth;
+				}
+				
+				if(p.y+popUPHeight>stage.stageHeight){
+				newY =stage.stageHeight-popUPHeight;
+				}
+				
+				p = new Point(newX,newY);
+				}
+		]]>
+	</mx:Script>
+	<mx:HBox width="100%" height="100%" verticalAlign="middle" horizontalAlign="center">
+		<flex:JdInput id="ss" jd="{jd}"  click="{resetLocal(ss.x,ss.y);JDSWin.show(p.x,p.y+ss.height,ss);}"/>
+		<mx:Image source="{ImagesAssets.TIMER}" click="{resetLocal(ss.x,ss.y);JDSWin.show(p.x,p.y+ss.height,ss);}"/>
+	</mx:HBox>
+</mx:VBox>
