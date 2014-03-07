@@ -62,8 +62,8 @@ MenuBar
 	verticalAlign:				middle;
 	horizontalGap:          	5;
 	cornerRadius:0;
-	fillAlphas: 			0.40, 1.00;
-	fillColors: 			#67CBCD,#67CBCD;
+	fillAlphas: 			0.30, 1.00;
+	fillColors: 			#67CBCD,#57CBCD;
 	highlightAlphas:		1.0, 1.0;
 	color:#000000;
 }

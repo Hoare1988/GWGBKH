@@ -10,7 +10,12 @@ import org.just.xch.domain.sys.ExeItem;
 
 public class DataLogInterceptor
 {
-	
+	/**
+	 *  
+	 * @param pjp
+	 * @return
+	 * @throws Throwable
+	 */
 	public Object insertExeItem(ProceedingJoinPoint pjp) throws Throwable
 	{
 		Object returnBean=pjp.proceed();

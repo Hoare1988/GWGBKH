@@ -16,4 +16,7 @@ public interface SysOrgService {
 	List<SysUserOrgMapping> findUserOrgMapByConsdition(SysUser sysUser,SysOrg sysOrg);
 	
 	List<SysUser> findUserByOrgAndStation(String orgName,Integer station);
+	
+	void deleteUserOrgMaps(List<SysUserOrgMapping> uerOrgMaps);
+	void deleteUserOrgMapsBySysOrg(SysOrg sysOrg);
 }

@@ -50,23 +50,38 @@ public class ExeItemServiceImpl implements ExeItemService
 	// }
 
 	@Override
-	public void createAccessFormByRootItem(ExeItem root)
+	public ExeItem createAccessFormByRootItem(ExeItem root)
 	{
+		ExeItem resultExeItem=null;
 		try
 		{
-			if (root.getId() == null || root.getId() <= 0)
+			List<ExeItem> exeItemExist=findRootExeItems(root);
+			
+			if(exeItemExist!=null)
 			{
-				exeItemDao.insertExeItem(root);
-				root.setId((long) exeItemDao.getMaxExeItemID());
+				resultExeItem=root;
 			}
-			root.setRootExeItem(root);
-			addExeItemsByParent(root);
+			else
+			{
+				if (root.getId() == null || root.getId() <= 0)
+				{
+					exeItemDao.insertExeItem(root);
+					root.setId((long) exeItemDao.getMaxExeItemID());
+				}
+				root.setRootExeItem(root);
+				addExeItemsByParent(root);
+				resultExeItem=null;
+			}
 		}
 		catch (Exception e)
 		{
 			e.printStackTrace();
+			resultExeItem=null;
 		}
+		
+		return resultExeItem;
 	}
+	
 
 	private void addExeItemsByParent(ExeItem parentExeItem)
 	{
@@ -346,14 +361,14 @@ public class ExeItemServiceImpl implements ExeItemService
 						exeItemVO.setFirstIndex(parentExeItem.getItem()
 								.getName());
 						exeItemVO.setItemAndWeight(parentExeItem
-								.getParentExeItem().getItem().getName());
+								.getParentExeItem().getItem().getName().trim());
 					}
 					else
 					{
 						/****************/
 						exeItemVO.setFirstIndex(exeItem.getItem().getName());
 						exeItemVO.setItemAndWeight(parentExeItem.getItem()
-								.getName());
+								.getName().trim());
 					}
 					exeItemVOList.add(exeItemVO);
 				}
@@ -363,9 +378,27 @@ public class ExeItemServiceImpl implements ExeItemService
 		return exeItemVOList;
 	}
 
+	/**
+	 * 对 exeitemVO 的string 重置  ，1：如果考核项目及权重有多个(三个及以上)子项目，则考核项目及权重单列显示（竖立）
+	 * @param exeitemVOList
+	 * @return
+	 */
+	private List<ExeItemVO> resetExeItemVOContent(List<ExeItemVO> exeitemVOList)
+	{
+		
+		return exeitemVOList;
+	}
+
+	@Override
+	public List<ExeItem> findExeItemByProperty(String protertyName, Object value)
+	{
+		Map<String, Object> conditions = new HashMap<String, Object>();
+		conditions.put(protertyName, value);
+		return exeItemDao.findExeItemByCondition(conditions);
+	}
+
 	@Resource
 	private ExeItemDao exeItemDao;
-
 	@Resource
 	private ItemDao itemDao;
 	@Resource

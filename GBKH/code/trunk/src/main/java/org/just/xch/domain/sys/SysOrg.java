@@ -17,13 +17,13 @@ public class SysOrg implements Serializable
 	private Date createDate;
 	private Date updateDate;
 	/**
-	 * 1 YES  2 NO
+	 * 1 YES  0 NO
 	 */
-	private  int enable;
+	private  Integer enable;
 	/**
 	 * 1 YEsS 2:NO
 	 */
-	private int isSelected;
+	private Integer isSelected;
 	
 	public Integer getId()
 	{
@@ -85,12 +85,12 @@ public class SysOrg implements Serializable
 		this.updateDate = updateDate;
 	}
 
-	public int getEnable()
+	public Integer getEnable()
 	{
 		return enable;
 	}
 
-	public void setEnable(int enable)
+	public void setEnable(Integer enable)
 	{
 		this.enable = enable;
 	}

@@ -117,7 +117,7 @@
 		from Dept o
 		where o.enable=1
 		<if test="name!=null"> and o.name like '%${name}%' </if>
-		<if test="py!=null"> and o.py like '%${py}' </if>
+		<if test="py!=null"> and o.py like '${py}%' </if>
 	</select>
 
 	<select id="queryPmUsers" parameterType="map"
@@ -179,6 +179,7 @@
 		<if test="name!=null"> ,name=#{name}</if>
 		<if test="py!=null"> ,py=#{py}</if>
 		<if test="comments!=null"> ,comments=#{comments}</if>
+		<if test="enable!=null">,enable=#{enable} </if>
 		where id=#{id}	
 	</update>
 	
@@ -187,8 +188,8 @@
 	
 	<insert id="insertUserOrgMapping" parameterType="SysUserOrgMapping">
 		insert
-		into sysuser_org_stat_map(sysUserID,OrgID)
-		values(#{user.id},#{org.id})
+		into sysuser_org_stat_map(sysUserID,OrgID,createdate,updatedate)
+		values(#{user.id},#{org.id},getdate(),getdate())
 	</insert>
 	
 	<insert id="insertSysOrg" parameterType="SysOrg">
@@ -198,7 +199,13 @@
 	
 	
 	<!-- delete -->
-
+	<delete id="deleteUserOrgMap" parameterType="SysUserOrgMapping">
+		delete from sysuser_org_stat_map where sysUserID =#{user.id} and OrgID=#{org.id}
+	</delete>
+	
+	<delete id="deleteUserOrgMapBySysOrg" parameterType="SysOrg">
+	  delete from sysuser_org_stat_map where orgID=#{id}
+	</delete>
 </mapper>
 
 

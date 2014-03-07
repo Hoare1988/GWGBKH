@@ -135,9 +135,21 @@ public class ItemServiceImpl implements ItemService {
 
 	@Override
 	public Item deleteItem(Item item) {
+		//删除所有子节点
+		if(item.getIsBottom()==0)
+		{
+			List<Item> childrenItems=this.findChildrens(item);
+			if(childrenItems!=null&&childrenItems.size()>0)
+			{
+				for(Item item2:childrenItems)
+				{
+					deleteItem(item2);
+				}
+			}
+		}
 		item.setEnable(0);
 		itemDao.updateItem(item);
-		return null;
+		return item;
 	}
 
 	@Override

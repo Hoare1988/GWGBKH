@@ -165,8 +165,6 @@
 
 
 
-
-
 	<!-- select -->
 	<select id="findSysUserById" parameterType="long"
 		resultMap="sysUserBasicResultMap">
@@ -182,6 +180,17 @@
 		<include refid="sysUserCol" />
 		from SYSUSER u
 		where u.enable=1
+		<if test="userName!=null"> and u.username like '%${userName}%' </if>
+		<if test="realName!=null"> and u.realName like '%${realName}%' </if>
+		<if test="py!=null"> and u.py like #{py}+'%' </if>
+	</select>
+	
+	<select id="queryHistoyUser" parameterType="map"
+		resultMap="sysUserBasicResultMap">
+		select
+		<include refid="sysUserCol" />
+		from SYSUSER u
+		where u.enable=0
 		<if test="userName!=null"> and u.username like '%${userName}%' </if>
 		<if test="realName!=null"> and u.realName like '%${realName}%' </if>
 		<if test="py!=null"> and u.py like #{py}+'%' </if>

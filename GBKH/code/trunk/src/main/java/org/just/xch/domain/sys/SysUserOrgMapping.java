@@ -6,7 +6,7 @@ public class SysUserOrgMapping {
 	/**
 	 * 1:正职 2: 副职
 	 */
-	private int station;
+	private Integer station;
 
 	public SysUser getUser() {
 		return user;
@@ -24,11 +24,11 @@ public class SysUserOrgMapping {
 		this.org = org;
 	}
 
-	public int getStation() {
+	public Integer getStation() {
 		return station;
 	}
 
-	public void setStation(int station) {
+	public void setStation(Integer station) {
 		this.station = station;
 	}
 }

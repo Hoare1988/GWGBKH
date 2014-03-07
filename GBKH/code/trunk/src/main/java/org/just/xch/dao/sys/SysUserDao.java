@@ -18,7 +18,11 @@ public interface SysUserDao
 	public List<SysUser> queryPmUsers(Map<String, Object> condition);
 
 	public List<SysUser> findUsersByCondition(Map<String, Object> condition);
+	
+	public List<SysUser> queryHistoyUser(Map<String, Object> condition);
 
+	
+	
 	public List<SysModule> selectAllModulesForRole(Map<String, Object> condition);
 
 	public List<SysModule> selectValidModulesForRole(

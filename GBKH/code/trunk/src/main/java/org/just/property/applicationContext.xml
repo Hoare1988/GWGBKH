@@ -16,14 +16,14 @@
      http://www.springframework.org/schema/flex/spring-flex-1.0.xsd">
 
 	<context:annotation-config /><!--开启注解 -->
-	<context:component-scan base-package="com.winning" />
-	<task:annotation-driven /> <!-- 这句是重点 定时器开关 -->
+	<context:component-scan base-package="org.just" />
+	<task:annotation-driven /> 
     <bean class="org.springframework.web.servlet.mvc.annotation.DefaultAnnotationHandlerMapping" />
     
   	<bean id="dataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
 		<property name="driverClassName" value="com.microsoft.sqlserver.jdbc.SQLServerDriver" />
 		<property name="url"
-			value="jdbc:sqlserver://localhost:1433;DatabaseName=GBKH"/>
+			value="jdbc:sqlserver://localhost:1433;DatabaseName=GBKH_Test"/>
 		<property name="username" value="sa"/>
 		<property name="password" value="sql2k"/>
  	</bean>

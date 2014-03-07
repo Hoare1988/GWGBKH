@@ -425,9 +425,9 @@ public class POIUtil {
 		{
 			HSSFRow row = sheet.createRow(rowIndex);
 			/**************设置行高************************/
-				if(rowData!=null){
-					row.setHeight((short)(this.DEFAULT_ROW_HEIGHT*(((String)rowData[3]).length()/ExeItemVO.EVALUATION_STANDARD_DEFAULT_WIDTH+1)));
-				}
+//				if(rowData!=null){
+//					row.setHeight((short)(this.DEFAULT_ROW_HEIGHT*(((String)rowData[3]).length()/ExeItemVO.EVALUATION_STANDARD_DEFAULT_WIDTH+1)));
+//				}
 			/***********************************/
 			for(int colIndex=0;colIndex<rowData.length;colIndex++)
 			{

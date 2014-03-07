@@ -15,32 +15,66 @@ import org.just.xch.domain.sys.SysUser;
 import org.just.xch.domain.sys.SysUserOrgMapping;
 import org.just.xch.service.intf.SysOrgService;
 
-public class SysOrgServiceImpl implements SysOrgService {
+public class SysOrgServiceImpl implements SysOrgService
+{
+	
+	
 
 	@Override
-	public List<SysOrg> queryOrgByCondition(String name, String py) {
-		Map<String, Object> condition = DpUtil.getConMap();
-		if (NewwinningUtil.isNotNull(name)) {
-			condition.put("name", name);
-		}
-		if (NewwinningUtil.isNotNull(py)) {
-			condition.put("py", py);
-		}
-		return sysOrgDao.queryByCondition(condition);
+	public void deleteUserOrgMapsBySysOrg(SysOrg sysOrg)
+	{
+		sysOrgDao.deleteUserOrgMapBySysOrg(sysOrg);
+		
 	}
 
 	@Override
-	public void addSysUserOrgMap(SysUserOrgMapping uerOrgMapping) {
+	public List<SysOrg> queryOrgByCondition(String name, String py)
+	{
+		Map<String, Object> condition = DpUtil.getConMap();
+		if (NewwinningUtil.isNotNull(name))
+		{
+			condition.put("name", name);
+		}
+		if (NewwinningUtil.isNotNull(py))
+		{
+			condition.put("py", py);
+		}
+		List<SysOrg> list = sysOrgDao.queryByCondition(condition);
+		return list;
+	}
+
+	@Override
+	public void addSysUserOrgMap(SysUserOrgMapping uerOrgMapping)
+	{
 		List<SysUserOrgMapping> userOrgs = this.findUserOrgMapByConsdition(
 				uerOrgMapping.getUser(), uerOrgMapping.getOrg());
-		if (userOrgs == null || userOrgs.size() == 0) {
-			sysOrgDao.insertUserOrgMapping(uerOrgMapping);
+		if (userOrgs == null || userOrgs.size() == 0)
+		{
+			try
+			{
+				sysOrgDao.insertUserOrgMapping(uerOrgMapping);
+			}
+			catch (Exception e)
+			{
+				e.printStackTrace();
+			}
+		}
+	}
+
+	@Override
+	public void deleteUserOrgMaps(List<SysUserOrgMapping> uerOrgMaps)
+	{
+
+		for (SysUserOrgMapping map : uerOrgMaps)
+		{
+			sysOrgDao.deleteUserOrgMap(map);
 		}
 	}
 
 	@Override
 	public List<SysUserOrgMapping> findUserOrgMapByConsdition(SysUser sysUser,
-			SysOrg sysOrg) {
+			SysOrg sysOrg)
+	{
 		Map<String, Object> conditionsMap = new HashMap<String, Object>();
 		conditionsMap.put("SysUserID", sysUser.getId());
 		conditionsMap.put("OrgID", sysOrg.getId());
@@ -48,33 +82,45 @@ public class SysOrgServiceImpl implements SysOrgService {
 	}
 
 	@Override
-	public List<SysUser> findUserByOrgAndStation(String orgName, Integer station) {
+	public List<SysUser> findUserByOrgAndStation(String orgName, Integer station)
+	{
 
 		Map<String, Object> conditionsMap = new HashMap<String, Object>();
-		if (NewwinningUtil.isNotNull(orgName)) {
+		if (NewwinningUtil.isNotNull(orgName))
+		{
 			conditionsMap.put("orgName", orgName);
 		}
-		if (NewwinningUtil.isNotNull(station)) {
+		if (NewwinningUtil.isNotNull(station))
+		{
 			conditionsMap.put("station", station);
 		}
 		return sysOrgDao.findUserByOrgAndStation(conditionsMap);
 	}
 
 	@Override
-	public void saveOrUpdateOrg(SysOrg sysorg) {
-		if(sysorg!=null)
+	public void saveOrUpdateOrg(SysOrg sysorg)
+	{
+		if (sysorg != null)
 		{
-			if(!NewwinningUtil.isNotNull(sysorg.getPy())&&NewwinningUtil.isNotNull(sysorg.getName()))
+			if (!NewwinningUtil.isNotNull(sysorg.getPy())
+					&& NewwinningUtil.isNotNull(sysorg.getName()))
 			{
 				sysorg.setPy(Pinyin4jUtil.getPinYinHeadChar(sysorg.getName()));
 			}
-			
-			if(sysorg.getId()!=null)
+			try
 			{
-				sysOrgDao.updateSysOrg(sysorg);
-			}else
+				if (NewwinningUtil.isNotNull(sysorg.getId()))
+				{
+					sysOrgDao.updateSysOrg(sysorg);
+				}
+				else
+				{
+					sysOrgDao.insertSysOrg(sysorg);
+				}
+			}
+			catch (Exception e)
 			{
-				sysOrgDao.insertSysOrg(sysorg);
+				e.printStackTrace();
 			}
 		}
 	}

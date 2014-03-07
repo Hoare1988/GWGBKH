@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import org.apache.poi.hssf.usermodel.HSSFRichTextString;
 import org.apache.poi.hssf.usermodel.HSSFRow;
 import org.apache.poi.hssf.usermodel.HSSFSheet;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.ss.formula.FormulaParseException;
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
 import org.apache.poi.ss.usermodel.Comment;
@@ -27,6 +25,7 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.ss.util.Region;
+import org.aspectj.weaver.ast.Var;
 import org.just.xch.domain.sys.ExeItem;
 import org.just.xch.domain.sys.ExeItemVO;
 
@@ -38,6 +37,10 @@ import org.just.xch.domain.sys.ExeItemVO;
  */
 public class ExcelUtil
 {
+	
+	//评分标准默认宽度是25
+	public static final int  EVALUATION_STANDARD_DEFAULT_WIDTH=30; 
+	
 	// HSSFCellStyle Excle样式
 	public HSSFCellStyle cellStyle = null;
 
@@ -56,10 +59,24 @@ public class ExcelUtil
 	// 内容为空时左右
 	public HSSFCellStyle leftRightBorderCellStyle = null;
 
-	// 标题
+	/**
+	 * 标题
+	 */
 	private HSSFCellStyle titleCellStyle = null;
-	// 副标题
+	/**
+	 * 副标题
+	 */
 	private HSSFCellStyle chiefTitleCellStyle = null;
+	/**
+	 * 项目和权重 样式
+	 */
+	private HSSFCellStyle itemAndWeightStyle = null;
+	/**
+	 * 一级指标样式
+	 */
+	private HSSFCellStyle firstIndexStyle=null;
+	
+	
 
 	private static final SimpleDateFormat sdf = new SimpleDateFormat(
 			"yyyy-MM-dd");
@@ -102,6 +119,20 @@ public class ExcelUtil
 		catch (Exception e)
 		{
 			e.printStackTrace();
+		}finally
+		{
+			if(outputStream!=null)
+			{
+				try
+				{
+					outputStream.close();
+				}
+				catch (IOException e)
+				{
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
 		}
 	}
 
@@ -139,29 +170,38 @@ public class ExcelUtil
 		chiefTitleCellStyle.setFont(chiefTitlefont);
 
 		leftBorderCellStyle = workbook.createCellStyle();
-		leftBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_DOTTED);
+		leftBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 
 		rightBorderCellStyle = workbook.createCellStyle();
 		rightBorderCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
 
 		bottomBorderCellStyle = workbook.createCellStyle();
-		bottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_DOTTED);
+		bottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 
 		// 右下
 		rightBottomBorderCellStyle = workbook.createCellStyle();
 		rightBottomBorderCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
-		rightBottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_DOTTED);
+		rightBottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		// 左下
 		leftBottomBorderCellStyle = workbook.createCellStyle();
-		leftBottomBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_DOTTED);
-		leftBottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_DOTTED);
+		leftBottomBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
+		leftBottomBorderCellStyle.setBorderBottom(HSSFCellStyle.BORDER_THIN);
 		// 左右
 		leftRightBorderCellStyle = workbook.createCellStyle();
 		leftRightBorderCellStyle.setAlignment(HSSFCellStyle.ALIGN_CENTER);// 左右居中
 		leftRightBorderCellStyle
 				.setVerticalAlignment(HSSFCellStyle.VERTICAL_CENTER);// 上下居中
-		leftRightBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_DOTTED);
+		leftRightBorderCellStyle.setBorderLeft(HSSFCellStyle.BORDER_THIN);
 		leftRightBorderCellStyle.setBorderRight(HSSFCellStyle.BORDER_THIN);
+		
+		//项目和权重 样式
+		itemAndWeightStyle=workbook.createCellStyle();
+		itemAndWeightStyle.setBorderTop(HSSFCellStyle.BORDER_THIN);
+		//项目和权重字体
+		HSSFFont itemAndWeightfont = workbook.createFont();
+		itemAndWeightfont.setBoldweight(HSSFFont.BOLDWEIGHT_BOLD); // 字体加粗
+		itemAndWeightfont.setFontName("宋体"); // 设置单元格字体
+		itemAndWeightStyle.setFont(itemAndWeightfont);
 	}
 
 	/**
@@ -224,7 +264,7 @@ public class ExcelUtil
 			if (rowData != null)
 			{
 				row.setHeight((short) (this.DEFAULT_ROW_HEIGHT * (((String) rowData[3])
-						.length() / ExeItemVO.EVALUATION_STANDARD_DEFAULT_WIDTH + 1)));
+						.length() / ExcelUtil.EVALUATION_STANDARD_DEFAULT_WIDTH + 1)));
 			}
 
 			Object[] lastRecord = null;
@@ -237,6 +277,15 @@ public class ExcelUtil
 			for (int colIndex = 0; colIndex < rowData.length; colIndex++)
 			{
 				HSSFCell cell_Sh = row.createCell(colIndex);
+				if(rowIndex==2)
+				{
+					//首行，标题栏
+					cell_Sh.setCellStyle(itemAndWeightStyle);
+					insertToCell(cell_Sh, rowData[colIndex]);
+					continue;
+				}
+				
+				
 				if ((colIndex < 2 || colIndex > 5)
 						&& lastRecord != null
 						&& lastRecord[colIndex] != null
@@ -257,22 +306,22 @@ public class ExcelUtil
 					{
 						cell_Sh.setCellStyle(leftBottomBorderCellStyle);
 					}
-					else if (colIndex == 0)
-					{
-						cell_Sh.setCellStyle(leftBorderCellStyle);
-					}
-					else if (colIndex == 6)
-					{
-						cell_Sh.setCellStyle(bottomBorderCellStyle);
-					}
+//					else if (colIndex == 6)
+//					{
+//						cell_Sh.setCellStyle(bottomBorderCellStyle);
+//					}
 					else
 					{
 						cell_Sh.setCellStyle(leftRightBorderCellStyle);
 					}
 					continue;
 				}
-
-				if (cellStyle != null)
+				
+			
+				if(colIndex==0)
+				{//项目和权重 样式
+					cell_Sh.setCellStyle(itemAndWeightStyle);
+				}else if (cellStyle != null)
 				{
 					cell_Sh.setCellStyle(cellStyle);
 				}
@@ -280,7 +329,7 @@ public class ExcelUtil
 			}
 			rowIndex++;
 		}
-
+		sheet.autoSizeColumn(0,true);
 		sheet.autoSizeColumn(3);
 		sheet.autoSizeColumn(6);
 	}

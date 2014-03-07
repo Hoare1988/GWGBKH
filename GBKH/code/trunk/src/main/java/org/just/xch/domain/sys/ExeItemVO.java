@@ -7,8 +7,6 @@ package org.just.xch.domain.sys;
  */
 public class ExeItemVO
 {
-	//评分标准默认宽度是15
-	public static final int  EVALUATION_STANDARD_DEFAULT_WIDTH=20; 
 	
 	/**
 	 * 考核项目及权重

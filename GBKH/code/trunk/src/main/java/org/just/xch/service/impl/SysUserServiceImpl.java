@@ -69,6 +69,25 @@ public class SysUserServiceImpl implements SysUserService
 		}
 		return sysUserDao.queryUsersByCondition(condition);
 	}
+	
+	public List<SysUser> queryHistoryUsers(String userName,
+			String realName, String py)
+	{
+		Map<String, Object> condition = DpUtil.getConMap();
+		if (NewwinningUtil.isNotNull(userName))
+		{
+			condition.put("userName", userName);
+		}
+		if (NewwinningUtil.isNotNull(realName))
+		{
+			condition.put("realName", realName);
+		}
+		if (NewwinningUtil.isNotNull(py))
+		{
+			condition.put("py", py);
+		}
+		return sysUserDao.queryHistoyUser(condition);
+	}
 
 	public List<SysUser> queryPmUsers(String userName, String realName,
 			String py)

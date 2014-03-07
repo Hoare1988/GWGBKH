@@ -16,7 +16,7 @@ public class DataLog extends BaseDomain
 	 */
 	private static final long serialVersionUID = 1L;
 	/**
-	 * 1
+	 * 1 item  2：exeItem
 	 */
 	private Integer type;
 	/**
@@ -27,7 +27,7 @@ public class DataLog extends BaseDomain
 	 *  由Type 1：itemID 2：exeItem.ID
 	 */
 	private String serviceID;
-
+	
 	public Integer getType()
 	{
 		return type;
@@ -57,5 +57,9 @@ public class DataLog extends BaseDomain
 	{
 		this.serviceID = serviceID;
 	}
+	
+	
+	
+	
 	
 }
